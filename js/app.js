@@ -5,7 +5,7 @@
 (function (OSLab) {
   'use strict';
 
-  const DEFAULT_ROUTE = 'scheduling';
+  const DEFAULT_ROUTE = 'learn';
   const STATUS = {
     ready: { text: 'SIM READY', cls: 'ok' },
     running: { text: 'RUNNING', cls: 'busy' },
@@ -23,34 +23,58 @@
 
   /* ------------------------------------------------------------ yönlendirme */
 
+  // "#/learn/ch2/baglayici" → { id: 'learn', params: ['ch2', 'baglayici'] }
   function parseRoute() {
-    const id = location.hash.replace(/^#\/?/, '');
-    return OSLab.modules[id] ? id : DEFAULT_ROUTE;
+    const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
+    return OSLab.modules[parts[0]]
+      ? { id: parts[0], params: parts.slice(1) }
+      : { id: DEFAULT_ROUTE, params: [] };
+  }
+
+  // Menüde, adresin en uzun önekiyle eşleşen öğe etkin olur (#/learn/ch2/... → "Bölüm 2")
+  function updateNav() {
+    const hash = location.hash || '#/' + DEFAULT_ROUTE;
+    let best = null;
+    document.querySelectorAll('.nav-item').forEach((a) => {
+      const href = a.getAttribute('href');
+      if ((hash === href || hash.startsWith(href + '/')) && (!best || href.length > best.getAttribute('href').length)) best = a;
+    });
+    document.querySelectorAll('.nav-item').forEach((a) => {
+      a.classList.toggle('active', a === best);
+      if (a === best) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+  }
+
+  function setHeader(h) {
+    els.num.textContent = h.num;
+    els.title.textContent = h.title;
+    els.sub.textContent = h.sub || '';
+    document.title = `${h.title} · OS Interactive Lab`;
   }
 
   function route() {
-    const id = parseRoute();
-    if (id === current) return;
+    const { id, params } = parseRoute();
+    updateNav();
+    toggleSidebar(false);
+    if (id === current) {
+      const mod = OSLab.modules[id];
+      if (mod.navigate) {
+        els.view.scrollTop = 0;
+        mod.navigate(params);
+      }
+      return;
+    }
     if (current) OSLab.modules[current].unmount();
     current = id;
 
     const mod = OSLab.modules[id];
-    document.querySelectorAll('.nav-item').forEach((a) => {
-      const active = a.dataset.route === id;
-      a.classList.toggle('active', active);
-      if (active) a.setAttribute('aria-current', 'page');
-      else a.removeAttribute('aria-current');
-    });
-    els.num.textContent = mod.num;
-    els.title.textContent = mod.title;
-    els.sub.textContent = mod.subtitle;
-    document.title = `${mod.title} · OS Interactive Lab`;
+    setHeader({ num: mod.num, title: mod.title, sub: mod.subtitle });
     setStatus('standby');
 
     Info.render(id, mod);
     els.view.scrollTop = 0;
-    mod.mount(els.view);
-    toggleSidebar(false);
+    mod.mount(els.view, params);
   }
 
   function setStatus(key) {
@@ -92,7 +116,7 @@
             </div>
             <div class="q-answer" hidden>${q.a}</div>
           </article>`).join('')
-        : '<p class="empty">Bu modülün sınav soruları modülle birlikte eklenecek.</p>';
+        : `<p class="empty">${data.examEmpty || 'Bu modül için sınav sorusu yok.'}</p>`;
     },
 
     // Seçili algoritmanın/konunun teori bölümünü açıp vurgular; diğer odak bölümlerini kapatır
@@ -192,7 +216,7 @@
     route();
   }
 
-  OSLab.app = { setStatus, focusInfo: (id) => Info.focus(id), loadPreset };
+  OSLab.app = { setStatus, setHeader, focusInfo: (id) => Info.focus(id), loadPreset };
 
   init();
 })(window.OSLab = window.OSLab || {});

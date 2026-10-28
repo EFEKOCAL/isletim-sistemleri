@@ -24,22 +24,44 @@
         </div>
       </div>
 
-      <div class="nav-label">Modüller</div>
+      <div class="nav-label">1 · Ders (önce teori)</div>
+      <nav class="nav">
+        <a class="nav-item" href="#/learn" data-route="learn">
+          <span class="nav-num">★</span>
+          <span class="nav-text"><span class="nav-title">Başlangıç</span><span class="nav-sub">Çalışma yöntemi, ilerleme</span></span>
+        </a>
+        <a class="nav-item" href="#/learn/ch1" data-route="learn">
+          <span class="nav-num">B1</span>
+          <span class="nav-text"><span class="nav-title">Giriş</span><span class="nav-sub">Kesmeler, depolama, çift mod</span></span>
+        </a>
+        <a class="nav-item" href="#/learn/ch2" data-route="learn">
+          <span class="nav-num">B2</span>
+          <span class="nav-text"><span class="nav-title">İşletim Sistemi Yapıları</span><span class="nav-sub">Sistem çağrıları, linker, yapılar</span></span>
+        </a>
+        <a class="nav-item" href="#/learn/ch3" data-route="learn">
+          <span class="nav-num">B3</span>
+          <span class="nav-text"><span class="nav-title">İşlemler</span><span class="nav-sub">PCB, fork, IPC, soket, RPC</span></span>
+        </a>
+        <a class="nav-item" href="#/learn/sorular" data-route="learn">
+          <span class="nav-num">?</span>
+          <span class="nav-text"><span class="nav-title">Hocanın Soruları</span><span class="nav-sub">Aralıklı tekrar</span></span>
+          <span class="badge badge-live">Sınav</span>
+        </a>
+      </nav>
+
+      <div class="nav-label nav-label-2">2 · Laboratuvar (pratik)</div>
       <nav class="nav">
         <a class="nav-item" href="#/system" data-route="system">
-          <span class="nav-num">01</span>
-          <span class="nav-text"><span class="nav-title">System &amp; Architecture</span><span class="nav-sub">Sistem ve Mimari</span></span>
-          <span class="badge badge-live">Aktif</span>
+          <span class="nav-num">L1</span>
+          <span class="nav-text"><span class="nav-title">System &amp; Architecture</span><span class="nav-sub">Bölüm 1–2</span></span>
         </a>
         <a class="nav-item" href="#/scheduling" data-route="scheduling">
-          <span class="nav-num">02</span>
-          <span class="nav-text"><span class="nav-title">CPU Scheduling</span><span class="nav-sub">İşlemci Zamanlama</span></span>
-          <span class="badge badge-live">Aktif</span>
+          <span class="nav-num">L2</span>
+          <span class="nav-text"><span class="nav-title">CPU Scheduling</span><span class="nav-sub">Hafta 4</span></span>
         </a>
         <a class="nav-item" href="#/sync" data-route="sync">
-          <span class="nav-num">03</span>
-          <span class="nav-text"><span class="nav-title">Synchronization</span><span class="nav-sub">Senkronizasyon</span></span>
-          <span class="badge badge-live">Aktif</span>
+          <span class="nav-num">L3</span>
+          <span class="nav-text"><span class="nav-title">Synchronization</span><span class="nav-sub">Bölüm 3 · üretici–tüketici</span></span>
         </a>
       </nav>
 
@@ -89,6 +111,12 @@
   </aside>
 
   <script src="js/data/info-content.js" defer></script>
+  <script src="js/data/lessons-ch1.js" defer></script>
+  <script src="js/data/lessons-ch2.js" defer></script>
+  <script src="js/data/lessons-ch3.js" defer></script>
+  <script src="js/data/teacher-questions.js" defer></script>
+  <script src="js/views/diagrams.js" defer></script>
+  <script src="js/views/learn-view.js" defer></script>
   <script src="js/scheduler.js" defer></script>
   <script src="js/views/scheduling-view.js" defer></script>
   <script src="js/synchronization.js" defer></script>

@@ -4,7 +4,31 @@
 
 **Canlı site:** https://efekocal.github.io/isletim-sistemleri/
 
-## Modüller
+## Önce teori: Ders Notları
+
+Site açıldığında **Ders Notları** bölümüyle başlar. Ders PDF'leri (Silberschatz, 10. baskı) slayt sırasıyla 31 kısa derse bölünmüştür:
+
+| Bölüm | Kaynak | Dersler |
+|---|---|---|
+| 1 · Giriş | ch01_TR.pdf | İşletim sistemi nedir, organizasyon, kesmeler, G/Ç ve DMA, depolama hiyerarşisi, mimari, çoklu programlama, çift mod ve zamanlayıcı, bileşenler, bilgi işlem ortamları |
+| 2 · İşletim Sistemi Yapıları | ch02_TR.pdf | Servisler, arayüz, sistem çağrıları, parametre geçişi, sistem programları, linker/loader, ABI, policy/mechanism, yapılar, önyükleme, hata ayıklama |
+| 3 · İşlemler | ch03_TR.pdf | İşlem kavramı, durumlar, PCB ve bağlam değişimi, planlama, fork/exec/wait, IPC, paylaşılan bellek, mesaj geçişi, POSIX/Mach/pipe, soket ve RPC |
+
+Her ders aynı öğrenme döngüsünü izler:
+
+1. **Okumadan önce düşün** (ön test): Konuyu okumadan bir soruyu tahmin etmeye çalış.
+2. **Oku:** Tanım kartları, karşılaştırmalar, slayt numaraları. Slaytlardaki hatalar ayrıca işaretlenir.
+3. **Gör:** 29 etkileşimli şekil var. Bazılarına tıklanır, bazıları adım adım ilerler. Örnekler: kesme döngüsü, depolama piramidi, işlem durum makinesi, fork, dairesel tampon.
+4. **Kendini yokla** (geri çağırma pratiği): Ders sonundaki soruları cevaba bakmadan cevapla.
+5. **Laboratuvarda dene:** Kavramı ilgili simülatörde canlı çalıştır.
+
+**Hocanın Soruları** sayfasında her sorunun model cevabı ve cevapta bulunması gereken anahtar noktalar vardır. Sorular aralıklı tekrarla çalışılır: bir soru ancak farklı günlerde iki kez bilinirse "Öğrenildi" sayılır. Kart modu ise soruları karışık sırayla sorar. İlerleme yalnızca kendi tarayıcında saklanır.
+
+### Hocanın yeni sorularını eklemek
+
+`js/data/teacher-questions.js` dosyasında, listenin sonuna yeni bir nesne eklemek yeterli. Dosyanın başında örnek bir şablon bulunuyor.
+
+## Laboratuvarlar
 
 | # | Modül | Laboratuvarlar |
 |---|---|---|
@@ -58,8 +82,12 @@ js/
   scheduler.js              CPU zamanlama algoritmaları (DOM'dan bağımsız)
   synchronization.js        semafor, mutex, yarış durumu, bounded buffer
   architecture.js           sistem çağrısı adımları, bağlama/yükleme, mimari yolları
-  data/info-content.js      teori metinleri ve sınav soruları
-  views/                    her modülün arayüz ve animasyon katmanı
+  data/info-content.js      laboratuvarların Bilgi & Sınav paneli içerikleri
+  data/lessons-ch1..3.js    ders notları (bölüm başına bir dosya)
+  data/teacher-questions.js hocanın soruları, model cevaplar, anahtar noktalar
+  views/learn-view.js       Ders Notları: ana sayfa, dersler, soru tekrarı
+  views/diagrams.js         ders notlarındaki etkileşimli şekiller
+  views/                    her laboratuvarın arayüz ve animasyon katmanı
 ```
 
 Hesaplama dosyaları (`scheduler.js`, `synchronization.js`, `architecture.js`) arayüzden ayrıdır ve Node.js ile tek başına test edilebilir.

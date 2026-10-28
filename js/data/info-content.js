@@ -621,4 +621,46 @@ signal(Q);      signal(S);</div>
       ]
     }
   };
+
+  OSLab.info.learn = {
+    theory: [
+      {
+        id: 'method',
+        title: 'Bu sitede nasıl çalışmalı?',
+        html: `
+          <ol>
+            <li><b>Oku:</b> Dersleri PDF sırasıyla izle. Her dersin başındaki "okumadan önce düşün" sorusunu cevaplamaya çalış.</li>
+            <li><b>Gör:</b> Şekilleri tıklayarak veya "İleri" ile adım adım incele. Şekli kendi cümlelerinle anlatabiliyorsan kavramı öğrenmişsindir.</li>
+            <li><b>Hatırla:</b> Ders sonundaki soruları cevaba bakmadan cevapla.</li>
+            <li><b>Dene:</b> "Laboratuvara git" ile kavramı simülatörde çalıştır.</li>
+            <li><b>Tekrar et:</b> Hocanın sorularında önce kendi cevabını yaz, sonra anahtar noktaları işaretle.</li>
+          </ol>`
+      },
+      {
+        id: 'science',
+        title: 'Hangi öğrenme ilkelerine dayanıyor?',
+        html: `
+          <ul>
+            <li><b>Geri çağırma pratiği (testing effect):</b> Bilgiyi hatırlamaya çalışmak, aynı süreyi tekrar okumaya harcamaktan daha kalıcı öğrenme sağlar. Bu yüzden her ders sorularla biter.</li>
+            <li><b>Aralıklı tekrar (spacing effect):</b> Aynı konuyu farklı günlere yaymak tek seferde yoğun çalışmaktan daha etkilidir. Bir soru ancak <b>farklı günlerde</b> iki kez bilinirse "Öğrenildi" olur.</li>
+            <li><b>İkili kodlama (dual coding):</b> Sözel açıklama ile görsel şeklin birlikte sunulması hatırlamayı kolaylaştırır.</li>
+            <li><b>Ön test (pretesting):</b> Konuyu okumadan önce soruyu tahmin etmeye çalışmak, okurken dikkatin doğru yere gitmesini sağlar.</li>
+            <li><b>Karma tekrar (interleaving):</b> Kart modu soruları konulara göre değil, karışık sorar; sınavdaki gibi hangi konunun sorulduğunu tanımayı öğretir.</li>
+          </ul>`
+      },
+      {
+        id: 'exam',
+        title: 'Sınav stratejisi',
+        html: `
+          <ul>
+            <li>Tanımları <b>Türkçe + İngilizce terimiyle</b> öğren (ör. yeniden konumlandırma / relocation).</li>
+            <li>"Fark nedir?" sorularında iki kavramı <b>aynı ölçütlerle</b> karşılaştır: ne zaman, nerede, ne yapar, örnek.</li>
+            <li>Her cevaba <b>somut bir örnek</b> ekle (gcc komutları, 14000 + 346, fork dönüş değerleri).</li>
+            <li>Ders notlarındaki <b>"Dikkat: slaytta hata"</b> kutularına bak: XDL yerine XDR gibi.</li>
+          </ul>`
+      }
+    ],
+    exam: [],
+    examEmpty: 'Hocanın soruları için soldaki menüden <b>Hocanın Soruları</b> sayfasını aç. Orada model cevaplar, anahtar noktalar ve aralıklı tekrar var.'
+  };
 })(window.OSLab = window.OSLab || {});
