@@ -6,7 +6,9 @@
 
 ## Önce teori: Ders Notları
 
-Site açıldığında **Ders Notları** bölümüyle başlar. Ders PDF'leri (Silberschatz, 10. baskı) slayt sırasıyla 31 kısa derse bölünmüştür:
+Site, ortasında büyük bir **Başla** düğmesi ve tepesinde konu konu dolan bir ilerleme çubuğu olan sade bir ekranla açılır. Dersler tek ekranlık kartlar halinde, kısa video akışı gibi dikey olarak ilerler: kaydır, ok tuşlarını veya **Devam** düğmesini kullan. Kartlar, ders verisindeki bloklardan otomatik üretilir. Menü (☰) laboratuvarları, Hocanın Sorularını ve dönem planını açar.
+
+Ders PDF'leri (Silberschatz, 10. baskı) slayt sırasıyla 31 kısa derse bölünmüştür:
 
 | Bölüm | Kaynak | Dersler |
 |---|---|---|
@@ -55,6 +57,7 @@ start index.html        # Windows  (macOS: open index.html)
 |---|---|
 | `I` | Bilgi & Sınav panelini aç/kapat |
 | `Esc` | Paneli kapat |
+| `↓` `↑` `Boşluk` | Ders akışında sonraki / önceki kart |
 
 ### Çalışma önerisi
 

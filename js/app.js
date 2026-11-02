@@ -216,7 +216,7 @@
     route();
   }
 
-  OSLab.app = { setStatus, setHeader, focusInfo: (id) => Info.focus(id), loadPreset };
+  OSLab.app = { setStatus, setHeader, toggleSidebar, focusInfo: (id) => Info.focus(id), loadPreset };
 
   init();
 })(window.OSLab = window.OSLab || {});
