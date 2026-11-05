@@ -1597,6 +1597,17 @@ body.focus-mode .scrim.show { opacity: 1; pointer-events: auto; }
 .fx-check { margin-top: 10px; }
 .fx-check .btn[hidden] { display: none; }
 .fx-check-q { margin: 0 0 18px; font-size: 23px; font-weight: 700; line-height: 1.35; }
+/* --- soru kaynağı etiketleri ve bölüm tekrarı */
+.src-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font: 700 11.5px var(--mono); letter-spacing: 0.03em; border: 1px solid; white-space: nowrap; text-decoration: none; }
+.src-teacher { color: #fbbf24; border-color: rgba(251, 191, 36, 0.5); background: rgba(251, 191, 36, 0.1); }
+.src-web { color: var(--accent); border-color: rgba(56, 189, 248, 0.5); background: var(--accent-soft); white-space: normal; }
+a.src-web:hover { text-decoration: underline; }
+.src-lesson { color: var(--accent-2); border-color: rgba(167, 139, 250, 0.5); background: rgba(167, 139, 250, 0.1); }
+.rq-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 6px; }
+.rq-lesson { margin: 0 0 8px; color: var(--muted); font-size: 13.5px; }
+.rq-answer { font-size: 16px; line-height: 1.55; }
+.rq-answer p, .rq-answer ul { margin: 0 0 8px; }
+.rv-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
 .fx-check.ok .fx-check-q { color: var(--ok); }
 .fx-check.bad .fx-check-q { color: var(--warn); }
 .fx-check .l-check-a { margin-top: 2px; font-size: 16px; }

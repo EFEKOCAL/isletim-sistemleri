@@ -64,6 +64,93 @@
   const lessonHref = (ch, l) => `#/learn/${ch.id}/${l.id}`;
   const lessonSource = (l) => l.src || `slayt ${l.slides}`;
 
+  /* ------------------------------------------------------------ bölüm sonu tekrarı */
+
+  // Her bölümün sonunda bir tekrar "dersi" vardır: önce o bölümün soruları, sonra önceki bölümlerden
+  // karışık sorular. İlerleme çubuğuna ve genel yüzdeye girmez.
+  const reviewCache = new Map();
+  function reviewOf(ch) {
+    if (!reviewCache.has(ch)) reviewCache.set(ch, { id: 'tekrar', review: true, ch, title: `Bölüm ${ch.num} tekrarı`, en: `Chapter ${ch.num} review`, checks: [] });
+    return reviewCache.get(ch);
+  }
+
+  // Bir sonraki / önceki ders: bölümün son dersinden sonra o bölümün tekrarı gelir
+  function nextOf(ch, l) {
+    const ci = chapters().indexOf(ch);
+    if (l.review) {
+      const nc = chapters()[ci + 1];
+      return nc ? { ch: nc, l: nc.lessons[0] } : null;
+    }
+    const i = ch.lessons.indexOf(l);
+    return i < ch.lessons.length - 1 ? { ch, l: ch.lessons[i + 1] } : { ch, l: reviewOf(ch) };
+  }
+  function prevOf(ch, l) {
+    if (l.review) return { ch, l: ch.lessons[ch.lessons.length - 1] };
+    const i = ch.lessons.indexOf(l);
+    if (i > 0) return { ch, l: ch.lessons[i - 1] };
+    const pc = chapters()[chapters().indexOf(ch) - 1];
+    return pc ? { ch: pc, l: reviewOf(pc) } : null;
+  }
+
+  const SOURCE = { teacher: 'Hocanın sorusu', web: 'İnternetten', lesson: 'Ders sorusu' };
+
+  function reviewPool(ch) {
+    const pool = [];
+    questions().filter((q) => q.lesson.split('/')[0] === ch.id)
+      .forEach((q) => pool.push({ id: `tq:${q.id}`, kind: 'teacher', ch, q: q.q, a: q.a, tq: q.id }));
+    (OSLab.webQuestions || []).filter((w) => w.ch === ch.id)
+      .forEach((w) => pool.push({ id: `web:${w.id}`, kind: 'web', ch, q: w.q, a: w.a, from: w.from, url: w.url }));
+    ch.lessons.forEach((l) => (l.checks || [])
+      .forEach((c, n) => pool.push({ id: `${lessonKey(ch, l)}#${n}`, kind: 'lesson', ch, l, q: c.q, a: c.a })));
+    return pool;
+  }
+
+  // Aynı gün aynı sırayı veren basit tohumlu karıştırma (kart adresleri gün içinde değişmesin)
+  function seeded(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+    return () => {
+      h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909);
+      return ((h ^= h >>> 16) >>> 0) / 4294967296;
+    };
+  }
+  const shuffle = (xs, rnd) => {
+    const a = xs.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+  // Önce bilemediklerin, sonra hiç cevaplamadıkların, en son bildiklerin seçilir
+  const rank = (x) => ({ bad: 0, ok: 2 })[Store.data.checks[x.id]] ?? 1;
+  const pick = (xs, n, rnd) => shuffle(xs, rnd).sort((a, b) => rank(a) - rank(b)).slice(0, n);
+
+  function buildReview(rv) {
+    const ch = rv.ch;
+    const rnd = seeded(`${ch.id}|${today()}`);
+    const pool = reviewPool(ch);
+    const own = shuffle([
+      ...pick(pool.filter((x) => x.kind === 'teacher'), 8, rnd),
+      ...pool.filter((x) => x.kind === 'web'),
+      ...pick(pool.filter((x) => x.kind === 'lesson'), 6, rnd)
+    ], rnd);
+    const before = chapters().slice(0, chapters().indexOf(ch));
+    const prev = shuffle(pick(before.flatMap((c) => pick(reviewPool(c), 4, rnd)), 12, rnd), rnd);
+    const cards = [{ kind: 'open', own: own.length, prev: prev.length, before }];
+    own.forEach((item) => cards.push({ kind: 'rq', item }));
+    if (prev.length) cards.push({ kind: 'rqsep', before, n: prev.length });
+    prev.forEach((item) => cards.push({ kind: 'rq', item }));
+    cards.push({ kind: 'end' });
+    cards.filter((c) => c.kind === 'rq').forEach((c, i, all) => { c.n = i + 1; c.total = all.length; });
+    return cards;
+  }
+
+  function sourceBadge(item) {
+    if (item.kind === 'web') return `<a class="src-badge src-web" href="${item.url}" target="_blank" rel="noopener" title="Soru kaynağı">${SOURCE.web} · ${esc(item.from)} ↗</a>`;
+    return `<span class="src-badge src-${item.kind}">${SOURCE[item.kind]}</span>`;
+  }
+
   /* ------------------------------------------------------------ blok çizimi */
 
   const NOTE = {
@@ -180,6 +267,7 @@
         <h4>Bu bölümün sonunda şunları yapabilmelisin</h4>
         <ul class="l-list">${ch.objectives.map((o) => `<li>${o}</li>`).join('')}</ul>
         <div class="btn-row"><a class="btn btn-primary" href="${lessonHref(ch, firstUnread)}">▶ ${p.read ? 'Devam et' : 'Başla'}: ${firstUnread.title}</a>
+        <a class="btn" href="#/learn/${ch.id}/tekrar">Bölüm ${ch.num} tekrarı</a>
         ${qn.length ? `<a class="btn" href="#/learn/sorular">Bu bölümden ${qn.length} hoca sorusu</a>` : ''}</div>
       </section>
       <ol class="l-lessonlist">${ch.lessons.map((l, i) => `
@@ -191,78 +279,89 @@
 
   /* ------------------------------------------------------------ kartlara bölme */
 
-  // Bir kartta en fazla bu kadar okuma metni olur (karakter); kart tek fikir taşısın diye
-  const CARD_BUDGET = 480;
-  const textLen = (html) => html.replace(/<[^>]+>/g, '').length;
+  // Bir kartın görsel yükü bu sınırı geçmez: birlikte akılda tutulacak bilgiler aynı ekranda kalır,
+  // ama ekran kitap sayfası gibi cümleyle dolmaz. Şekil, tablo ve kod da yük sayılır.
+  const CARD_BUDGET = 1150;
+  const textLen = (html) => (html || '').replace(/<[^>]+>/g, '').length;
   const cardCache = new Map();
 
-  // Ders bloklarını tek ekranlık kartlara böler: tanım, not, şekil ve tablolar kendi kartındadır;
-  // başlık yeni kart açar; uzun listeler bölünür. Şekli tanıtan paragraf şekille aynı kartta kalır.
-  // attach: true olan not, kendi kartını açmak yerine bir önceki karta eklenir.
+  function weight(bl) {
+    switch (bl.t) {
+      case 'p': return textLen(bl.html) * 1.15;
+      case 'def': return textLen(bl.html) + 90;
+      case 'note': return textLen(bl.html) + 40;
+      case 'list': return bl.items.reduce((s, x) => s + textLen(x) + 25, 0);
+      case 'compare': return bl.cols.reduce((s, c) => s + c.items.reduce((a, x) => a + textLen(x) + 20, 60), 0);
+      case 'table': return (bl.rows.length + 1) * 55 + bl.rows.flat().reduce((s, x) => s + textLen(x), 0) * 0.6;
+      case 'code': return bl.text.split('\n').length * 38;
+      case 'dg': return 650;
+      default: return 400;
+    }
+  }
+  const WIDE = new Set(['dg', 'table', 'compare', 'code', 'solve']);
+
+  // Ders bloklarını ekranlara böler. Başlık (h) bir konu birimidir ve yeni ekran açar; birim sığıyorsa
+  // tamamı aynı ekranda kalır. Sığmazsa yalnızca blok sınırlarından bölünür: liste, tablo ve
+  // karşılaştırma hiçbir zaman parçalanmaz; şekli veya listeyi tanıtan paragraf onunla birlikte kalır;
+  // not, açıkladığı bloğun yanında durur. { t: 'br' } yazar tarafından konan zorunlu ekran sonudur.
   function buildCards(l) {
     if (cardCache.has(l)) return cardCache.get(l);
+    if (l.review) {
+      cardCache.set(l, buildReview(l));
+      return cardCache.get(l);
+    }
     const cards = [{ kind: 'open' }];
     let sec = null;
-    let cur = [];
-    let size = 0;
+    let unit = [];
 
-    const flush = () => {
-      if (cur.length) cards.push({ kind: 'read', h: sec, blocks: cur });
-      cur = [];
-      size = 0;
+    const kindOf = (blocks) => {
+      if (blocks.some((b) => WIDE.has(b.t))) return 'wide';
+      if (blocks[0].t === 'def' && blocks.every((b, i) => i === 0 || b.t === 'note')) return 'def';
+      if (blocks.every((b) => b.t === 'note')) return 'note';
+      return 'read';
     };
-    const flushKeepLead = () => {
-      const lead = cur.length && cur[cur.length - 1].t === 'p' ? cur.pop() : null;
-      flush();
-      return lead;
+    const emit = (blocks, h) => { if (blocks.length) cards.push({ kind: kindOf(blocks), h, blocks }); };
+
+    const closeUnit = () => {
+      if (!unit.length) return;
+      // Birbirinden ayrılmaması gereken blokları gruplara topla
+      const groups = [];
+      unit.forEach((bl, i) => {
+        const prev = groups[groups.length - 1];
+        const leadIn = prev && prev.length === 1 && prev[0].t === 'p' && unit[i - 1] === prev[0] && bl.t !== 'p' && bl.t !== 'def';
+        if (prev && (bl.t === 'note' || leadIn)) prev.push(bl);
+        else groups.push([bl]);
+      });
+      let cur = [];
+      let size = 0;
+      groups.forEach((g) => {
+        const w = g.reduce((s, b) => s + weight(b), 0);
+        if (cur.length && size + w > CARD_BUDGET) {
+          emit(cur, sec);
+          cur = [];
+          size = 0;
+        }
+        cur = cur.concat(g);
+        size += w;
+      });
+      emit(cur, sec);
+      unit = [];
     };
 
     l.blocks.forEach((bl) => {
       if (bl.t === 'h') {
-        flush();
+        closeUnit();
         sec = bl.text;
-      } else if (bl.t === 'p') {
-        const n = textLen(bl.html);
-        if (size && size + n > CARD_BUDGET) flush();
-        cur.push(bl);
-        size += n;
-      } else if (bl.t === 'list') {
-        const lens = bl.items.map(textLen);
-        if (size && size + lens.reduce((s, n) => s + n, 0) > CARD_BUDGET) {
-          const lead = flushKeepLead();
-          if (lead) {
-            cur.push(lead);
-            size = textLen(lead.html);
-          }
-        }
-        let part = [];
-        let start = 1;
-        bl.items.forEach((item, i) => {
-          if (part.length && size + lens[i] > CARD_BUDGET) {
-            cur.push(Object.assign({}, bl, { items: part, start }));
-            flush();
-            part = [];
-            start = i + 1;
-          }
-          part.push(item);
-          size += lens[i];
-        });
-        cur.push(Object.assign({}, bl, { items: part, start }));
+      } else if (bl.t === 'br') {
+        closeUnit();
       } else if (bl.t === 'solve') {
-        flush();
+        closeUnit();
         cards.push({ kind: 'wide', h: null, blocks: [bl] });
-      } else if (bl.t === 'note' && bl.attach) {
-        flush();
-        cards[cards.length - 1].blocks.push(bl);
-      } else if (bl.t === 'def' || bl.t === 'note') {
-        flush();
-        cards.push({ kind: bl.t, h: sec, blocks: [bl] });
       } else {
-        const lead = flushKeepLead();
-        cards.push({ kind: 'wide', h: sec, blocks: lead ? [lead, bl] : [bl] });
+        unit.push(bl);
       }
     });
-    flush();
+    closeUnit();
 
     (l.checks || []).forEach((c, i) => cards.push({ kind: 'check', check: c, n: i }));
     cards.push({ kind: 'end' });
@@ -320,7 +419,42 @@
   function renderCard(card, i, ctx) {
     const { ch, l, key, idx, cards, next } = ctx;
     let inner;
-    if (card.kind === 'open') {
+    if (l.review && card.kind === 'open') {
+      const range = card.before.length > 1 ? `Bölüm 1–${card.before.length}` : 'Bölüm 1';
+      inner = `<span class="tag">Bölüm ${ch.num} · Tekrar</span>
+        <h2 class="fx-title">${l.title}</h2>
+        <p class="fx-sub">${card.own} soru bu bölümden${card.prev ? ` · ardından ${card.prev} soru ${range}'den karışık` : ''}</p>
+        <div class="fx-pre"><span class="l-note-label">Nasıl çalışır?</span>
+          <p class="rv-legend">${sourceBadge({ kind: 'teacher' })} ${sourceBadge({ kind: 'web', url: '#', from: 'kaynak' }).replace(/<a [^>]*>/, '<span class="src-badge src-web">').replace('</a>', '</span>')} ${sourceBadge({ kind: 'lesson' })}</p>
+          <small>Her sorunun üstünde nereden geldiği yazar. Önce cevabı kendin düşün, sonra aç ve "Bildim / Bilemedim" de. Bilemediklerin sonraki tekrarlarda önce gelir.</small></div>`;
+    } else if (card.kind === 'rqsep') {
+      inner = `<span class="tag">Karışık tekrar</span>
+        <h2 class="fx-title">Önceki bölümler</h2>
+        <p class="fx-sub">Şimdi ${card.before.map((c) => `Bölüm ${c.num}`).join(', ')} içinden karışık ${card.n} soru geliyor.</p>`;
+    } else if (card.kind === 'rq') {
+      const it = card.item;
+      const st = Store.data.checks[it.id];
+      inner = `<div class="rq-head"><span class="tag">Bölüm ${it.ch.num} · Soru ${card.n} / ${card.total}</span>${sourceBadge(it)}</div>
+        ${it.l ? `<p class="rq-lesson">${esc(it.l.title)}</p>` : ''}
+        <div class="fx-check${st ? ' ' + st : ''}" data-check="${it.id}">
+          <p class="fx-check-q">${it.q}</p>
+          <button class="btn" type="button" data-act="reveal">Cevabı göster</button>
+          <div class="l-check-a" hidden><div class="rq-answer">${it.a}</div><div class="btn-row"><button class="btn btn-sm l-ok" type="button" data-act="ok">✓ Bildim</button><button class="btn btn-sm l-bad" type="button" data-act="bad">✗ Bilemedim</button></div></div>
+        </div>`;
+    } else if (l.review && card.kind === 'end') {
+      const items = cards.filter((c) => c.kind === 'rq').map((c) => c.item.id);
+      const ok = items.filter((id) => Store.data.checks[id] === 'ok').length;
+      const bad = items.filter((id) => Store.data.checks[id] === 'bad').length;
+      inner = `<div class="fx-end">
+        <span class="fx-end-mark" aria-hidden="true">✓</span>
+        <h2 class="fx-title">${l.title} tamam</h2>
+        <p class="fx-sub" id="rv-score">${ok} bildim · ${bad} bilemedim · ${items.length - ok - bad} işaretlenmedi</p>
+        ${next
+          ? `<a class="btn btn-primary fx-next" href="${lessonHref(next.ch, next.l)}">Bölüm ${next.ch.num}: ${next.l.title} ▶</a>`
+          : '<a class="btn btn-primary fx-next" href="#/learn/sorular">Hocanın soruları ▶</a>'}
+        <div class="btn-row"><a class="btn btn-sm" href="#/learn/${ch.id}">Bölüm ${ch.num} dersleri</a></div>
+      </div>`;
+    } else if (card.kind === 'open') {
       const pre = l.checks && l.checks[0];
       inner = `<span class="tag">Bölüm ${ch.num} · Ders ${idx + 1} / ${ch.lessons.length}</span>
         <h2 class="fx-title">${l.title}</h2>
@@ -330,7 +464,7 @@
       const c = card.check;
       const id = `${key}#${card.n}`;
       const st = Store.data.checks[id];
-      inner = `<span class="tag">Kendini yokla · ${card.n + 1} / ${l.checks.length}</span>
+      inner = `<div class="rq-head"><span class="tag">Kendini yokla · ${card.n + 1} / ${l.checks.length}</span>${sourceBadge({ kind: 'lesson' })}</div>
         <div class="fx-check${st ? ' ' + st : ''}" data-check="${id}">
           <p class="fx-check-q">${c.q}</p>
           <button class="btn" type="button" data-act="reveal">Cevabı göster</button>
@@ -358,9 +492,7 @@
   }
 
   function pageFeed(ch, l) {
-    const all = allLessons();
-    const gi = all.findIndex((x) => x.l === l);
-    const ctx = { ch, l, key: lessonKey(ch, l), idx: ch.lessons.indexOf(l), cards: buildCards(l), next: all[gi + 1] };
+    const ctx = { ch, l, key: lessonKey(ch, l), idx: ch.lessons.indexOf(l), cards: buildCards(l), next: nextOf(ch, l) };
     const caption = `<div class="fx-caption"><span>${ch.title} › <b>${l.title}</b></span><span class="fx-count" id="fx-count"></span></div>`;
     return `<div class="fx">
       ${renderTop(l, caption)}
@@ -381,8 +513,11 @@
   function refreshFeedUi() {
     root.querySelector('#fx-count').textContent = `${F.idx + 1} / ${lastCard(F.l) + 1}`;
     root.querySelector('#fx-nav').classList.toggle('end', F.idx === lastCard(F.l));
-    root.querySelector('.fx-seg.active i').style.width = `${lessonFill(F.ch, F.l)}%`;
-    root.querySelector('.fx-seg.active').classList.toggle('read', isRead(F.ch, F.l));
+    const seg = root.querySelector('.fx-seg.active');
+    if (seg) {
+      seg.querySelector('i').style.width = `${lessonFill(F.ch, F.l)}%`;
+      seg.classList.toggle('read', isRead(F.ch, F.l));
+    }
     root.querySelector('#fx-pct').textContent = `%${overallPct()}`;
   }
 
@@ -417,9 +552,7 @@
     if (scrollInsideCard(dir)) return;
     const i = F.idx + dir;
     if (i >= 0 && i <= lastCard(F.l)) { showCard(i); return; }
-    const all = allLessons();
-    const gi = all.findIndex((x) => x.l === F.l);
-    const to = all[gi + dir];
+    const to = dir > 0 ? nextOf(F.ch, F.l) : prevOf(F.ch, F.l);
     if (to) location.hash = dir > 0 ? lessonHref(to.ch, to.l) : `${lessonHref(to.ch, to.l)}/son`;
     else if (dir > 0) location.hash = '#/learn/sorular';
   }
@@ -483,6 +616,7 @@
     return `<article class="card qx" id="q-${q.id}" data-q="${q.id}">
       <header class="qx-head">
         <span class="q-num">S${n}</span>
+        ${sourceBadge({ kind: 'teacher' })}
         <span class="q-topic">${esc(q.set)}</span>
         ${l ? `<a class="qx-lesson" href="${lessonHref(ch, l)}">Bölüm ${ch.num} · ${l.title}</a>` : ''}
         <span class="pill ${BOX[st.box].cls}">${BOX[st.box].label}</span>
@@ -645,10 +779,20 @@
         chk.querySelector('.l-check-a').hidden = false;
         act.hidden = true;
       } else if (a === 'ok' || a === 'bad') {
-        Store.data.checks[chk.dataset.check] = a;
+        const id = chk.dataset.check;
+        Store.data.checks[id] = a;
+        // Hocanın sorusu tekrarda cevaplanırsa "Hocanın soruları" sayfasındaki kutusu da güncellenir
+        if (id.startsWith('tq:')) rate(id.slice(3), a === 'ok' ? 'good' : 'bad');
         Store.save();
         chk.classList.remove('ok', 'bad');
         chk.classList.add(a);
+        const score = root.querySelector('#rv-score');
+        if (score && F) {
+          const ids = buildCards(F.l).filter((c) => c.kind === 'rq').map((c) => c.item.id);
+          const ok = ids.filter((x) => Store.data.checks[x] === 'ok').length;
+          const bad = ids.filter((x) => Store.data.checks[x] === 'bad').length;
+          score.textContent = `${ok} bildim · ${bad} bilemedim · ${ids.length - ok - bad} işaretlenmedi`;
+        }
       }
       return;
     }
@@ -696,7 +840,7 @@
     let focus = false;
     let header = { num: 'T', title: 'Ders Notları', sub: 'Önce teori, sonra laboratuvar' };
     const ch = findChapter(a);
-    const l = ch && b2 && ch.lessons.find((x) => x.id === b2);
+    const l = ch && b2 && (b2 === 'tekrar' ? reviewOf(ch) : ch.lessons.find((x) => x.id === b2));
     F = null;
     if (a === 'plan') {
       html = pageOverview();

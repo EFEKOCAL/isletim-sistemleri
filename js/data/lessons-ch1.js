@@ -156,6 +156,7 @@
           { t: 'p', html: 'Uygulamalar G/Ç\'yi doğrudan değil, <b>işletim sistemi üzerinden</b> yapar:' },
           { t: 'dg', id: 'iochain' },
           { t: 'p', html: 'Sistem çağrısından sonra uygulama çağrının bitmesini bekleyebilir (<b>engellenen çağrı</b>) ya da başka işlere devam edebilir (<b>engellenmeyen çağrı</b>).' },
+          { t: 'h', text: 'Doğrudan bellek erişimi (DMA)' },
           { t: 'def', term: 'Doğrudan bellek erişimi', en: 'Direct Memory Access (DMA)', html: 'Aygıt denetleyicisi veri bloklarını <b>CPU müdahalesi olmadan</b> doğrudan aygıt tamponundan ana belleğe aktarır. <b>Bayt başına bir kesme yerine blok başına yalnızca bir kesme</b> üretilir.' },
           { t: 'list', items: [
             'CPU, G/Ç modülünü belleğe yazma/okuma ile <b>yetkilendirir</b>.',
@@ -241,12 +242,16 @@
             '<b>Ölçek ekonomisi</b> (economy of scale): birden çok bilgisayardan daha ucuz, çevre birimleri paylaşılır',
             '<b>Artan güvenilirlik</b> (increased reliability): hata toleransı'
           ] },
+          { t: 'h', text: 'Asimetrik ve simetrik çoklu işlem' },
           { t: 'compare', cols: [
             { title: 'Asimetrik çoklu işlem', items: ['Her işlemciye <b>özel bir görev</b> atanır'] },
             { title: 'Simetrik çoklu işlem (SMP)', items: ['Her işlemci <b>tüm görevleri</b> yerine getirir', 'Her CPU\'nun kendi yazmaçları ve önbelleği, ortak ana bellek'] }
           ] },
+          { t: 'h', text: 'Mimari türleri' },
           { t: 'p', html: 'Mimari türlerini sekmelerden karşılaştır:' },
           { t: 'dg', id: 'arch' },
+          { t: 'note', kind: 'info', html: '<b>PC anakartı (slayt 1.53):</b> İşlemci soketi, DRAM yuvaları, PCIe veri yolu yuvaları ve çeşitli G/Ç ile güç bağlantıları vardır; yuvalar dolunca tam çalışan bir bilgisayardır. En ucuz genel amaçlı CPU bile birden çok çekirdek içerir. Bazı anakartlarda birden çok işlemci soketi bulunur; bu, NUMA sistemleri oluşturur.' },
+          { t: 'h', text: 'Kümelenmiş sistemler' },
           { t: 'def', term: 'Kümelenmiş sistemler', en: 'Clustered systems', html: 'Birlikte çalışan <b>birden çok sistem</b>. Genellikle <b>depolama alanı ağı (SAN)</b> üzerinden depolamayı paylaşır ve hatalardan kurtulan <b>yüksek kullanılabilirlik</b> sağlar.' },
           { t: 'list', items: [
             '<b>Asimetrik kümeleme:</b> bir makine bekleme (hot-standby) modundadır, diğeri çalışırken onu izler.',

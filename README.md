@@ -20,6 +20,8 @@ Ders PDF'leri (Silberschatz, 10. baskı) slayt sırasıyla kısa derslere bölü
 | 6 · Senkronizasyon | ch06_TR.pdf | Kritik bölüm, Peterson, bellek bariyeri, donanım komutları, mutex, semafor, monitör, canlılık |
 | 7 · Senkronizasyon Örnekleri | ch07.pdf | Sınırlı tampon, okuyucu-yazar, filozoflar, Windows ve Linux, POSIX, Java, alternatif yaklaşımlar |
 
+Her bölümün sonunda bir **bölüm tekrarı** gelir: önce o bölümün soruları, ardından önceki bölümlerden karışık sorular. Her sorunun üstünde kaynağı yazar: **Hocanın sorusu**, **İnternetten** (Operating System Concepts 10. baskının resmi sitesindeki çözümlü alıştırmalar, [os-book.com](https://os-book.com/OS10/practice-exercises/index-solu.html)) ya da **Ders sorusu** (derslerdeki kendini yoklama soruları). Bilinemeyen sorular sonraki tekrarlarda önce gelir.
+
 Her ders aynı öğrenme döngüsünü izler:
 
 1. **Okumadan önce düşün** (ön test): Konuyu okumadan bir soruyu tahmin etmeye çalış.
@@ -94,6 +96,7 @@ js/
   data/lessons-shell.js     shell dersleri (Bölüm 2'ye, arayüz dersinin arkasına eklenir)
   scheduler-trace.js        ders Gantt şekillerinin çizelge hesabı (SRTF ve öncelik dahil)
   data/teacher-questions.js hocanın soruları, model cevaplar, anahtar noktalar
+  data/web-questions.js     bölüm tekrarları için internetten sorular (kaynak bağlantılı)
   views/learn-view.js       Ders Notları: ana sayfa, dersler, soru tekrarı
   views/diagrams.js         ders notlarındaki etkileşimli şekiller
   views/diagrams-lab.js     Bölüm 4–7 şekilleri (Gantt, Amdahl, Peterson, semafor), chmod, ls -l, pipe

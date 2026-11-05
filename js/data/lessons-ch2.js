@@ -46,11 +46,13 @@
         slides: '2.8 – 2.12',
         minutes: 4,
         blocks: [
+          { t: 'h', text: 'Komut satırı (CLI)' },
           { t: 'def', term: 'Komut satırı yorumlayıcısı', en: 'Command-Line Interpreter (CLI)', html: 'Doğrudan komut girişine izin verir. Bazen çekirdekte, bazen bir sistem programı olarak gerçekleştirilir. Birden fazla seçeneği olabilir: <b>kabuklar (shells)</b>, ör. Bourne shell, bash. Temel görevi kullanıcıdan bir komut alıp çalıştırmaktır.' },
           { t: 'compare', cols: [
             { title: 'Yerleşik komutlar', items: ['Komutun kodu kabuğun içindedir', 'Yeni komut eklemek için kabuk değişmeli'] },
             { title: 'Program adları (UNIX yaklaşımı)', items: ['Kabuk, komutla aynı adlı programı bulup çalıştırır (ör. <code>rm file.txt</code> → <code>rm</code> programı)', 'Yeni özellik eklemek için <b>kabuğu değiştirmek gerekmez</b>'] }
           ] },
+          { t: 'h', text: 'Grafik ve dokunmatik arayüzler' },
           { t: 'def', term: 'Grafik kullanıcı arayüzü', en: 'GUI', html: 'Fare, klavye ve monitörle kullanılan masaüstü arayüzü. Simgeler dosyaları, programları, eylemleri temsil eder; fare düğmeleri bilgi alma, seçenekler, yürütme veya klasör açma gibi eylemler sağlar. <b>Xerox PARC</b>\'ta icat edildi.' },
           { t: 'list', items: [
             'Microsoft Windows: GUI + CLI "command" kabuğu',
@@ -155,10 +157,12 @@
         blocks: [
           { t: 'p', html: 'Kaynak koddan bellekte çalışan programa giden yol (slayt 2.36). Adımları ilerlet:' },
           { t: 'dg', id: 'linkload' },
+          { t: 'h', text: 'Dört temel terim' },
           { t: 'def', term: 'Yeniden konumlandırılabilir nesne dosyası', en: 'Relocatable object file', html: 'Derleyicinin ürettiği, fiziksel bellekte <b>herhangi bir yere yüklenebilecek</b> şekilde tasarlanmış dosya (ör. <code>main.o</code>).' },
           { t: 'def', term: 'Bağlayıcı', en: 'Linker', html: 'Nesne dosyalarını tek bir ikili <b>çalıştırılabilir (executable)</b> dosyada birleştirir; <b>kütüphaneleri de dahil eder</b>.' },
           { t: 'def', term: 'Yükleyici', en: 'Loader', html: 'İkincil depolamada duran çalıştırılabilir dosyayı yürütülmek üzere <b>belleğe getirir</b>.' },
           { t: 'def', term: 'Yeniden konumlandırma', en: 'Relocation', html: 'Program parçalarına <b>son adresleri atamak</b> ve programdaki kodu ve veriyi bu adreslere uyacak şekilde <b>düzeltmek</b>.' },
+          { t: 'h', text: 'Statik ve dinamik bağlama' },
           { t: 'def', term: 'Dinamik bağlı kütüphaneler', en: 'Dynamically linked libraries (DLL, .so)', html: 'Modern genel amaçlı sistemler kütüphaneleri çalıştırılabilir dosyaya kopyalamaz. Kütüphaneler <b>gerektiğinde yüklenir</b> ve aynı sürümü kullanan herkes tarafından <b>paylaşılır</b>: bellekte <b>bir kez</b> bulunur.' },
           { t: 'p', html: 'Nesne ve çalıştırılabilir dosyaların <b>standart biçimleri</b> vardır (Linux\'ta <b>ELF</b>), böylece işletim sistemi onları nasıl yükleyip başlatacağını bilir.' },
           { t: 'compare', cols: [
@@ -188,6 +192,7 @@
             '<b>Sanal makine içeren dil</b> (Java): uygulama, her işletim sistemi için yazılmış bir VM (JVM) içinde çalışır.',
             '<b>Standart dil</b> (C) ile yazıp <b>her işletim sisteminde ayrı derlemek</b>.'
           ] },
+          { t: 'h', text: 'ABI ve API' },
           { t: 'def', term: 'Uygulama ikili arayüzü', en: 'Application Binary Interface (ABI)', html: 'API\'nin <b>mimari düzeyindeki karşılığı</b>. Belirli bir mimaride, CPU\'da ve işletim sisteminde ikili kodun farklı bileşenlerinin <b>nasıl arayüz kuracağını</b> tanımlar: parametrelerin hangi yazmaçlarla geçirileceği, yığın düzeni, ikili kütüphane biçimi, veri türlerinin boyutu.' },
           { t: 'compare', cols: [
             { title: 'API', items: ['<b>Kaynak kodu</b> düzeyi', 'Hangi fonksiyonlar, hangi parametreler', 'Aynı API\'ye uyan kod farklı sistemde <b>yeniden derlenebilir</b>'] },

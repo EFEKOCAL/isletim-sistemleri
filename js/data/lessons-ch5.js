@@ -34,6 +34,7 @@
           { t: 'h', text: 'CPU burst nedir?' },
           { t: 'p', html: 'Çoklu programlama CPU kullanımını en üst düzeye çıkarır. İşlemin yürütülmesi <b>CPU–G/Ç burst döngüsünden</b> oluşur: CPU\'da çalışma ile G/Ç bekleme sırayla değişir. İşlemin tek seferde CPU\'da çalışacağı süreye <b>CPU burst</b> denir. Sorulardaki "burst time" budur.' },
           { t: 'p', html: 'Histogramda (slayt 5.5) <b>çok sayıda kısa</b>, <b>az sayıda uzun</b> burst görülür. Planlama bu dağılımı hesaba katar.' },
+          { t: 'h', text: 'CPU zamanlayıcı' },
           { t: 'def', term: 'CPU zamanlayıcı', en: 'CPU scheduler', html: 'Bellekte çalışmaya hazır bekleyen işlemlerden birini seçip CPU\'yu ona ayırır. Bölüm 3\'teki <b>kısa vadeli zamanlayıcıdır</b> (short-term scheduler). Hazır kuyruğu farklı şekillerde sıralanabilir.' },
           { t: 'h', text: 'Zamanlayıcı ne zaman karar verir?' },
           { t: 'list', ordered: true, items: [
@@ -49,6 +50,7 @@
             { title: 'Kesmeli (preemptive)', items: ['İşletim sistemi çalışan işlemi <b>elinden alabilir</b>', 'Windows, macOS, Linux ve UNIX dahil hemen hemen tüm modern sistemler kullanır', 'Örnekler: SRTF, kesmeli öncelikli, Round Robin'] }
           ] },
           { t: 'note', kind: 'info', attach: true, html: '<b>Yarış koşulu riski:</b> Veri paylaşan iki işlemden biri veriyi güncellerken kesilirse, diğeri tutarsız veriyi okuyabilir. Bu sorun Bölüm 6\'da ele alınır.' },
+          { t: 'h', text: 'Görev dağıtıcısı' },
           { t: 'def', term: 'Görev dağıtıcısı', en: 'Dispatcher', html: 'Zamanlayıcının seçtiği işleme CPU\'nun kontrolünü verir: <b>bağlam değişimi</b> yapar, <b>kullanıcı moduna</b> geçer ve programdaki doğru konuma atlar. Bir işlemi durdurup diğerini başlatmak için geçen süreye <b>gönderim gecikmesi</b> (dispatch latency) denir.' },
           { t: 'h', text: 'Planlama kriterleri' },
           { t: 'table', head: ['Kriter', 'Anlamı', 'Hedef'], rows: [
@@ -191,7 +193,11 @@
             ['Çok küçük', 'Yanıt iyi olur ama sürekli <b>bağlam değişimi</b> CPU zamanını harcar'],
             ['Dengeli', 'CPU burst\'lerinin yaklaşık <b>%80</b>\'i q\'dan kısa olmalıdır']
           ] },
-          { t: 'p', html: 'Tipik değerler: <b>q = 10–100 ms</b>, bağlam değişimi <b>&lt; 10 µs</b>. q, bağlam değişimi süresine göre büyük olmalıdır. Devir zamanı ise q büyüdükçe düzenli olarak iyileşmez (slayt 5.25).' },
+          { t: 'p', html: 'Tipik değerler: <b>q = 10–100 ms</b>, bağlam değişimi <b>&lt; 10 µs</b>. q, bağlam değişimi süresine göre büyük olmalıdır.' },
+          { t: 'table', head: ['10 birimlik işlem', 'q = 12', 'q = 6', 'q = 1'], rows: [
+            ['Bağlam değişimi', '0', '1', '9']
+          ] },
+          { t: 'p', html: 'Devir zamanı q büyüdükçe düzenli olarak iyileşmez. Slayt 5.25\'te burst\'leri 6, 3, 1, 7 olan dört işlemde ortalama devir zamanı q = 1–7 için 11,0 ile 12,25 arasında iner çıkar; q = 6 ve 7\'de 10,5\'e düşer.' },
           { t: 'note', kind: 'exam', html: 'RR\'de ortalama bekleme genellikle SJF\'ten yüksektir ama <b>yanıt süresi</b> iyidir. n işlem varsa hiçbir işlem bir dilim için (n−1)·q süresinden fazla beklemez. Sorularda bağlam değişimi süresi aksi söylenmedikçe 0 alınır.' }
         ],
         lab: { label: 'CPU Scheduling laboratuvarında q değerini değiştirip sonucu izle', preset: { algorithm: 'RR', quantum: 4, processes: [['P1', 0, 24], ['P2', 0, 3], ['P3', 0, 3]] } },
@@ -215,6 +221,7 @@
             { title: 'Zaman dilimi', items: ['Her kuyruk CPU zamanından belli bir pay alır', 'Örnek: %80 ön plan (RR), %20 arka plan (FCFS)'] }
           ] },
           { t: 'p', html: 'İşlem türüne göre öncelik sırası (slayt 5.30): <b>gerçek zamanlı → sistem → etkileşimli → toplu iş</b>.' },
+          { t: 'h', text: 'Geri bildirimli kuyruk' },
           { t: 'def', term: 'Çok düzeyli geri bildirimli kuyruk', en: 'Multilevel Feedback Queue', html: 'İşlem kuyruklar arasında <b>hareket edebilir</b>. Beş parametreyle tanımlanır: kuyruk sayısı, her kuyruğun algoritması, yükseltme yöntemi, indirgeme yöntemi ve işlemin hizmet gerektiğinde gireceği kuyruk. <b>Yaşlandırma</b> bu yapıyla uygulanabilir.' },
           { t: 'dg', id: 'mlfq' }
         ],
@@ -344,7 +351,7 @@
           { t: 'h', text: 'Olay gecikmesi' },
           { t: 'p', html: '<b>Olay gecikmesi (event latency)</b>, olayın oluşmasından hizmet görmesine kadar geçen süredir. Performansı iki gecikme etkiler:' },
           { t: 'table', head: ['Gecikme', 'Tanım'], rows: [
-            ['Kesme gecikmesi (interrupt latency)', 'Kesmenin gelişinden, kesmeye hizmet eden rutinin başlamasına kadar geçen süre'],
+            ['Kesme gecikmesi (interrupt latency)', 'Kesmenin gelişinden, kesmeye hizmet eden rutinin başlamasına kadar geçen süre: kesme türünü belirleme ve bağlam değişimi bu süreye girer'],
             ['Gönderim gecikmesi (dispatch latency)', 'Zamanlayıcının mevcut işlemi CPU\'dan alıp başkasına geçmesi için gereken süre']
           ] },
           { t: 'p', html: 'Gönderim gecikmesinin <b>çatışma evresi</b>: (1) çekirdek modunda çalışan işlemin kesilmesi, (2) düşük öncelikli işlemin, yüksek öncelikli işlemin ihtiyaç duyduğu kaynakları bırakması.' },
@@ -384,8 +391,12 @@
           { t: 'list', items: [
             '<b>Planlama sınıfları:</b> varsayılan ve gerçek zamanlı; yenileri eklenebilir. En yüksek sınıftaki en yüksek öncelikli görev seçilir.',
             'Sabit süreli dilim yerine <b>CPU zamanının oranı</b> kullanılır; pay, <b>−20 ile +19</b> arasındaki nice değerine göre hesaplanır. Küçük değer yüksek önceliktir.',
-            '<b>Hedef gecikme (target latency):</b> görevin en az bir kez çalışması gereken süre; aktif görev artınca büyüyebilir.',
+            '<b>Hedef gecikme (target latency):</b> görevin en az bir kez çalışması gereken süre; aktif görev artınca büyüyebilir.'
+          ] },
+          { t: 'h', text: 'CFS: sonraki görev nasıl seçilir?' },
+          { t: 'list', items: [
             'Her görev için <code>vruntime</code> tutulur. Düşük öncelikte azalma katsayısı yüksektir; varsayılan öncelikte sanal süre gerçek süreye eşittir. <b>En düşük vruntime\'a sahip görev</b> seçilir.',
+            'Çalışabilir görevler, anahtarı vruntime olan dengeli bir <b>kırmızı-siyah ağaçta</b> tutulur. En küçük vruntime en soldaki düğümdür; bulmak O(lg N) sürer, ama Linux bu değeri <code>rb_leftmost</code> değişkeninde önbellekler. Bloklanan görev ağaçtan çıkarılır.',
             'Gerçek zamanlı görevler POSIX.1b\'ye göre statik önceliklidir. Küresel şemada nice −20 → <b>100</b>, nice +19 → <b>139</b>.',
             'Yük dengeler ve NUMA farkındadır. <b>Planlama alanı (scheduling domain)</b>, örneğin önbellek paylaşan çekirdeklerden oluşur; amaç iş parçacıklarının alanlar arasında göçünü önlemektir.'
           ] },
@@ -411,6 +422,8 @@
           { t: 'list', items: [
             '<b>Altı sınıf:</b> zaman paylaşımlı (varsayılan), etkileşimli, gerçek zamanlı, sistem, adil paylaşım, sabit öncelik. İş parçacığı aynı anda tek sınıftadır ve her sınıfın kendi algoritması vardır.',
             'Zaman paylaşımı <b>çok düzeyli geri bildirimli kuyruktur</b>; tablosu sistem yöneticisince ayarlanabilir.',
+            '<b>Dağıtım tablosu (slayt 5.70):</b> her öncelik için zaman dilimi, dilim dolunca inilecek öncelik ve uykudan dönünce çıkılacak öncelik tutulur. Örnek: öncelik 0 → dilim 200 ms; öncelik 59 → dilim 20 ms. Yüksek öncelik daha kısa dilim alır.',
+            '<b>Küresel öncelik (slayt 5.71):</b> kesme iş parçacıkları 160–169, gerçek zamanlı 100–159, sistem 60–99; adil paylaşım, sabit öncelik, zaman paylaşımlı ve etkileşimli 0–59.',
             'Sınıf öncelikleri <b>küresel önceliğe</b> çevrilir. En yüksek öncelikli iş parçacığı bloklanana, dilimi bitene veya kesilene kadar çalışır; eşit öncelikte RR uygulanır.'
           ] }
         ],
@@ -428,6 +441,7 @@
         minutes: 6,
         blocks: [
           { t: 'p', html: 'Bir işletim sistemi için algoritma seçerken önce <b>kriterler belirlenir</b>, sonra algoritmalar değerlendirilir. Dört yöntem:' },
+          { t: 'h', text: 'Deterministik modelleme' },
           { t: 'def', term: 'Deterministik modelleme', en: 'Deterministic modeling', html: 'Önceden belirlenmiş bir iş yükü için her algoritmanın performansını hesaplar. <b>Basit ve hızlıdır</b> ama kesin sayılar gerektirir ve yalnızca o girdiler için geçerlidir.' },
           { t: 'p', html: 'Örnek: t=0\'da burst\'leri 10, 29, 3, 7, 12 olan beş işlem. Ortalama bekleme:' },
           { t: 'table', head: ['Algoritma', 'Ortalama bekleme'], rows: [
@@ -435,8 +449,11 @@
             ['SJF (kesmesiz)', '<b>13 ms</b>'],
             ['RR (q = 10)', '23 ms']
           ] },
+          { t: 'h', text: 'Kuyruk modelleri ve Little formülü' },
           { t: 'def', term: 'Kuyruk modelleri', en: 'Queueing models', html: 'İşlem gelişlerini ve burst\'leri <b>olasılıkla</b> (genellikle üstel dağılım ve ortalama) tanımlar. Sistem, kuyruklu sunuculardan oluşan bir ağ gibi ele alınır; geliş ve servis hızlarından kullanım, ortalama kuyruk uzunluğu ve bekleme hesaplanır.' },
           { t: 'def', term: 'Little formülü', en: 'Little\'s law', html: '<b>n = λ × W</b>. n ortalama kuyruk uzunluğu, W ortalama bekleme, λ ortalama geliş hızıdır. Kararlı durumda kuyruğa giren kadar işlem çıkar. Her algoritma ve geliş dağılımı için geçerlidir. Örnek: saniyede 7 işlem gelir, kuyrukta 14 işlem varsa bekleme <b>2 saniyedir</b>.' },
+          { t: 'code', text: 'FCFS (28 ms):  P1 0–10, P2 10–39, P3 39–42, P4 42–49, P5 49–61\nSJF  (13 ms):  P3 0–3, P4 3–10, P1 10–20, P5 20–32, P2 32–61\nRR   (23 ms):  P1 0–10, P2 10–20, P3 20–23, P4 23–30, P5 30–40,\n               P2 40–50, P5 50–52, P2 52–61' },
+          { t: 'h', text: 'Simülasyon ve gerçekleştirme' },
           { t: 'def', term: 'Simülasyon', en: 'Simulation', html: 'Bilgisayar sisteminin programlanmış modelidir; saat bir değişkendir ve performans istatistikleri toplanır. Kuyruk modellerinden <b>daha doğrudur</b>. Veriler rastgele sayı üreteciyle, matematiksel veya deneysel dağılımlarla ya da gerçek olayları kaydeden <b>trace tape</b> ile sağlanır.' },
           { t: 'def', term: 'Gerçekleştirme', en: 'Implementation', html: 'Simülasyonların da doğruluğu sınırlıdır. Yeni planlayıcıyı gerçek sistemde denemek en doğru sonucu verir ama <b>maliyeti ve riski yüksektir</b>, ortamlar da değişir. Bu yüzden planlayıcılar değiştirilebilir yapılır veya öncelik değiştiren API\'ler sunulur.' }
         ],

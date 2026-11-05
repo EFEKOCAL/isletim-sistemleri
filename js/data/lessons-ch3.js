@@ -84,6 +84,7 @@
         blocks: [
           { t: 'def', term: 'İşlem kontrol bloğu', en: 'Process Control Block (PCB)', html: 'İşletim sisteminde <b>her işlem bir PCB ile temsil edilir</b>. İşlemle ilgili tüm bilgileri tutar. Alanlara tıkla:' },
           { t: 'dg', id: 'pcb' },
+          { t: 'h', text: 'Bağlam değişimi' },
           { t: 'def', term: 'Bağlam değişimi', en: 'Context switch', html: 'CPU başka bir işleme geçtiğinde sistem <b>eski işlemin durumunu kaydetmeli</b> ve yeni işlemin <b>kaydedilmiş durumunu yüklemelidir</b>. İşlemin bağlamı (context) <b>PCB</b>\'de tutulur.' },
           { t: 'dg', id: 'ctxswitch' },
           { t: 'list', items: [
@@ -150,7 +151,8 @@
           ] },
           { t: 'p', html: 'Slayt 3.26\'daki programı adım adım çalıştır:' },
           { t: 'dg', id: 'fork' },
-          { t: 'p', html: 'Windows karşılığı: <code>CreateProcess()</code> (yeni programı doğrudan yükler) ve <code>WaitForSingleObject()</code>.' },
+          { t: 'p', html: 'Windows karşılığı: <code>CreateProcess()</code> yeni programı doğrudan yükler, ebeveyn <code>WaitForSingleObject()</code> ile bekler (slayt 3.27).' },
+          { t: 'code', text: 'STARTUPINFO si;  PROCESS_INFORMATION pi;\nZeroMemory(&si, sizeof(si));  si.cb = sizeof(si);\nZeroMemory(&pi, sizeof(pi));\n\nif (!CreateProcess(NULL,             /* komut satırı kullan */\n        "C:\\\\WINDOWS\\\\system32\\\\mspaint.exe",\n        NULL, NULL,                  /* işlem ve iş parçacığı tutamacı miras alınmaz */\n        FALSE,                       /* tutamaç mirası kapalı */\n        0,                           /* oluşturma bayrağı yok */\n        NULL, NULL,                  /* ebeveynin ortamı ve dizini */\n        &si, &pi)) {\n    fprintf(stderr, "Create Process Failed");\n    return -1;\n}\nWaitForSingleObject(pi.hProcess, INFINITE);   /* çocuğu bekle */\nprintf("Child Complete");\nCloseHandle(pi.hProcess);  CloseHandle(pi.hThread);' },
           { t: 'h', text: 'İşlem sonlandırma' },
           { t: 'list', items: [
             'İşlem işi bitince <code>exit()</code> sistem çağrısıyla işletim sistemine bildirir. Durum verisi <code>wait()</code> ile ebeveyne döner; kaynaklar işletim sistemince geri alınır.',
@@ -279,7 +281,8 @@
             ['mmap(...)', 'Nesneyi işlemin adres alanına eşler; dönen işaretçiyle okunur/yazılır'],
             ['shm_unlink(name)', 'Paylaşılan bellek nesnesini kaldırır']
           ] },
-          { t: 'p', html: 'Slayttaki örnekte üretici "OS" adlı nesneyi oluşturup "Hello" ve "World!" yazar; tüketici aynı adla açıp (<code>O_RDONLY</code>) okur ve <code>shm_unlink</code> ile kaldırır.' },
+          { t: 'p', html: 'Slayttaki örnekte üretici "OS" adlı nesneyi oluşturup "Hello" ve "World!" yazar; tüketici aynı adla açıp (<code>O_RDONLY</code>) okur ve <code>shm_unlink</code> ile kaldırır (slayt 3.57 – 3.58).' },
+          { t: 'code', text: '/* Üretici */\nconst int SIZE = 4096;  const char *name = "OS";\nshm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);\nftruncate(shm_fd, SIZE);\nptr = mmap(0, SIZE, PROT_WRITE, MAP_SHARED, shm_fd, 0);\nsprintf(ptr, "%s", "Hello");   ptr += strlen("Hello");\nsprintf(ptr, "%s", "World!");  ptr += strlen("World!");\n\n/* Tüketici */\nshm_fd = shm_open(name, O_RDONLY, 0666);\nptr = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);\nprintf("%s", (char *)ptr);\nshm_unlink(name);' },
           { t: 'h', text: 'Mach' },
           { t: 'list', items: [
             'İletişim <b>mesaj tabanlıdır</b>: <b>sistem çağrıları bile mesajdır</b>.',
@@ -287,6 +290,7 @@
             'Mesajlar <code>mach_msg()</code> ile gönderilir ve alınır; portlar <code>mach_port_allocate()</code> ile oluşturulur.',
             'Posta kutusu doluysa dört seçenek: <b>süresiz bekle</b>, <b>en fazla n ms bekle</b>, <b>hemen dön</b>, <b>mesajı geçici olarak önbelleğe al</b>.'
           ] },
+          { t: 'code', text: 'struct message { mach_msg_header_t header; int data; };\nmach_port_t client, server;\n\n/* İstemci: başlığı kur ve gönder */\nmessage.header.msgh_size = sizeof(message);\nmessage.header.msgh_remote_port = server;\nmessage.header.msgh_local_port = client;\nmach_msg(&message.header, MACH_SEND_MSG, sizeof(message), 0,\n         MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);\n\n/* Sunucu: mesajı al */\nmach_msg(&message.header, MACH_RCV_MSG, 0, sizeof(message),\n         server, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);' },
           { t: 'h', text: 'Windows: ALPC (advanced local procedure call)' },
           { t: 'list', items: [
             'Mesaj geçişi merkezli; yalnızca <b>aynı sistemdeki</b> işlemler arasında çalışır.',
@@ -315,6 +319,7 @@
         slides: '3.68 – 3.75',
         minutes: 8,
         blocks: [
+          { t: 'h', text: 'Soketler' },
           { t: 'def', term: 'Soket', en: 'Socket', html: 'İletişim için bir <b>uç nokta</b>. <b>IP adresi ve port numarasının birleşimidir</b>; port, bir ana bilgisayardaki ağ servislerini ayırt etmek için mesaj paketinin başına eklenen sayıdır. İletişim <b>bir çift soket</b> arasında gerçekleşir.' },
           { t: 'dg', id: 'socket' },
           { t: 'list', items: [
@@ -323,6 +328,8 @@
             '<b>127.0.0.1 (loopback)</b>, işlemin çalıştığı sistemin kendisini ifade eder.',
             'Java\'da üç soket türü: <b>bağlantı yönelimli (TCP)</b>, <b>bağlantısız (UDP)</b>, <b>MulticastSocket</b> (veriyi birden çok alıcıya gönderir). Slayttaki Date sunucusu 6013 portunu dinler, istemci <code>new Socket("127.0.0.1", 6013)</code> ile bağlanır.'
           ] },
+          { t: 'code', text: '/* Date sunucusu */\nServerSocket sock = new ServerSocket(6013);\nwhile (true) {\n    Socket client = sock.accept();          /* bağlantı bekle */\n    PrintWriter pout = new PrintWriter(client.getOutputStream(), true);\n    pout.println(new java.util.Date().toString());\n    client.close();\n}\n\n/* Date istemcisi */\nSocket sock = new Socket("127.0.0.1", 6013);\nBufferedReader bin = new BufferedReader(\n    new InputStreamReader(sock.getInputStream()));\nString line;\nwhile ((line = bin.readLine()) != null)\n    System.out.println(line);\nsock.close();' },
+          { t: 'h', text: 'Uzaktan yordam çağrısı (RPC)' },
           { t: 'def', term: 'Uzaktan yordam çağrısı', en: 'Remote Procedure Call (RPC)', html: 'Ağa bağlı sistemlerdeki işlemler arasında <b>yordam çağrısını soyutlar</b>; servisleri ayırt etmek için yine portlar kullanılır.' },
           { t: 'list', items: [
             '<b>Stub</b>: sunucudaki gerçek yordam için <b>istemci tarafındaki vekil (proxy)</b>.',

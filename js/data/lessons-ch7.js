@@ -147,10 +147,13 @@
             { title: 'Bekleme kümesi (wait set)', items: ['<code>wait()</code> çağrısı kilidi bırakır, durumu <b>blocked</b> yapar ve iş parçacığını buraya koyar'] }
           ] },
           { t: 'p', html: '<code>notify()</code> çağrısı bekleme kümesinden rastgele bir T seçer, <b>giriş kümesine</b> taşır ve durumunu <b>runnable</b> yapar. T artık kilit için yarışıp koşulu yeniden kontrol edebilir.' },
-          { t: 'code', text: 'public synchronized void insert(E item) {     /* sınırlı tampon */\n    while (count == BUFFER_SIZE) {\n        try { wait(); }\n        catch (InterruptedException ie) { }\n    }\n    buffer[in] = item;\n    in = (in + 1) % BUFFER_SIZE;\n    count++;\n    notify();\n}' },
+          { t: 'h', text: 'Sınırlı tampon: Java' },
+          { t: 'code', text: 'public class BoundedBuffer<E> {\n    private static final int BUFFER_SIZE = 5;\n    private int count, in, out;   /* hepsi 0 ile başlar */\n    private E[] buffer;\n\n    /* Üreticiler çağırır */\n    public synchronized void insert(E item) {\n        while (count == BUFFER_SIZE) {\n            try { wait(); }\n            catch (InterruptedException ie) { }\n        }\n        buffer[in] = item;\n        in = (in + 1) % BUFFER_SIZE;\n        count++;\n        notify();\n    }\n\n    /* Tüketiciler çağırır */\n    public synchronized E remove() {\n        E item;\n        while (count == 0) {\n            try { wait(); }\n            catch (InterruptedException ie) { }\n        }\n        item = buffer[out];\n        out = (out + 1) % BUFFER_SIZE;\n        count--;\n        notify();\n        return item;\n    }\n}' },
           { t: 'h', text: 'Reentrant lock, semafor, koşul değişkeni' },
-          { t: 'code', text: 'Lock key = new ReentrantLock();\nkey.lock();\ntry {\n    /* critical section */\n} finally {\n    key.unlock();   /* istisna olsa da kilit bırakılır */\n}\n\nSemaphore sem = new Semaphore(1);\ntry {\n    sem.acquire();\n    /* critical section */\n} catch (InterruptedException ie) { }\nfinally { sem.release(); }\n\nCondition condition = key.newCondition();\ncondition.await();    /* bekle */\ncondition.signal();   /* haber ver */' },
-          { t: 'p', html: 'Koşul değişkeni bir <code>ReentrantLock</code>\'a bağlıdır. Slayt 7.39: 0–4 numaralı beş iş parçacığı <code>turn</code> değişkenini paylaşır. <code>doWork()</code> çağıran iş parçacığı sırası değilse bekler, işi bitince sıradakine haber verir.' }
+          { t: 'code', text: 'Lock key = new ReentrantLock();\nkey.lock();\ntry {\n    /* critical section */\n} finally {\n    key.unlock();   /* istisna olsa da kilit bırakılır */\n}\n\nSemaphore sem = new Semaphore(1);    /* yapıcı: Semaphore(int value) */\ntry {\n    sem.acquire();\n    /* critical section */\n} catch (InterruptedException ie) { }\nfinally { sem.release(); }\n\nCondition condition = key.newCondition();\ncondition.await();    /* bekle */\ncondition.signal();   /* haber ver */' },
+          { t: 'h', text: 'Örnek: sırayla çalışan beş iş parçacığı' },
+          { t: 'p', html: 'Koşul değişkeni bir <code>ReentrantLock</code>\'a bağlıdır. Slayt 7.39 – 7.40: 0–4 numaralı beş iş parçacığı <code>turn</code> değişkenini paylaşır. <code>doWork()</code> çağıran iş parçacığı sırası değilse bekler, işi bitince sıradakine haber verir.' },
+          { t: 'code', text: 'Lock lock = new ReentrantLock();\nCondition[] condVars = new Condition[5];\nfor (int i = 0; i < 5; i++)\n    condVars[i] = lock.newCondition();\n\npublic void doWork(int threadNumber) {\n    lock.lock();\n    try {\n        if (threadNumber != turn)          /* sıra bende değilse bekle */\n            condVars[threadNumber].await();\n        /* bir süre çalış ... */\n        turn = (turn + 1) % 5;             /* sırayı sonrakine ver */\n        condVars[turn].signal();\n    }\n    catch (InterruptedException ie) { }\n    finally { lock.unlock(); }\n}' }
         ],
         checks: [
           { q: 'Java\'da wait() çağrısı hangi üç şeyi yapar?', a: 'Nesnenin kilidini bırakır, iş parçacığını blocked yapar ve bekleme kümesine koyar.' },
@@ -165,10 +168,13 @@
         slides: '7.41 – 7.44',
         minutes: 3,
         blocks: [
+          { t: 'h', text: 'İşlemsel bellek' },
           { t: 'def', term: 'İşlemsel bellek', en: 'Transactional memory', html: 'Bellek işlemi (memory transaction), <b>atomik yapılan</b> okuma-yazma dizisidir. <code>atomic{S}</code>, S içindeki ifadelerin atomik çalışmasını sağlar; kilit yönetimi gerekmez.' },
           { t: 'code', text: '/* Mutex ile */                  /* İşlemsel bellekle */\nvoid update() {                  void update() {\n    acquire();                       atomic {\n    /* veriyi değiştir */                /* veriyi değiştir */\n    release();                       }\n}                                }' },
+          { t: 'h', text: 'OpenMP' },
           { t: 'def', term: 'OpenMP', en: 'OpenMP', html: 'Paralel programlama için derleyici yönergeleri ve API. <code>#pragma omp critical</code> içindeki kod <b>kritik bölüm</b> sayılır ve atomik yürütülür.' },
           { t: 'code', text: 'void update(int value) {\n    #pragma omp critical\n    {\n        count += value;\n    }\n}' },
+          { t: 'h', text: 'Fonksiyonel diller' },
           { t: 'def', term: 'Fonksiyonel diller', en: 'Functional programming languages', html: 'Yordamsal dillerin aksine <b>durum tutmazlar</b>; değişkenler atandıktan sonra değişmez. Bu nedenle veri yarışlarına yaklaşımlarıyla ilgi görürler. Örnek: <b>Erlang</b>, <b>Scala</b>.' }
         ],
         checks: [

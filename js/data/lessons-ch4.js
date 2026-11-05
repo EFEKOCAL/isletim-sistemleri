@@ -69,7 +69,7 @@
             { title: 'Görev paralelleştirme', items: ['İş parçacıkları çekirdeklere dağıtılır', 'Her iş parçacığı <b>farklı bir işlem</b> yapar'] }
           ] },
           { t: 'h', text: 'Amdahl Yasası' },
-          { t: 'def', term: 'Amdahl Yasası', en: 'Amdahl\'s Law', html: 'Seri ve paralel kısımları olan uygulamaya çekirdek eklemenin kazancını tanımlar: <b>hızlanma ≤ 1 / (S + (1 − S) / N)</b>. S seri kısım, N çekirdek sayısıdır. N sonsuza giderken hızlanma <b>1/S</b>\'ye yaklaşır.' },
+          { t: 'def', term: 'Amdahl Yasası', en: 'Amdahl\'s Law', html: 'Seri ve paralel kısımları olan uygulamaya çekirdek eklemenin kazancını tanımlar: <b>hızlanma ≤ 1 / (S + (1 − S) / N)</b>. S seri kısım, N çekirdek sayısıdır. N sonsuza giderken hızlanma <b>1/S</b>\'ye yaklaşır. Slayt 4.13\'teki grafikte S = 0,05, 0,10 ve 0,50 eğrileri ideal doğrusal hızlanmanın altında kalır; S = 0,50\'de 16 çekirdekle bile hızlanma 2\'ye yaklaşır.' },
           { t: 'p', html: 'Değerleri değiştir. %25 seri ve 2 çekirdekte hızlanmanın <b>1,6 kat</b> olduğunu gör:' },
           { t: 'dg', id: 'amdahl' },
           { t: 'note', kind: 'exam', attach: true, html: 'Seri kısmın, çekirdek eklemeyle elde edilen kazanç üzerinde <b>orantısız etkisi</b> vardır: %25 seri kısım varsa çekirdek sayısı ne olursa olsun hızlanma 4 katı geçemez.' }
@@ -115,18 +115,20 @@
           { t: 'def', term: 'İş parçacığı kütüphanesi', en: 'Thread library', html: 'Programcıya iş parçacığı oluşturmak ve yönetmek için API sağlar. İki yolla gerçekleştirilir: tamamen <b>kullanıcı alanında</b> ya da işletim sistemince desteklenen <b>çekirdek düzeyinde</b>.' },
           { t: 'def', term: 'Pthreads', en: 'POSIX threads', html: 'İş parçacığı oluşturma ve senkronizasyon için POSIX standardı (IEEE 1003.1c) API\'sidir. <b>Uygulama değil, şartnamedir</b>: davranışı belirtir, gerçekleştirme kütüphaneye bağlıdır. Linux ve macOS gibi UNIX sistemlerinde yaygındır.' },
           { t: 'code', text: '#include <pthread.h>\n#include <stdio.h>\n#include <stdlib.h>\n\nint sum;                     /* iş parçacıklarının paylaştığı veri */\nvoid *runner(void *param);\n\nint main(int argc, char *argv[]) {\n    pthread_t tid;           /* iş parçacığı kimliği */\n    pthread_attr_t attr;     /* öznitelikler */\n    pthread_attr_init(&attr);\n    pthread_create(&tid, &attr, runner, argv[1]);\n    pthread_join(tid, NULL); /* bitmesini bekle */\n    printf("sum = %d\\n", sum);\n}\n\nvoid *runner(void *param) {\n    int i, upper = atoi(param);\n    sum = 0;\n    for (i = 1; i <= upper; i++)\n        sum += i;\n    pthread_exit(0);\n}' },
-          { t: 'p', html: 'Birden çok iş parçacığını beklemek için <code>pthread_join</code> bir döngüde çağrılır (slayt 4.25).' },
-          { t: 'h', text: 'Windows ve Java' },
-          { t: 'table', head: ['', 'Oluşturma', 'Bekleme'], rows: [
-            ['Pthreads', '<code>pthread_create()</code>', '<code>pthread_join()</code>'],
-            ['Windows', '<code>CreateThread()</code>', '<code>WaitForSingleObject()</code>'],
-            ['Java', '<code>new Thread(new Task()).start()</code>', '<code>worker.join()</code>']
-          ] },
+          { t: 'p', html: 'Birden çok iş parçacığını beklemek için <code>pthread_join</code> bir döngüde çağrılır (slayt 4.25):' },
+          { t: 'code', text: '#define NUM_THREADS 10\npthread_t workers[NUM_THREADS];   /* beklenecek iş parçacıkları */\n\nfor (int i = 0; i < NUM_THREADS; i++)\n    pthread_join(workers[i], NULL);' },
+          { t: 'h', text: 'Windows' },
+          { t: 'p', html: 'Aynı toplama programının Windows sürümü (slayt 4.26 – 4.27). <code>CreateThread</code> iş parçacığını oluşturur, <code>WaitForSingleObject</code> bitmesini bekler, <code>CloseHandle</code> tutamacı kapatır.' },
+          { t: 'code', text: '#include <windows.h>\n#include <stdio.h>\nDWORD Sum;                  /* iş parçacıklarının paylaştığı veri */\n\nDWORD WINAPI Summation(LPVOID Param) {\n    DWORD Upper = *(DWORD*)Param;\n    for (DWORD i = 1; i <= Upper; i++)\n        Sum += i;\n    return 0;\n}\n\nint main(int argc, char *argv[]) {\n    DWORD ThreadId;  HANDLE ThreadHandle;  int Param;\n    Param = atoi(argv[1]);\n    ThreadHandle = CreateThread(\n        NULL,        /* varsayılan güvenlik öznitelikleri */\n        0,           /* varsayılan yığın boyutu */\n        Summation,   /* iş parçacığı fonksiyonu */\n        &Param,      /* fonksiyonun parametresi */\n        0,           /* varsayılan oluşturma bayrakları */\n        &ThreadId);  /* iş parçacığı kimliği döner */\n    WaitForSingleObject(ThreadHandle, INFINITE);\n    CloseHandle(ThreadHandle);\n    printf("sum = %d\\n", Sum);\n}' },
+          { t: 'h', text: 'Java' },
           { t: 'list', items: [
             'Java iş parçacıklarını <b>JVM</b> yönetir; genellikle alttaki işletim sisteminin modeliyle gerçekleştirilir.',
-            'İki yol vardır: <code>Thread</code> sınıfını genişletmek ya da <code>Runnable</code> arayüzünü gerçekleştirmek. <b>Standart yöntem Runnable\'dır</b>.',
-            '<b>Executor çerçevesi</b>, iş parçacığını açıkça oluşturmak yerine işi <code>execute()</code> veya <code>submit()</code> ile verir. <code>Callable</code> ve <code>Future</code> ile sonuç alınabilir.'
-          ] }
+            'İki yol vardır: <code>Thread</code> sınıfını genişletmek ya da <code>Runnable</code> arayüzünü gerçekleştirmek. <b>Standart yöntem Runnable\'dır</b>.'
+          ] },
+          { t: 'code', text: 'class Task implements Runnable {\n    public void run() {\n        System.out.println("I am a thread.");\n    }\n}\n\nThread worker = new Thread(new Task());   /* oluştur */\nworker.start();                            /* başlat */\n\ntry { worker.join(); }                      /* bekle */\ncatch (InterruptedException ie) { }' },
+          { t: 'h', text: 'Java Executor çerçevesi' },
+          { t: 'p', html: 'İş parçacığını açıkça oluşturmak yerine iş <code>Executor</code> arayüzüne verilir: <code>void execute(Runnable command)</code>. Sonuç döndüren iş için <code>Callable</code> ve <code>Future</code> kullanılır (slayt 4.30 – 4.32).' },
+          { t: 'code', text: 'class Summation implements Callable<Integer> {\n    private int upper;\n    public Summation(int upper) { this.upper = upper; }\n    public Integer call() {          /* iş parçacığı burada çalışır */\n        int sum = 0;\n        for (int i = 1; i <= upper; i++)\n            sum += i;\n        return new Integer(sum);\n    }\n}\n\nExecutorService pool = Executors.newSingleThreadExecutor();\nFuture<Integer> result = pool.submit(new Summation(upper));\nSystem.out.println("sum = " + result.get());' }
         ],
         checks: [
           { q: 'Pthreads neden "şartname" olarak anılır?', a: 'API yalnızca kütüphanenin davranışını belirtir; nasıl gerçekleştirileceği kütüphaneyi geliştirenlere bağlıdır.' },
@@ -143,10 +145,13 @@
           { t: 'def', term: 'Örtük iş parçacığı', en: 'Implicit threading', html: 'İş parçacığı sayısı arttıkça programın doğruluğunu korumak zorlaşır. Bu yüzden oluşturma ve yönetim programcı yerine <b>derleyiciler ve çalışma zamanı kütüphanelerince</b> yapılır. Beş yöntem: iş parçacığı havuzu, fork-join, OpenMP, Grand Central Dispatch, Intel TBB.' },
           { t: 'h', text: 'İş parçacığı havuzu' },
           { t: 'p', html: 'Havuzda önceden iş parçacıkları oluşturulur ve iş bekler. <b>Avantajlar:</b> mevcut iş parçacığıyla hizmet vermek genellikle daha hızlıdır; iş parçacığı sayısı havuz boyutuyla sınırlanır; işi oluşturma mekanizmasından ayırmak farklı stratejilere izin verir (ör. periyodik çalıştırma).' },
-          { t: 'code', text: '/* Java: Executors sınıfının üç fabrika metodu */\nExecutors.newSingleThreadExecutor();\nExecutors.newFixedThreadPool(int size);\nExecutors.newCachedThreadPool();' },
+          { t: 'p', html: 'Windows API de iş parçacığı havuzunu destekler. Java\'da <code>Executors</code> sınıfının üç fabrika metodu vardır; slayt 4.36\'daki örnek havuzla görevleri çalıştırıp havuzu kapatır:' },
+          { t: 'code', text: 'static ExecutorService newSingleThreadExecutor()\nstatic ExecutorService newFixedThreadPool(int size)\nstatic ExecutorService newCachedThreadPool()\n\nExecutorService pool = Executors.newCachedThreadPool();\nfor (int i = 0; i < numTasks; i++)\n    pool.execute(new Task());   /* her görev havuzdaki bir iş parçacığıyla */\npool.shutdown();                /* hepsi bitince havuzu kapat */' },
           { t: 'h', text: 'Fork-Join' },
           { t: 'p', html: 'Birden çok görev <b>çatallanır (fork)</b>, sonra <b>birleştirilir (join)</b>. Java\'da <code>ForkJoinTask</code> soyut taban sınıftır: <code>RecursiveTask</code> <code>compute()</code> ile sonuç döndürür, <code>RecursiveAction</code> döndürmez.' },
           { t: 'code', text: 'Task(problem)\n    if (problem yeterince küçük)\n        doğrudan çöz\n    else\n        altgörev1 = fork(new Task(problemin alt kümesi))\n        altgörev2 = fork(new Task(problemin alt kümesi))\n        sonuç1 = join(altgörev1)\n        sonuç2 = join(altgörev2)\n        return sonuçları birleştir' },
+          { t: 'p', html: 'Görevler özyinelemeli olarak bölünür ve bir ağaç oluşturur (slayt 4.39). Java örneği bir dizinin elemanlarını toplar; parça <code>THRESHOLD</code> (1000) değerinden küçükse doğrudan toplanır:' },
+          { t: 'code', text: 'ForkJoinPool pool = new ForkJoinPool();\nint[] array = new int[SIZE];      /* toplanacak sayılar */\nSumTask task = new SumTask(0, SIZE - 1, array);\nint sum = pool.invoke(task);\n\nclass SumTask extends RecursiveTask<Integer> {\n    static final int THRESHOLD = 1000;\n    protected Integer compute() {\n        if (end - begin < THRESHOLD) {\n            int sum = 0;\n            for (int i = begin; i <= end; i++) sum += array[i];\n            return sum;\n        } else {\n            int mid = (begin + end) / 2;\n            SumTask leftTask = new SumTask(begin, mid, array);\n            SumTask rightTask = new SumTask(mid + 1, end, array);\n            leftTask.fork();\n            rightTask.fork();\n            return rightTask.join() + leftTask.join();\n        }\n    }\n}' },
           { t: 'h', text: 'OpenMP' },
           { t: 'p', html: 'C, C++ ve FORTRAN için derleyici yönergeleri ve API. <b>Paylaşılan bellek</b> ortamında paralel bölgeleri işaretler.' },
           { t: 'code', text: '#pragma omp parallel          /* çekirdek sayısı kadar iş parçacığı */\n{ printf("I am a parallel region."); }\n\n#pragma omp parallel for      /* for döngüsünü paralel çalıştır */\nfor (i = 0; i < N; i++)\n    c[i] = a[i] + b[i];' },
@@ -155,9 +160,10 @@
             '<b>GCD:</b> macOS ve iOS teknolojisi; C, C++ ve Objective-C uzantıları, API ve çalışma zamanı kütüphanesi. Paralel bölümler <code>^{ }</code> <b>bloğuyla</b> yazılır, gönderim kuyruğuna konur ve kuyruktan alınınca havuzdaki bir iş parçacığına atanır.',
             '<b>Seri kuyruk:</b> bloklar FIFO ile tek tek alınır; işlem başına bir tane vardır (main queue), programcı ek kuyruk oluşturabilir.',
             '<b>Eşzamanlı kuyruk:</b> FIFO ile alınır ama aynı anda birkaçı alınabilir. Hizmet kalitesine göre dört sistem kuyruğu: USER_INTERACTIVE, USER_INITIATED, UTILITY, BACKGROUND.',
-            'Swift\'te görev <b>closure</b>\'dır ve <code>dispatch_async()</code> ile kuyruğa verilir.',
-            '<b>Intel TBB:</b> paralel C++ için şablon kütüphanesi. Ör. <code>parallel_for</code> ile for döngüsü paralel yazılır.'
-          ] }
+            'Swift\'te görev <b>closure</b>\'dır (şapka işareti olmayan blok) ve <code>dispatch_async()</code> ile kuyruğa verilir.',
+            '<b>Intel TBB:</b> paralel C++ programları için şablon kütüphanesi.'
+          ] },
+          { t: 'code', text: '/* GCD, Swift */\nlet queue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)\ndispatch_async(queue, { print("I am a closure.") })\n\n/* TBB: seri döngü ve parallel_for ile aynısı */\nfor (int i = 0; i < n; i++)\n    apply(v[i]);\nparallel_for(size_t(0), n, [=](size_t i) { apply(v[i]); });' }
         ],
         checks: [
           { q: 'İş parçacığı havuzunun üç avantajı nedir?', a: 'Mevcut iş parçacığıyla hizmet vermek genellikle daha hızlıdır, iş parçacığı sayısı havuz boyutuyla sınırlanır, iş oluşturma mekanizmasından ayrıldığı için farklı stratejiler uygulanabilir.' },
@@ -187,6 +193,7 @@
             'Linux\'ta iptal sinyallerle yapılır.',
             'Java\'da ertelenmiş iptal <code>interrupt()</code> ile yapılır; iş parçacığı <code>isInterrupted()</code> ile kontrol eder.'
           ] },
+          { t: 'code', text: '/* Pthreads */\npthread_create(&tid, 0, worker, NULL);\npthread_cancel(tid);         /* iptal iste */\npthread_join(tid, NULL);     /* sonlanmasını bekle */\n\n/* Java */\nworker.interrupt();          /* kesilme durumunu ayarla */\nwhile (!Thread.currentThread().isInterrupted()) { ... }' },
           { t: 'h', text: 'Thread-local storage (TLS)' },
           { t: 'p', html: 'TLS, her iş parçacığına verinin <b>kendi kopyasını</b> verir. İş parçacığı oluşturmayı kontrol edemediğinde (ör. havuzda) kullanışlıdır. Yerel değişkenden farkı: yerel değişken tek fonksiyon çağrısında görünür, <b>TLS çağrılar arasında</b> görünür. Statik veriye benzer ama her iş parçacığına özeldir.' },
           { t: 'h', text: 'Scheduler activations' },
@@ -208,7 +215,7 @@
           { t: 'h', text: 'Windows' },
           { t: 'p', html: 'Windows API birincil API\'dir ve <b>bire-bir, çekirdek düzeyinde</b> eşleme kullanır. Her iş parçacığının kimliği, yazmaç seti, kullanıcı ve çekirdek modu için ayrı yığınları, kütüphanelerin kullandığı özel veri alanı vardır. Yazmaç seti, yığınlar ve özel alan iş parçacığının <b>bağlamıdır</b>.' },
           { t: 'table', head: ['Yapı', 'İçerik', 'Bulunduğu alan'], rows: [
-            ['ETHREAD', 'Ait olduğu işleme ve KTHREAD\'e işaretçi', 'Çekirdek'],
+            ['ETHREAD', 'İş parçacığının başlangıç adresi, ait olduğu işleme ve KTHREAD\'e işaretçi', 'Çekirdek'],
             ['KTHREAD', 'Planlama ve senkronizasyon bilgisi, çekirdek yığını, TEB\'e işaretçi', 'Çekirdek'],
             ['TEB', 'İş parçacığı kimliği, kullanıcı yığını, thread-local storage', 'Kullanıcı']
           ] },

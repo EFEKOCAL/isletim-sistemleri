@@ -1,0 +1,71 @@
+/*
+ * web-questions.js — İnternetten tekrar soruları.
+ * Kaynak: Silberschatz, Galvin, Gagne "Operating System Concepts" 10. baskının resmi sitesindeki
+ * çözümlü alıştırmalar (Practice Exercises, os-book.com). Sorular ve cevaplar Türkçeye çevrildi,
+ * cevaplar kısaltıldı. "(Ek)" ile işaretli kısımlar resmi çözümde yok.
+ */
+(function (OSLab) {
+  'use strict';
+
+  const SRC = 'https://os-book.com/OS10/practice-exercises/index-solu.html';
+  const q = (ch, no, question, answer) => ({ id: `w${no}`, ch, no, from: `OSC 10. baskı, Practice Exercise ${no}`, url: SRC, q: question, a: answer });
+
+  OSLab.webQuestions = [
+    /* Bölüm 1 */
+    q('ch1', '1.1', 'İşletim sisteminin üç temel amacı nedir?', '(1) Kullanıcının programları donanım üzerinde rahat ve verimli çalıştırabileceği bir ortam sağlamak. (2) Bilgisayarın kaynaklarını görevlere olabildiğince adil ve verimli dağıtmak. (3) Kontrol programı olarak kullanıcı programlarının yürütülmesini denetleyip hatalı kullanımı önlemek ve G/Ç aygıtlarını yönetmek.'),
+    q('ch1', '1.3', 'Gerçek zamanlı bir ortam için işletim sistemi yazan programcının aşması gereken temel zorluk nedir?', 'İşletim sistemini gerçek zamanlı sistemin sabit zaman kısıtları içinde tutmak. Görev belirli sürede bitmezse bütün sistem çökebilir; bu yüzden planlama yöntemleri yanıt süresinin kısıtı aşmasına izin vermemelidir.'),
+    q('ch1', '1.5', 'Çekirdek modu ile kullanıcı modu ayrımı nasıl basit bir koruma sağlar?', 'Bazı komutlar, donanım aygıtlarına erişim ve kesmeleri açıp kapatma yalnızca çekirdek modunda yapılabilir. Kullanıcı modundaki CPU\'nun yetenekleri çok sınırlı olduğu için kritik kaynaklar korunur.'),
+    q('ch1', '1.6', 'Şunlardan hangileri ayrıcalıklı olmalıdır? (a) zamanlayıcıyı ayarlamak (b) saati okumak (c) belleği temizlemek (d) trap komutu vermek (e) kesmeleri kapatmak (f) aygıt durum tablosunu değiştirmek (g) kullanıcı modundan çekirdek moduna geçmek (h) G/Ç aygıtına erişmek', 'Ayrıcalıklı olmalı: zamanlayıcıyı ayarlamak, belleği temizlemek, kesmeleri kapatmak, aygıt durum tablosunu değiştirmek, G/Ç aygıtına erişmek. Saati okumak, trap vermek ve kullanıcı modundan çekirdek moduna geçmek kullanıcı modunda yapılabilir (geçiş trap ile olur).'),
+    q('ch1', '1.10', 'Önbellekler neden yararlıdır, hangi sorunu çözer, hangi sorunu yaratır? Önbellek, önbelleklediği aygıt kadar büyük yapılabiliyorsa neden aygıt kaldırılmaz?', 'Hızları farklı iki bileşen veri alışverişi yaparken araya orta hızda bir tampon koyar; hızlı taraf veriyi önbellekte bulursa yavaşı beklemez. Sorunu tutarlılıktır: bileşendeki veri değişirse önbellekteki kopya da güncellenmeli; çok işlemcili sistemde bu daha zordur. Aygıt ancak önbellek de veriyi elektrik kesilince koruyabiliyorsa ve maliyeti karşılanabiliyorsa kaldırılabilir; hızlı bellek pahalıdır.'),
+    q('ch1', '1.11', 'Dağıtık sistemlerde istemci–sunucu ve eşler arası modeller arasındaki fark nedir?', 'İstemci–sunucuda roller kesindir: istemci ister, sunucu hizmet verir. Eşler arası modelde tüm düğümler eştir; her biri hem istemci hem sunucu olabilir, bir düğüm başka eşten hizmet isteyebilir ya da hizmet verebilir.'),
+
+    /* Bölüm 2 */
+    q('ch2', '2.1', 'Sistem çağrılarının amacı nedir?', 'Kullanıcı seviyesindeki işlemlerin işletim sisteminden hizmet istemesini sağlamak.'),
+    q('ch2', '2.2', 'Komut yorumlayıcısının amacı nedir? Neden genellikle çekirdekten ayrıdır?', 'Kullanıcıdan ya da bir komut dosyasından komutları okur ve genellikle bunları bir veya daha fazla sistem çağrısına çevirerek yürütür. Sık değiştiği için çekirdeğin parçası yapılmaz.'),
+    q('ch2', '2.3', 'UNIX\'te kabuğun yeni bir işlem başlatması için hangi sistem çağrıları gerekir?', 'fork() ve exec(). fork() çalışan işlemi kopyalar, exec() çağıran işlemin üzerine başka bir çalıştırılabilir dosyadan yeni programı yükler.'),
+    q('ch2', '2.4', 'Sistem programlarının amacı nedir?', 'Yararlı sistem çağrılarının paketleri gibidirler. Kullanıcılara temel işlevleri hazır sunar; böylece yaygın sorunlar için kendi programlarını yazmaları gerekmez.'),
+    q('ch2', '2.5', 'Katmanlı tasarımın temel avantajı ve dezavantajı nedir?', 'Avantaj: hata ayıklamak ve değiştirmek kolaydır, değişiklik yalnızca sınırlı bir bölümü etkiler; veri yalnızca gerektiği katmanda tutulur, hatalar o katmanla sınırlı kalır. Dezavantaj: bir hizmete ulaşmak için katmanlardan geçmenin ek yükü yüzünden performans düşer.'),
+    q('ch2', '2.8', 'Açılışta birden çok işletim sisteminden birini seçmeye izin veren bir sistem nasıl tasarlanır? Önyükleme programı ne yapmalıdır?', 'Her işletim sistemi diskte durur. Açılışta önce özel bir önyükleme yöneticisi (boot manager) çalışır ve hangi sisteme geçileceğine karar verir; kullanıcıya seçenek sunar, seçim yapılmazsa varsayılan sistemi başlatır. Bu yöneticinin diskte tanınacağı belirli bir konumda saklanması gerekir. (Ek) GRUB böyle bir önyükleyicidir.'),
+
+    /* Bölüm 3 */
+    q('ch3', '3.1', '<code>int value = 5;</code> olan programda çocuk <code>value += 15;</code> yapıp çıkıyor, ebeveyn <code>wait(NULL)</code> sonrası <code>value</code>\'yu yazdırıyor. Çıktı nedir?', '<b>PARENT: value = 5.</b> Çocuk kendi kopyasını değiştirir; ebeveynin değişkeni etkilenmez.'),
+    q('ch3', '3.2', 'Art arda üç <code>fork();</code> çağrısı yapan programda, ilk ebeveyn dahil kaç işlem oluşur?', '<b>8 işlem</b> (2³). Her fork o an var olan işlem sayısını ikiye katlar.'),
+    q('ch3', '3.3', 'İlk iOS sürümleri eşzamanlı işleme izin vermiyordu. Eşzamanlı işlemenin işletim sistemine getirdiği üç zorluk nedir?', '(1) CPU zamanlayıcısı eşzamanlı işlemleri bilip uygun algoritmayla planlamalıdır. (2) İşlemler birbiriyle iletişim kurabileceği için IPC yöntemleri gerekir. (3) Mobil cihazlarda bellek kısıtlıdır; belleği kötü kullanan işlem diğerlerini etkiler, bu yüzden bellek dikkatle yönetilmelidir.'),
+    q('ch3', '3.4', 'Birden çok yazmaç setli sistemde bağlam değişimi yapılırken yeni bağlam zaten bir sette yüklüyse ne olur? Bellekteyse ve tüm setler doluysa ne olur?', 'Yüklüyse yalnızca geçerli yazmaç seti işaretçisi yeni seti gösterecek şekilde değişir; çok hızlıdır. Bellekteyse bir setteki bağlam seçilip belleğe yazılır ve yeni bağlam o sete yüklenir; tek setli sisteme göre biraz daha uzun sürer.'),
+    q('ch3', '3.5', 'fork() ile oluşan çocuk, ebeveyniyle hangisini paylaşır: yığın, heap, paylaşılan bellek bölümleri?', 'Yalnızca <b>paylaşılan bellek bölümlerini</b>. Yığın ve heap çocuk için kopyalanır.'),
+    q('ch3', '3.6', 'RPC\'nin "tam olarak bir kez" anlamı, istemciye dönen ACK ağda kaybolursa da korunur mu?', 'Evet. İstemci RPC\'yi zaman damgasıyla gönderir ve zamanlayıcı başlatır; ACK gelmezse aynı isteği yeniden gönderir. İstek ilk seferde hiç ulaşmadıysa sunucu şimdi yürütür. Yürütülüp ACK kaybolduysa sunucu zaman damgasından tekrarı tanır, yordamı ikinci kez çalıştırmaz ve yeniden ACK gönderir.'),
+
+    /* Bölüm 4 */
+    q('ch4', '4.1', 'Çok iş parçacığının tek iş parçacığından daha iyi performans verdiği üç örnek verin.', '(1) Her isteğe ayrı iş parçacığıyla hizmet veren web sunucusu. (2) Matris çarpımı gibi parçaları paralel işlenebilen uygulama. (3) Bir iş parçacığının kullanıcı girdisini, birinin çalışan uygulamayı, birinin performansı izlediği hata ayıklayıcı gibi etkileşimli GUI programı.'),
+    q('ch4', '4.2', 'Paralel kısmı %60 olan uygulama için Amdahl yasasıyla 2 ve 4 çekirdekte hızlanmayı hesaplayın.', 'S = 0,4. İki çekirdek: 1 / (0,4 + 0,6/2) ≈ <b>1,43</b> (resmi çözüm 1,42 yazar). Dört çekirdek: 1 / (0,4 + 0,6/4) ≈ <b>1,82</b>.'),
+    q('ch4', '4.3', 'Her isteğe ayrı iş parçacığı açan çok iş parçacıklı web sunucusu görev mi, veri paralelliği mi gösterir?', '<b>Veri paralelliği.</b> Her iş parçacığı aynı işi farklı veriler üzerinde yapar.'),
+    q('ch4', '4.4', 'Kullanıcı ve çekirdek iş parçacıkları arasında iki fark nedir?', 'Kullanıcı iş parçacıklarını çekirdek bilmez, çekirdek iş parçacıklarını bilir. Çoktan-bire ve çoktan-çoğa modellerde kullanıcı iş parçacıklarını kütüphane, çekirdek iş parçacıklarını çekirdek planlar. Ayrıca çekirdek iş parçacıkları çekirdek veri yapısı gerektirdiği için tutması daha pahalıdır.'),
+    q('ch4', '4.5', 'Çekirdek iş parçacıkları arasında bağlam değişimi için çekirdek ne yapar?', 'Çıkan iş parçacığının CPU yazmaçlarını kaydeder ve planlanan yeni iş parçacığının yazmaçlarını geri yükler.'),
+    q('ch4', '4.6', 'İş parçacığı oluşturmak hangi kaynakları kullanır? İşlem oluşturmaktan farkı nedir?', 'İş parçacığı daha küçüktür: yazmaç seti, yığın ve öncelik için küçük bir yapı ayrılır. İşlem oluşturmak ise bellek haritası, açık dosyalar ve ortam değişkenlerini içeren büyük bir PCB gerektirir; en çok zamanı bellek haritasını ayırmak alır.'),
+
+    /* Bölüm 5 */
+    q('ch5', '5.1', 'Tek işlemcide n işlem için kaç farklı planlama sırası mümkündür?', '<b>n!</b> (n × (n−1) × … × 1).'),
+    q('ch5', '5.2', 'Kesmeli ve kesmesiz planlama arasındaki fark nedir?', 'Kesmeli planlama, çalışan işlemi yarıda kesip CPU\'yu başka işleme verebilir. Kesmesiz planlamada işlem CPU\'yu ancak mevcut CPU burst\'ünü bitirince bırakır.'),
+    q('ch5', '5.3', 'P1 (geliş 0, burst 8), P2 (0,4; 4), P3 (1; 1) kesmesiz planlanıyor. Ortalama turnaround: (a) FCFS (b) SJF (c) CPU ilk 1 birim boş bırakılıp sonra SJF uygulanırsa?', '(a) <b>10,53</b> (b) <b>9,53</b> (c) <b>6,86</b>. Turnaround = bitiş − geliş; geliş çıkarılmazsa FCFS yanlışlıkla 11 çıkar. (c)\'de ileriyi bilmek kısa işleri öne alır ama gerçekte bu bilgi yoktur.'),
+    q('ch5', '5.6', 'Çok düzeyli kuyrukta farklı seviyelerde farklı kuantum kullanmanın avantajı nedir?', 'Sık hizmet isteyen etkileşimli işlemler küçük kuantumlu kuyrukta, sık hizmet gerekmeyenler büyük kuantumlu kuyrukta tutulur. Böylece daha az bağlam değişimiyle bilgisayar daha verimli kullanılır.'),
+    q('ch5', '5.7', 'Şu algoritma kümeleri arasında nasıl bir ilişki vardır? (a) Öncelikli ve SJF (b) Geri bildirimli kuyruk ve FCFS (c) Öncelikli ve FCFS (d) RR ve SJF', '(a) En kısa iş en yüksek önceliği alır. (b) Geri bildirimli kuyruğun en alt seviyesi FCFS\'tir. (c) FCFS, en uzun süredir var olan işe en yüksek önceliği verir. (d) İlişki yoktur.'),
+    q('ch5', '5.9', 'PCS ve SCS planlama arasındaki fark nedir?', 'PCS işleme yereldir: kütüphane iş parçacıklarını LWP\'lere planlar. SCS\'de işletim sistemi çekirdek iş parçacıklarını planlar. Bire-bir modelde ikisi aynıdır.'),
+    q('ch5', '5.10', 'Geleneksel UNIX\'te büyük sayı düşük önceliktir ve öncelik = (son CPU kullanımı / 2) + 60. Son kullanımları 40, 18 ve 10 olan P1, P2, P3\'ün yeni öncelikleri nedir? CPU yoğun işlemin önceliği artar mı azalır mı?', 'P1 = <b>80</b>, P2 = <b>69</b>, P3 = <b>65</b>. CPU yoğun işlemin göreli önceliği <b>düşer</b>.'),
+
+    /* Bölüm 6 */
+    q('ch6', '6.1', 'Kesmeleri sık kapatmak sistem saatini neden etkileyebilir? Etki nasıl azaltılır?', 'Sistem saati her saat kesmesinde güncellenir; kesmeler uzun süre kapalı kalırsa saat geri kalır. Zamanlayıcı da kuantumu saat tıklarıyla ölçtüğü için kuantumları doğru atayamaz. Etki, saat kesmelerini yalnızca çok kısa süre kapatarak azaltılır.'),
+    q('ch6', '6.2', 'Meşgul bekleme ne demektir? Tamamen önlenebilir mi?', 'İşlemin bir koşulu, CPU\'yu bırakmadan sıkı bir döngüde beklemesidir. Bekleyen işlemi uyutup koşul sağlanınca uyandırarak önlenebilir, ama bu da uyutma ve uyandırmanın ek yükünü getirir.'),
+    q('ch6', '6.3', 'Spinlock neden tek işlemcili sistemde uygun değildir ama çok işlemcilide sık kullanılır?', 'Tek işlemcide döngüden çıkaracak koşulu ancak başka bir işlem sağlayabilir; dönen işlem CPU\'yu bırakmadığı için o işlem çalışamaz. Çok işlemcide diğer işlemler başka işlemcilerde çalışıp koşulu değiştirebilir.'),
+    q('ch6', '6.4', 'wait() ve signal() atomik olmazsa karşılıklı dışlamanın nasıl bozulabileceğini gösterin.', 'Semafor 1 iken iki wait() atomik olmadan aynı anda çalışırsa ikisi de değeri 1 okuyup azaltabilir; iki işlem birden kritik bölüme girer.'),
+    q('ch6', '6.5', 'İkili semaforla n işlem arasında karşılıklı dışlama nasıl sağlanır?', 'n işlem 1 ile başlayan <code>mutex</code> semaforunu paylaşır. Her işlem: <code>wait(mutex);</code> kritik bölüm <code>signal(mutex);</code> kalan bölüm.'),
+    q('ch6', '6.6', 'Ortak hesapta biri withdraw(), diğeri deposit() çağırıyor. Yarış durumu nasıl oluşur, nasıl önlenir?', 'Bakiye 250 iken withdraw(50) ve deposit(100) çalışsın; doğrusu 300. Çekim yapan bakiyeyi okuyup 200 hesaplar, yazmadan önce yatırma 300 yazar; sonra çekim 200 yazar ve sonuç yanlış olur. (Ek) Bakiyeyi okuyup yazan kodu mutex veya semaforla kritik bölüm yaparak önlenir.'),
+
+    /* Bölüm 7 */
+    q('ch7', '7.1', 'Windows ve Linux neden birden çok kilit mekanizması sunar? Spinlock, mutex, semafor ve koşul değişkeni ne zaman kullanılır?', 'İhtiyaçlar farklıdır. Spinlock çok işlemcide kısa süreli beklemede uyutma ek yükünden kaçınmak için kullanılır. Mutex kaynakları kilitlemek içindir. Kaynak uzun süre tutulacaksa dönmek verimsiz olduğu için semafor ve koşul değişkeni daha uygundur.'),
+    q('ch7', '7.2', 'Windows\'un "slim reader–writer lock" kilidi ne okuyucuyu ne yazarı kayırır, FIFO sırası da tutmaz. Bunun yararı nedir?', 'Basitlik. Adalet veya öncelik sağlamak ek yük getirir; basit kilit hızlı alınıp bırakılır. Okuyucu-yazar kilidi gereken ama hızın önemli olduğu durumlara uygundur.'),
+    q('ch7', '7.3', 'Sınırlı tampon çözümünde ikili semafor yerine mutex kilidi kullanmak için ne değişmelidir?', '<code>wait(mutex)</code> ve <code>signal(mutex)</code> çağrıları, mutex API\'sinin <code>acquire()</code> ve <code>release()</code> çağrılarıyla değiştirilir.'),
+    q('ch7', '7.4', 'Yemek yiyen filozoflarda kilitlenme nasıl oluşabilir?', 'Tüm filozoflar aynı anda sol çubuğunu alırsa sağ çubuğu almaya çalışınca hepsi bloklanır ve birbirini sonsuza kadar bekler.'),
+    q('ch7', '7.5', 'Windows dispatcher nesnelerinde signaled ve non-signaled durumları arasındaki fark nedir?', 'Signaled durumdaki nesne müsaittir; onu almak isteyen iş parçacığı bloklanmaz. Kilit alınınca non-signaled olur, bırakılınca tekrar signaled olur.'),
+    q('ch7', '7.6', 'Linux\'ta atomik val için: atomic_set(&val,10); atomic_sub(8,&val); atomic_inc(&val); atomic_inc(&val); atomic_add(6,&val); atomic_sub(3,&val); sonunda val kaçtır?', '10 − 8 + 1 + 1 + 6 − 3 = <b>7</b>.')
+  ];
+})(window.OSLab = window.OSLab || {});
