@@ -110,11 +110,13 @@
     kind: 'explorer',
     hint: 'Bir katmana tıkla. Kesik çizgi uçucu ve kalıcı depolamayı ayırır.',
     html: `<div class="dg-pyr">
-        ${[['reg', 'yazmaçlar (registers)', 30], ['cache', 'önbellek (cache)', 40], ['mem', 'ana bellek', 50]].map(([k, t, w]) => `<div class="dg-b dg-pyr-l dg-volatile" data-k="${k}" style="width:${w}%"><b>${t}</b></div>`).join('')}
+        <div class="dg-pyr-row dg-pyr-head"><span></span><span class="dg-pyr-cap">günümüz kapasitesi (≈)</span></div>
+        ${[['reg', 'yazmaçlar (registers)', 30, '100 B – birkaç KB'], ['cache', 'önbellek (cache)', 40, 'birkaç MB – 1 GB'], ['mem', 'ana bellek', 50, '8 GB – birkaç TB']].map(([k, t, w, c]) => `<div class="dg-pyr-row"><div class="dg-pyr-slot"><div class="dg-b dg-pyr-l dg-volatile" data-k="${k}" style="width:${w}%"><b>${t}</b></div></div><span class="dg-pyr-cap">${c}</span></div>`).join('')}
         <div class="dg-divider"><span>↑ uçucu (volatile) · kalıcı (nonvolatile) ↓</span></div>
-        ${[['nvm', 'kalıcı bellek (SSD / NVM)', 62], ['hdd', 'sabit disk (HDD)', 74], ['opt', 'optik disk', 86], ['tape', 'manyetik teyp', 98]].map(([k, t, w]) => `<div class="dg-b dg-pyr-l" data-k="${k}" style="width:${w}%"><b>${t}</b></div>`).join('')}
+        ${[['nvm', 'kalıcı bellek (SSD / NVM)', 62, '256 GB – 245 TB'], ['hdd', 'sabit disk (HDD)', 74, '1 TB – 30+ TB'], ['opt', 'optik disk', 86, '700 MB – 128 GB'], ['tape', 'manyetik teyp', 98, '18 – 40 TB (kartuş)']].map(([k, t, w, c]) => `<div class="dg-pyr-row"><div class="dg-pyr-slot"><div class="dg-b dg-pyr-l" data-k="${k}" style="width:${w}%"><b>${t}</b></div></div><span class="dg-pyr-cap">${c}</span></div>`).join('')}
       </div>
-      <div class="dg-axis"><span>▲ daha hızlı, daha küçük, daha pahalı</span><span>▼ daha yavaş, daha büyük, daha ucuz</span></div>`,
+      <div class="dg-axis"><span>▲ daha hızlı, daha küçük, daha pahalı</span><span>▼ daha yavaş, daha büyük, daha ucuz</span></div>
+      <p class="dg-pyr-note">Ek: Kapasiteler 2026 için yaklaşık aralıktır; üst sınırlar sunucu ürünleridir. Katmana tıklayınca görünen boyutlar kitabın tablosundan gelir ve daha eskidir.</p>`,
     info: {
       reg: '<b>Yazmaçlar</b> · birincil depolama · &lt; 1 KB · erişim 0.25–0.5 ns · <b>derleyici</b> yönetir · uçucu.',
       cache: '<b>Önbellek</b> · birincil depolama · &lt; 16 MB · 0.5–25 ns · <b>donanım</b> yönetir · uçucu. Ana belleğin sık kullanılan kısmının kopyası.',
@@ -293,7 +295,7 @@
     html: col(
       b('pw', 'Güç verilir', 'yürütme sabit bir bellek adresinde başlar'),
       ar('down'),
-      b('fw', 'Firmware: BIOS veya UEFI', 'ROM / EEPROM · bootstrap loader', 'dg-hw'),
+      b('fw', 'Firmware: BIOS veya UEFI', 'anakart üzerindeki ROM / EEPROM · bootstrap loader', 'dg-hw'),
       ar('down'),
       b('bb', 'Boot block / önyükleyici (GRUB)', 'menü: hangi çekirdek, hangi seçenekler?', 'dg-tool'),
       ar('down'),
@@ -305,7 +307,7 @@
     ),
     steps: [
       { on: ['pw'], text: 'Güç verildiğinde CPU, yürütmeye <b>sabit bir bellek konumunda</b> başlar. Orada kalıcı bellekte duran kod vardır.' },
-      { on: ['fw'], text: '<b>Bootstrap loader</b> (BIOS): ROM veya EEPROM\'da saklanan küçük kod. Donanımı sınar ve çekirdeği ya da onu yükleyecek kodu bulur. Modern sistemlerde BIOS\'un yerini <b>UEFI</b> almıştır.' },
+      { on: ['fw'], text: '<b>Bootstrap loader</b> (BIOS): anakart üzerindeki ROM veya EEPROM\'da saklanan küçük kod. Donanımı sınar ve çekirdeği ya da onu yükleyecek kodu bulur. Modern sistemlerde BIOS\'un yerini <b>UEFI</b> almıştır.' },
       { on: ['bb'], text: 'Çoğu zaman <b>iki adımlıdır</b>: ROM kodu diskteki sabit konumdan <b>boot block</b>\'u yükler, o da asıl önyükleyiciyi yükler. <b>GRUB</b>, birden çok diskten, çekirdek sürümünden ve seçenekten seçim yapmaya izin verir.' },
       { on: ['k'], text: 'Seçilen çekirdek imajı (<b>vmlinuz</b>) belleğe yüklenir ve kontrol ona verilir.' },
       { on: ['init'], text: 'Çekirdek donanımı tanır, kök dosya sistemini bağlar ve ilk kullanıcı işlemini (Linux\'ta <b>systemd</b>, pid 1) başlatır. Önyükleyici <b>tek kullanıcı modu</b> gibi başlatma durumlarına da izin verebilir.' },
@@ -834,5 +836,5 @@
     });
   }
 
-  OSLab.diagrams = { render, init, has: (id) => id in D, ids: () => Object.keys(D) };
+  OSLab.diagrams = { render, init, register: (id, def) => { D[id] = def; }, has: (id) => id in D, ids: () => Object.keys(D) };
 })(window.OSLab = window.OSLab || {});

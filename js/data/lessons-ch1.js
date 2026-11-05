@@ -38,6 +38,7 @@
           { t: 'h', text: 'Bilgisayar sisteminin dört bileşeni' },
           { t: 'p', html: 'Bir bilgisayar sistemi dört bileşene ayrılır. Şekildeki katmanlara tıklayarak her birinin görevini incele:' },
           { t: 'dg', id: 'sys4' },
+          { t: 'note', kind: 'info', attach: true, html: '<b>Örnekler:</b> Donanım: mikroişlemci, bellek, G/Ç kartları, yazıcı, klavye, monitör. Uygulama yazılımı: muhasebe, ticaret, kelime işlemci, hesap tablosu, grafik programları. İşletim sistemi, farklı kullanıcıların kullandığı bu yazılımlarla donanım arasındaki uyumu ve koordinasyonu sağlar.' },
           { t: 'h', text: 'İşletim sistemi ne yapar?' },
           { t: 'list', items: [
             'Kullanımı kolay ve kaynakları verimli kullanan bir ortam sağlar.',
@@ -46,6 +47,8 @@
             '<b>El bilgisayarı (handheld)</b> gibi kaynakları kısıtlı sistemlerde kullanılabilirliği ve <b>pil ömrünü</b> optimize eder.',
             'Arayüzü az olan ya da hiç olmayan <b>gömülü sistemlerin</b> çalışmasını sağlar.'
           ] },
+          { t: 'h', text: 'Nasıl ortaya çıktı?' },
+          { t: 'p', html: '"İşletim sistemi" terimi birçok rolü kapsar; ekmek kızartma makinesinden gemilere, uzay araçlarına, oyun makinelerine ve endüstriyel kontrol sistemlerine kadar farklı cihazlarda bulunur. Askeriyede kullanılan sabit amaçlı bilgisayarlar daha genel amaçlı kullanıma, kaynak yönetimine ve program kontrolüne ihtiyaç duyunca ortaya çıkmıştır.' },
           { t: 'h', text: 'İki temel bakış açısı' },
           { t: 'compare', cols: [
             { title: 'Kaynak ayırıcı (resource allocator)', items: ['CPU zamanı, bellek, G/Ç aygıtları gibi kaynakları yönetir', 'Çakışan istekler arasında verimli ve adil karar verir'] },
@@ -68,7 +71,7 @@
         minutes: 5,
         blocks: [
           { t: 'h', text: 'Bilgisayarın başlatılması' },
-          { t: 'def', term: 'Ön yükleme programı', en: 'Bootstrap program', html: 'Açılışta veya yeniden başlatmada yüklenen ilk program. <b>ROM</b> ya da <b>EEPROM</b> içinde bulunur ve <b>firmware (üretici yazılımı)</b> olarak adlandırılır. Sistemi tüm yönleriyle başlatır, <b>işletim sistemi çekirdeğini yükler</b> ve yürütmeyi başlatır.' },
+          { t: 'def', term: 'Ön yükleme programı', en: 'Bootstrap program', html: 'Açılışta veya yeniden başlatmada yüklenen ilk program. <b>Anakart üzerindeki ROM</b> ya da <b>EEPROM</b> içinde bulunur ve <b>firmware (üretici yazılımı)</b> olarak adlandırılır. Sistemi tüm yönleriyle başlatır, bütün bileşenleri hazır duruma getirir, <b>işletim sistemi çekirdeğini yükler</b> ve yürütmeyi başlatır. Çekirdek bundan sonra sürekli çalışır.' },
           { t: 'h', text: 'Sistem organizasyonu' },
           { t: 'p', html: 'Bir veya daha fazla CPU ve aygıt denetleyicileri, <b>ortak bir veri yolu (system bus)</b> üzerinden paylaşılan belleğe erişir. CPU ve aygıtlar <b>eşzamanlı</b> çalışır ve <b>bellek döngüleri (memory cycles) için yarışır</b>. Bileşenlere tıkla:' },
           { t: 'dg', id: 'bus' },
@@ -84,7 +87,7 @@
           { t: 'note', kind: 'extra', html: 'Her aygıt denetleyicisi için işletim sisteminde bir <b>aygıt sürücüsü (device driver)</b> bulunur. Sürücü denetleyiciyi tanır ve işletim sisteminin geri kalanına tek tip bir arayüz sunar.' }
         ],
         checks: [
-          { q: 'Bootstrap programı nerede saklanır ve görevi nedir?', a: 'ROM veya EEPROM\'da (firmware). Sistemi başlatır, işletim sistemi çekirdeğini belleğe yükleyip çalıştırır.' },
+          { q: 'Bootstrap programı nerede saklanır ve görevi nedir?', a: 'Anakart üzerindeki ROM veya EEPROM\'da (firmware). Sistemi başlatır, işletim sistemi çekirdeğini belleğe yükleyip çalıştırır.' },
           { q: 'Bir aygıt denetleyicisi işini bitirdiğini CPU\'ya nasıl bildirir?', a: 'Bir kesme (interrupt) üreterek.' }
         ]
       },
@@ -108,26 +111,33 @@
             'Servis rutini çalışır.',
             'Kaydedilen adres program sayacına geri yüklenir; yarım kalan iş kaldığı yerden devam eder.'
           ] },
-          { t: 'def', term: 'Kesme vektörü', en: 'Interrupt vector', html: 'Düşük bellek alanında tutulan, aygıtların <b>kesme servis rutinlerinin adreslerini</b> içeren işaret (pointer) tablosu. Kesmeyi hızlıca doğru rutine yönlendirir.' },
+          { t: 'note', kind: 'info', attach: true, html: '<b>Bu akış vectored interrupt içindir.</b> 3. adımda kontrolü kesme vektörü aktarır. Polling kullanan sistemde bu adımda önce aygıtlar sorgulanır; diğer adımlar aynı kalır. İki yöntem birkaç kart sonra karşılaştırılıyor.' },
+          { t: 'def', term: 'Kesme vektörü', en: 'Interrupt vector', html: '<b>Düşük bellek alanında</b> (ana belleğin 0 adresine yakın, en küçük numaralı adreslerden oluşan bölümü) tutulan, aygıtların <b>kesme servis rutinlerinin başlangıç adreslerini</b> içeren işaret (pointer) tablosu. Kesmeyi hızlıca doğru rutine yönlendirir.' },
+          { t: 'note', kind: 'extra', attach: true, html: '<b>Nasıl çalışır:</b> Kesmenin numarası tabloda satır numarası gibi kullanılır. Örneğin 33 numaralı kesmede 33. satırdaki adrese atlanır.<br><b>Terim:</b> Derste "kesme vektörü" tablonun tamamını anlatır. Dar anlamda vektör tablodaki tek bir adrestir; tablonun adı <b>IVT</b> (Interrupt Vector Table), x86\'nın korumalı modunda <b>IDT</b>\'dir.<br><b>Modern işlemciler:</b> Tablo yine RAM\'dedir ama düşük bellekte olmak zorunda değildir. Başlangıç adresi işlemcideki özel bir yazmaçta tutulur (x86\'da IDTR, ARM\'da VBAR).' },
           { t: 'def', term: 'Kesme servis rutini', en: 'Interrupt service routine', html: 'Bir kesme oluştuğunda yapılması gereken işlemleri içeren komutların bütünü. Her kesme türünün kendi rutini vardır.' },
           { t: 'h', text: 'Kesme tabanlı G/Ç döngüsü' },
-          { t: 'p', html: 'Slayt 1.31\'deki döngüyü adım adım ilerlet:' },
+          { t: 'p', html: 'Slayt 1.31\'deki döngüyü adım adım ilerlet. Şekil, kesme vektörü kullanan (vectored) sistemi gösterir:' },
           { t: 'dg', id: 'intcycle' },
+          { t: 'p', html: '<b>Zaman çizelgesi (slayt 1.29):</b> CPU kullanıcı programını çalıştırırken bir G/Ç isteği gelir ve boştaki aygıt aktarıma başlar. Aktarım bitince aygıt kesme sinyali üretir; CPU kısa süre kesmeyi işler, sonra programa döner. Aygıt bir sonraki isteğe kadar boşta kalır.' },
           { t: 'h', text: 'Kesmenin türünü belirlemek' },
+          { t: 'p', html: 'Kesme gelince onu kimin ürettiği ve hangi rutinin çalışacağı bulunmalıdır. Bunun <b>iki alternatif yolu</b> vardır; sırayla yapılan iki adım değildir:' },
           { t: 'compare', cols: [
-            { title: 'Polling (yoklama)', items: ['İşletim sistemi aygıtları tek tek sorgulayarak kesmeyi kimin ürettiğini bulur', 'Basit ama yavaş'] },
-            { title: 'Vectored interrupt', items: ['Kesme, kesme vektöründeki bir numarayla doğrudan doğru rutine gider', 'Hızlı'] }
+            { title: 'Polling (yoklama)', items: ['CPU kesme geldiğini bilir, kimden geldiğini bilmez', 'İşletim sistemi aygıtları <b>tek tek sorgulayarak</b> kesmeyi kimin ürettiğini bulur', '<b>Basit ama yavaş</b>: aygıt sayısı arttıkça sorgulama uzar'] },
+            { title: 'Vectored interrupt', items: ['Kesmeyle birlikte bir <b>numara</b> gelir, sorgulama gerekmez', 'Numara kesme vektöründe bir satırı gösterir; oradaki adresle doğrudan doğru rutine gidilir', '<b>Hızlı</b>, ama numarayı iletecek donanım desteği gerekir'] }
           ] },
+          { t: 'note', kind: 'extra', attach: true, html: '<b>Birlikte kullanım (interrupt chaining):</b> Kesme sayısı vektör tablosunu aşarsa birkaç aygıt aynı numarayı paylaşır. Önce vektörle o numaranın rutin listesine gidilir, sonra listedeki rutinler sırayla denenir.<br><b>G/Ç\'deki polling ile karıştırma:</b> Burada yoklama, kesme geldikten sonra göndereni bulmak içindir. Kesmesiz G/Ç\'de ise CPU, aygıt hazır mı diye sürekli kontrol ederek bekler (busy waiting).' },
+          { t: 'h', text: 'Maskeleme ve öncelik' },
           { t: 'list', items: [
             'Bir kesme işlenirken diğer kesmeler <b>devre dışı bırakılabilir</b> (maskelenir).',
             'Kesmelerin <b>öncelikleri</b> vardır: aynı anda birden çok kesme gelirse yüksek öncelikli olan önce işlenir, diğerleri maskelenir.',
             'İşletim sistemi <b>kesmelerle yönetilen (interrupt driven)</b> bir yapıdadır.'
           ] },
+          { t: 'h', text: 'Trap ve sistem çağrıları' },
           { t: 'note', kind: 'exam', html: '<b>Trap = exception</b>: yazılımın ürettiği kesme. Sistem çağrıları da trap ile çekirdeğe girer. Bu, Bölüm 2\'deki sistem çağrıları ve çift modlu çalışma konusunun temelidir.' }
         ],
         checks: [
           { q: 'Trap ile donanım kesmesi arasındaki fark nedir?', a: 'Donanım kesmesi bir aygıttan sinyal olarak gelir. Trap (exception) ise yazılım tarafından üretilir: bir hata (sıfıra bölme, geçersiz bellek erişimi) ya da kullanıcı programının isteği (sistem çağrısı).' },
-          { q: 'Kesme vektörü nedir, nerede tutulur?', a: 'Kesme servis rutinlerinin adreslerini tutan işaret tablosu; düşük bellek alanında tutulur.' },
+          { q: 'Kesme vektörü nedir, nerede tutulur?', a: 'Kesme servis rutinlerinin başlangıç adreslerini tutan işaret tablosudur. Kesmenin numarası tabloda hangi satıra bakılacağını, o satırdaki adres de hangi rutinin çalışacağını gösterir. Ana belleğin düşük bellek alanında (0 adresine yakın bölümünde) tutulur. (Ek) Modern işlemcilerde tablo RAM\'in başka bir yerinde olabilir; başlangıç adresi özel bir yazmaçta saklanır (x86\'da IDTR, ARM\'da VBAR).' },
           { q: 'Kesme işlendikten sonra kesilen program kaldığı yerden nasıl devam eder?', a: 'Kesme anında adresi (ve yazmaçları) kaydedilmiştir; rutin bitince bu adres program sayacına geri yüklenir.' }
         ]
       },
@@ -139,12 +149,13 @@
         minutes: 6,
         blocks: [
           { t: 'compare', cols: [
-            { title: 'Senkron (bloklayıcı) G/Ç', items: ['G/Ç başladıktan sonra kontrol, <b>G/Ç tamamlanınca</b> kullanıcı programına döner', 'Wait komutu CPU\'yu bir sonraki kesmeye kadar boşta bırakır', 'Aynı anda en fazla bir G/Ç isteği karşılanır'] },
-            { title: 'Asenkron (bloklamayan) G/Ç', items: ['Kontrol, G/Ç\'nin bitmesini <b>beklemeden</b> programa döner', 'Program isterse sistem çağrısıyla bitmesini bekleyebilir', '<b>Aygıt durum tablosu (device-status table)</b>: her aygıtın tipi, adresi ve durumu'] }
+            { title: 'Senkron (bloklayıcı) G/Ç', items: ['G/Ç başladıktan sonra kontrol, <b>G/Ç tamamlanınca</b> kullanıcı programına döner', 'Wait komutu CPU\'yu bir sonraki kesmeye kadar boşta bırakır', 'Bekleme döngüsü (wait loop) bellek erişimi için çekişme yaratır', 'Aynı anda en fazla bir G/Ç isteği karşılanır; eşzamanlı G/Ç yoktur'] },
+            { title: 'Asenkron (bloklamayan) G/Ç', items: ['Kontrol, G/Ç\'nin bitmesini <b>beklemeden</b> programa döner', 'Program isterse sistem çağrısıyla bitmesini bekleyebilir', '<b>Aygıt durum tablosu (device-status table)</b>: her aygıtın tipi, adresi ve durumu', 'İşletim sistemi bu tabloya bakarak aygıtın durumunu belirler ve girdiyi kesmeyi içerecek şekilde günceller'] }
           ] },
           { t: 'h', text: 'Uygulamadan aygıta' },
           { t: 'p', html: 'Uygulamalar G/Ç\'yi doğrudan değil, <b>işletim sistemi üzerinden</b> yapar:' },
           { t: 'dg', id: 'iochain' },
+          { t: 'p', html: 'Sistem çağrısından sonra uygulama çağrının bitmesini bekleyebilir (<b>engellenen çağrı</b>) ya da başka işlere devam edebilir (<b>engellenmeyen çağrı</b>).' },
           { t: 'def', term: 'Doğrudan bellek erişimi', en: 'Direct Memory Access (DMA)', html: 'Aygıt denetleyicisi veri bloklarını <b>CPU müdahalesi olmadan</b> doğrudan aygıt tamponundan ana belleğe aktarır. <b>Bayt başına bir kesme yerine blok başına yalnızca bir kesme</b> üretilir.' },
           { t: 'list', items: [
             'CPU, G/Ç modülünü belleğe yazma/okuma ile <b>yetkilendirir</b>.',
@@ -154,7 +165,9 @@
           { t: 'table', head: ['', 'DMA\'sız', 'DMA ile'], rows: [
             ['4 KB blok aktarımı', '≈ 4096 kesme (bayt başına)', '1 kesme (blok başına)'],
             ['CPU aktarım sırasında', 'Her baytla meşgul', 'Başka işleri yürütür']
-          ] }
+          ] },
+          { t: 'h', text: 'Modern bir bilgisayar nasıl çalışır?' },
+          { t: 'p', html: 'Slayt 1.37\'deki resim parçaları birleştirir. N adet CPU, önbelleği üzerinden komutları bellekten alıp yürütür (<b>komut yürütme döngüsü</b>) ve veriyi bellekle taşır. CPU, M adet aygıtla <b>G/Ç isteği</b>, <b>veri</b> ve <b>kesme</b> üzerinden konuşur. Yüksek hızlı aygıtlar veriyi <b>DMA</b> ile doğrudan belleğe aktarır.' }
         ],
         checks: [
           { q: 'DMA neden kullanılır?', a: 'Yüksek hızlı aygıtlarda bayt başına kesme CPU\'yu boğar. DMA ile denetleyici bloğu doğrudan belleğe aktarır, blok başına tek kesme üretir; CPU bu sırada başka iş yapar.' },
@@ -169,19 +182,19 @@
         minutes: 8,
         blocks: [
           { t: 'def', term: 'Ana bellek', en: 'Main memory', html: 'CPU\'nun <b>doğrudan erişebildiği</b> tek büyük depolama. <b>Rastgele erişimli</b> (random access) ve <b>uçucudur</b> (volatile: elektrik kesilince içerik kaybolur). Genellikle <b>DRAM</b>.' },
-          { t: 'def', term: 'İkincil depolama', en: 'Secondary storage', html: 'Büyük ve <b>kalıcı</b> (nonvolatile) depolama sağlayan ana bellek uzantısı: HDD, SSD, NVMe.' },
+          { t: 'def', term: 'İkincil depolama', en: 'Secondary storage', html: 'Büyük ve <b>kalıcı</b> (nonvolatile) depolama sağlayan ana bellek uzantısı: HDD, SSD, NVMe. Manyetik disklerde veri dönen plakalardadır (platters); <b>disk denetleyicisi</b> aygıt ile bilgisayar arasındaki etkileşimi yönetir.' },
           { t: 'table', head: ['Aygıt', 'Özellik'], rows: [
             ['HDD', 'Mekanik, manyetik plakalar; büyük kapasite ama yavaş'],
             ['SSD', 'Hareketli parça yok, flash bellek; HDD\'den çok daha hızlı'],
             ['NVMe M.2 SSD', 'PCIe hattını kullanır; GB/s seviyesinde hız, düşük gecikme']
           ] },
           { t: 'h', text: 'Birimler' },
-          { t: 'p', html: '<b>bit</b> (0/1) → <b>byte</b> = 8 bit (çoğu bilgisayarda en küçük kullanışlı birim) → <b>word</b>: mimarinin doğal veri birimi (64-bit mimaride 8 bayt). KB = 1024 B, MB = 1024² B, GB = 1024³ B, TB = 1024⁴ B, PB = 1024⁵ B. Ağ hızları ise <b>bit</b> cinsinden verilir.' },
+          { t: 'p', html: '<b>bit</b> (0/1) → <b>byte</b> = 8 bit (çoğu bilgisayarda en küçük kullanışlı birim) → <b>word</b>: mimarinin doğal veri birimi (64-bit mimaride 8 bayt). KB = 1024 B, MB = 1024² B, GB = 1024³ B, TB = 1024⁴ B, PB = 1024⁵ B. Üreticiler bu sayıları genellikle yuvarlar: 1 MB = 1 milyon bayt, 1 GB = 1 milyar bayt. Ağ hızları ise veriyi bit bit taşıdığı için <b>bit</b> cinsinden verilir.' },
           { t: 'h', text: 'Depolama hiyerarşisi' },
           { t: 'p', html: 'Depolama sistemleri <b>hız</b>, <b>maliyet</b> ve <b>uçuculuk</b> bakımından hiyerarşik düzenlenir. Yukarı çıktıkça hız artar, kapasite azalır. Katmanlara tıkla:' },
           { t: 'dg', id: 'pyramid' },
-          { t: 'def', term: 'Önbellekleme', en: 'Caching', html: 'Kullanımdaki bilgiyi geçici olarak <b>daha yavaş depolamadan daha hızlı depolamaya kopyalamak</b>. Önce hızlı depolamaya bakılır: veri oradaysa doğrudan kullanılır, yoksa kopyalanıp oradan kullanılır. Önbellek, önbelleğe alınan depolamadan küçüktür; <b>boyut</b> ve <b>değiştirme politikası</b> önemli tasarım sorunlarıdır.' },
-          { t: 'p', html: 'Ana bellek de ikincil depolama için bir önbellek gibi düşünülebilir: diskteki veri kullanılmadan önce ana belleğe kopyalanmalıdır.' },
+          { t: 'def', term: 'Önbellekleme', en: 'Caching', html: 'Donanım, işletim sistemi ve yazılım seviyelerinde uygulanan önemli bir ilke: kullanımdaki bilgiyi geçici olarak <b>daha yavaş depolamadan daha hızlı depolamaya kopyalamak</b>. Boyut ve hız arasındaki değiş tokuştan doğar. Önce hızlı depolamaya bakılır: veri oradaysa doğrudan kullanılır, yoksa kopyalanıp oradan kullanılır. Önbellek, önbelleğe alınan depolamadan küçüktür; <b>boyut</b> ve <b>değiştirme politikası</b> önemli tasarım sorunlarıdır.' },
+          { t: 'p', html: 'Ana bellek de ikincil depolama için bir önbellek gibi düşünülebilir: diskteki veri kullanılmadan önce ana belleğe kopyalanmalı, diske yazılacak veri de önce ana bellekte bulunmalıdır.' },
           { t: 'h', text: 'Verinin hiyerarşide taşınması' },
           { t: 'dg', id: 'migration' },
           { t: 'list', items: [
@@ -189,7 +202,24 @@
             '<b>Çok işlemcili</b> ortamda tüm CPU\'ların önbelleklerinde en yeni değerin olması donanımdaki <b>önbellek tutarlılığı (cache coherency)</b> ile sağlanır.',
             '<b>Dağıtık</b> ortamda verinin birden fazla kopyası olabileceği için durum daha karmaşıktır.'
           ] },
-          { t: 'note', kind: 'warn', html: 'Slayt 1.71\'deki tabloda ana belleğin teknolojisi "CMOS SRAM" yazıyor; ana bellek pratikte <b>DRAM</b>\'dir (slayt 1.40 da böyle söyler). Tablodaki erişim süresi sıralaması ise doğrudur: yazmaç &lt; önbellek &lt; ana bellek &lt; SSD &lt; manyetik disk.' }
+          { t: 'h', text: 'Depolama türlerinin özellikleri' },
+          { t: 'table', head: ['Katman', 'Tipik boyut', 'Erişim (ns)', 'Bant genişliği (MB/s)'], rows: [
+            ['Yazmaç', '&lt; 1 KB', '0,25–0,5', '20.000–100.000'],
+            ['Önbellek', '&lt; 16 MB', '0,5–25', '5.000–10.000'],
+            ['Ana bellek', '&lt; 64 GB', '80–250', '1.000–5.000'],
+            ['SSD', '&lt; 1 TB', '25.000–50.000', '500'],
+            ['Manyetik disk', '&lt; 10 TB', '5.000.000', '20–150']
+          ] },
+          { t: 'table', head: ['Katman', 'Teknoloji', 'Yöneten', 'Yedeklendiği yer'], rows: [
+            ['Yazmaç', 'Çok portlu özel CMOS bellek', 'Derleyici', 'Önbellek'],
+            ['Önbellek', 'Çip içi/dışı CMOS SRAM', 'Donanım', 'Ana bellek'],
+            ['Ana bellek', 'DRAM', 'İşletim sistemi', 'Disk'],
+            ['SSD', 'Flash bellek', 'İşletim sistemi', 'Disk'],
+            ['Manyetik disk', 'Manyetik disk', 'İşletim sistemi', 'Disk veya teyp']
+          ] },
+          { t: 'p', html: 'Bu değerler slayt 1.71\'in kitap dönemi rakamlarıdır. Katmanlar arasındaki veri hareketi <b>açık (explicit)</b> ya da <b>örtülü (implicit)</b> olabilir.' },
+          { t: 'h', text: 'Bellek teknolojisi ve erişim sırası' },
+          { t: 'note', kind: 'info', html: '<b>Ana bellek DRAM\'dir, önbellek ise SRAM\'dir.</b> DRAM hücresi bir transistör ve bir kapasitörden oluşur: yoğun ve ucuzdur, ama yükünü korumak için sürekli yenilenir (refresh). SRAM hücresi genellikle altı transistörlüdür: daha hızlı ve pahalıdır, yenileme gerekmez.<br><b>Erişim süresi sırası</b> (hızlıdan yavaşa): yazmaç &lt; önbellek &lt; ana bellek &lt; SSD &lt; manyetik disk.' }
         ],
         checks: [
           { q: 'Ana bellek neden tek başına yeterli değildir?', a: 'Hem tüm programlar ve veriler için çok küçüktür hem de uçucudur (elektrik kesilince içerik kaybolur). Bu yüzden kalıcı ve büyük ikincil depolama gerekir.' },
@@ -221,6 +251,7 @@
           { t: 'list', items: [
             '<b>Asimetrik kümeleme:</b> bir makine bekleme (hot-standby) modundadır, diğeri çalışırken onu izler.',
             '<b>Simetrik kümeleme:</b> birden çok düğüm uygulamaları çalıştırır ve birbirini izler.',
+            '<b>Çok çipli ve çok çekirdekli</b> tasarımlar yaygındır; bazı sistemlerde tek bir gövde birden çok ayrı sistemi barındırır.',
             '<b>Yüksek performanslı bilgi işlem (HPC)</b> kümelerinde uygulamalar paralelleştirmeye uygun yazılmalıdır.',
             'Çakışan işlemleri önlemek için <b>dağıtık kilit yöneticisi (DLM)</b> kullanılabilir.'
           ] }
@@ -238,7 +269,7 @@
         slides: '1.54 – 1.56',
         minutes: 5,
         blocks: [
-          { t: 'def', term: 'Çoklu programlama', en: 'Multiprogramming', html: 'Birden çok iş (job) aynı anda bellekte tutulur. Bir iş beklemek zorunda kaldığında (örneğin G/Ç için) <b>CPU başka bir işe devredilir</b>. Amaç: tek bir kullanıcının CPU\'yu ve G/Ç aygıtlarını sürekli meşgul tutamamasına karşı <b>CPU\'yu hiç boşta bırakmamak</b>. Hangi işin çalışacağına <b>iş planlaması (job scheduling)</b> ile karar verilir.' },
+          { t: 'def', term: 'Çoklu programlama', en: 'Multiprogramming', html: 'Sistemdeki işlerin (job) bir alt kümesi aynı anda bellekte tutulur. Bir iş beklemek zorunda kaldığında (örneğin G/Ç için) <b>CPU başka bir işe devredilir</b>. Amaç: tek bir kullanıcının CPU\'yu ve G/Ç aygıtlarını sürekli meşgul tutamamasına karşı <b>CPU\'yu hiç boşta bırakmamak</b>. Hangi işin çalışacağına <b>iş planlaması (job scheduling)</b> ile karar verilir.' },
           { t: 'dg', id: 'multiprog' },
           { t: 'def', term: 'Çoklu görev / zaman paylaşımı', en: 'Multitasking / Timesharing', html: 'Çoklu programlamanın mantıksal uzantısı: CPU işler arasında <b>o kadar sık geçiş yapar ki</b> kullanıcılar her işle etkileşimli çalışabilir. <b>Yanıt süresi &lt; 1 saniye</b> olmalıdır.' },
           { t: 'list', items: [
@@ -262,21 +293,31 @@
         slides: '1.57 – 1.60',
         minutes: 7,
         blocks: [
-          { t: 'list', ordered: true, items: [
-            '<b>Bootstrap programı</b> sistemi başlatır, çekirdeğin yüklenmesinden sorumludur.',
-            '<b>Çekirdek</b> yüklenir.',
-            'Çekirdek dışında hizmet veren arka plan programları başlatılır: <b>system daemons</b>.',
-            'Bundan sonra çekirdek <b>kesmelerle yönetilir</b> (donanım ve yazılım kesmeleri).'
+          { t: 'h', text: 'Açılıştan sonra kontrol kimde?' },
+          { t: 'p', html: 'Açılışta <b>bootstrap programı</b> çekirdeği yükler, çekirdek de <b>system daemons</b> denen arka plan programlarını başlatır. Ardından CPU kullanıcı programlarını çalıştırmaya başlar. Peki çekirdek, CPU\'yu programlara bıraktıktan sonra sistemi nasıl denetler?' },
+          { t: 'p', html: 'Çekirdek bir olay beklerken CPU başka işleri yürütür. Olay gerçekleşince <b>kesme</b> oluşur ve kontrol çekirdeğe geçer. Bu yüzden işletim sistemleri <b>kesmelerle yönetilir</b>.' },
+          { t: 'h', text: 'Çekirdeği hangi olaylar devreye sokar?' },
+          { t: 'compare', cols: [
+            { title: 'Donanım kesmesi', items: ['Aygıtlardan gelen sinyal', 'Örnek: disk işlemi bitti, klavyeye basıldı, <b>zamanlayıcı</b> doldu'] },
+            { title: 'Yazılım kesmesi (exception / trap)', items: ['Çalışan programın sebep olduğu olay', 'Örnek: sıfıra bölme, işletim sistemi servisi isteği (<b>sistem çağrısı</b>), izin verilmeyen belleğe erişim'] }
           ] },
-          { t: 'p', html: 'Yazılım kesmesi (exception / trap) şu durumlarda oluşur: yazılım hatası (sıfıra bölme), işletim sistemi servisi isteği (<b>sistem çağrısı</b>), sonsuz döngü ya da işlemlerin birbirini veya işletim sistemini değiştirmeye çalışması gibi sorunlar.' },
+          { t: 'note', kind: 'info', attach: true, html: 'Slayt 1.57, sonsuz döngüyü ve birbirini veya işletim sistemini değiştirmeye çalışan işlemleri de "diğer işlem sorunları" olarak bu listede sayar. Sonraki kart bu iki sorunun nasıl yakalandığını ayırıyor.' },
+          { t: 'h', text: 'Kullanıcı programları neden denetlenmeli?' },
+          { t: 'p', html: 'Çekirdek CPU\'yu programlara bıraktığı için iki sorunla karşılaşabilir. Bu dersin iki konusu, bu sorunların çözümleridir.' },
+          { t: 'compare', cols: [
+            { title: 'Sorun 1: Yetkisiz işlem', items: ['Program başka bir işlemi veya işletim sistemini değiştirmeye, donanımı doğrudan yönetmeye kalkabilir', 'Çözüm: <b>çift modlu çalışma</b>'] },
+            { title: 'Sorun 2: CPU\'yu bırakmama', items: ['<b>Sonsuz döngüdeki</b> program kendiliğinden trap üretmeyebilir ve CPU\'yu geri vermeyebilir', 'Çözüm: <b>zamanlayıcı</b>'] }
+          ] },
+          { t: 'h', text: 'Çözüm 1: Çift modlu çalışma' },
           { t: 'def', term: 'Çift modlu çalışma', en: 'Dual-mode operation', html: 'İşletim sistemi kendisini ve diğer bileşenleri korumak için iki mod kullanır: <b>kullanıcı modu</b> ve <b>çekirdek modu</b>. Donanımdaki <b>mod biti</b> hangisinde olunduğunu gösterir: <b>çekirdek = 0</b>, <b>kullanıcı = 1</b>.' },
           { t: 'dg', id: 'dualmode' },
           { t: 'list', items: [
             '<b>Ayrıcalıklı komutlar (privileged instructions)</b> yalnızca çekirdek modunda çalıştırılabilir. Örnek: donanım kontrol yazmacına veri yazmak.',
             'Kullanıcı mod bitini kendisi "kernel" yapamaz: çekirdeğe giriş yalnızca <b>sistem çağrısı (trap)</b> ile olur; dönüşte mod tekrar kullanıcıya ayarlanır.'
           ] },
-          { t: 'def', term: 'Zamanlayıcı', en: 'Timer', html: 'Bir işlemin kaynakları tüketmesini (örneğin <b>sonsuz döngü</b>) önler. Fiziksel saatle azalan bir sayaç tutulur; işletim sistemi sayacı ayarlar (<b>ayrıcalıklı komut</b>). Sayaç sıfıra inince <b>kesme</b> oluşur ve kontrol işletim sistemine döner; süreyi aşan program sonlandırılabilir.' },
-          { t: 'note', kind: 'exam', html: 'Sıra sorusu: kullanıcı modunda <b>trap</b> → donanım <b>mod bitini 0</b> yapar → sistem çağrısı yürütülür → <b>return</b> ile mod biti 1 → kullanıcıya dönüş (slayt 1.59).' }
+          { t: 'note', kind: 'exam', attach: true, html: 'Sıra sorusu: kullanıcı modunda <b>trap</b> → donanım <b>mod bitini 0</b> yapar → sistem çağrısı yürütülür → <b>return</b> ile mod biti 1 → kullanıcıya dönüş (slayt 1.59).' },
+          { t: 'h', text: 'Çözüm 2: Zamanlayıcı' },
+          { t: 'def', term: 'Zamanlayıcı', en: 'Timer', html: 'Bir işlemin kaynakları tüketmesini (örneğin <b>sonsuz döngü</b>) önler. Fiziksel saatle azalan bir sayaç tutulur; işletim sistemi sayacı ayarlar (<b>ayrıcalıklı komut</b>). İşletim sistemi bu ayarı işlemi planlamadan önce yapar. Sayaç sıfıra inince <b>kesme</b> oluşur ve kontrol işletim sistemine döner; süreyi aşan program sonlandırılabilir.' }
         ],
         lab: { label: 'System & Architecture laboratuvarında read() sistem çağrısını adım adım izle', preset: { module: 'system', lab: 'mode', syscall: 'read' } },
         checks: [
@@ -287,47 +328,93 @@
       },
       {
         id: 'bilesenler',
-        title: 'İşletim Sisteminin Temel Bileşenleri',
-        en: 'Major OS Components',
-        slides: '1.61 – 1.74',
-        minutes: 9,
+        title: 'İşlem ve Bellek Yönetimi',
+        en: 'Process & Memory Management',
+        slides: '1.61 – 1.66',
+        minutes: 5,
         blocks: [
-          { t: 'p', html: 'İşletim sisteminin temel görevleri: <b>işlem yönetimi</b> (CPU scheduling), <b>bellek yönetimi</b> (sanal bellek), <b>dosya sistemi yönetimi</b>, <b>depolama yönetimi</b>, <b>G/Ç kontrolü</b> ve <b>koruma</b>.' },
+          { t: 'h', text: 'İşletim sisteminin temel görevleri' },
+          { t: 'p', html: 'Temel görevler: <b>işlem yönetimi</b> (CPU scheduling), <b>bellek yönetimi</b> (sanal bellek), <b>dosya sistemi yönetimi</b>, <b>depolama yönetimi</b>, <b>G/Ç kontrolü</b> ve <b>koruma</b>. Bu ders ilk ikisini, sonraki iki ders diğerlerini anlatır.' },
           { t: 'h', text: 'İşlem yönetimi' },
           { t: 'def', term: 'İşlem', en: 'Process', html: 'Yürütülmekte olan program; sistemdeki çalışma birimi. <b>Program pasif</b>, <b>işlem aktif</b> bir varlıktır.' },
           { t: 'list', items: [
             'İşlem, görevi için kaynaklara ihtiyaç duyar: CPU, bellek, G/Ç, dosyalar, başlatma verileri.',
             'İşlem sonlandığında yeniden kullanılabilir kaynaklar <b>geri alınır</b>.',
-            'Tek iş parçacıklı işlemin, yürütülecek sonraki komutu gösteren bir <b>program sayacı</b> vardır; çok iş parçacıklı işlemde <b>iş parçacığı başına bir program sayacı</b> bulunur.',
+            'Sistemde genellikle çok sayıda kullanıcı ve işletim sistemi işlemi vardır; bir veya daha fazla CPU üzerinde aynı anda çalışırlar.',
+            'Tek iş parçacıklı işlemin, yürütülecek sonraki komutu gösteren bir <b>program sayacı</b> vardır ve komutları sırayla, birer birer yürütür; çok iş parçacıklı işlemde <b>iş parçacığı başına bir program sayacı</b> bulunur.',
             '<b>Eşzamanlılık (concurrency)</b>, CPU\'nun işlemler/iş parçacıkları arasında çoklanmasıyla sağlanır.'
           ] },
-          { t: 'p', html: 'İşletim sisteminin işlem yönetimindeki sorumlulukları: işlem <b>oluşturma ve silme</b>, <b>askıya alma ve devam ettirme</b>, <b>senkronizasyon</b>, <b>iletişim</b> ve <b>kilitlenme (deadlock)</b> ile başa çıkma mekanizmaları sağlamak.' },
+          { t: 'p', html: 'İşletim sisteminin işlem yönetimindeki sorumlulukları: kullanıcı ve sistem işlemlerini <b>oluşturma ve silme</b>, <b>askıya alma ve devam ettirme</b>, <b>senkronizasyon</b>, <b>iletişim</b> ve <b>kilitlenme (deadlock)</b> ile başa çıkma mekanizmaları sağlamak.' },
           { t: 'h', text: 'Bellek yönetimi' },
           { t: 'list', items: [
             'Program çalışması için komutlarının ve verilerinin (tamamı veya bir kısmı) bellekte olmalıdır.',
             'Bellek yönetimi, CPU kullanımını optimize etmek için bellekte neyin ne zaman olacağını belirler.',
             'Etkinlikler: belleğin hangi kısımlarını kimin kullandığını izlemek; hangi işlemlerin/verilerin belleğe girip çıkacağına karar vermek; gerektikçe bellek <b>ayırmak ve serbest bırakmak</b>.',
             'Her işlemin bir <b>adres uzayı</b> vardır (0\'dan max\'a mantıksal adresler: komutlar, veri, yığın); işletim sistemi bunu fiziksel belleğe <b>eşler (mapping)</b>.'
-          ] },
-          { t: 'h', text: 'Depolama ve dosya yönetimi' },
-          { t: 'def', term: 'Dosya', en: 'File', html: 'Birbiriyle ilişkili bilgilerin, yaratıcısının belirlediği anlamla bir araya getirildiği mantıksal depolama birimi. Genellikle program ve veriyi temsil eder.' },
-          { t: 'list', items: [
-            'Dosya yönetimi: dosya/dizin <b>oluşturma ve silme</b>, bunları değiştirmek için temel işlemler, dosyaları ikincil depolamaya <b>eşleme</b>, kalıcı ortama <b>yedekleme</b>.',
-            'Kütle depolama yönetimi: <b>boş alan yönetimi</b>, <b>depolama tahsisi</b>, <b>disk planlaması</b>.'
-          ] },
-          { t: 'h', text: 'G/Ç alt sistemi' },
-          { t: 'p', html: 'Amaç, donanım aygıtlarının ayrıntılarını kullanıcıdan <b>gizlemek</b>tir. İçerir: <b>buffering</b> (aktarım sırasında geçici depolama), <b>caching</b> (verinin bir kısmını hızlı bellekte tutma), <b>spooling</b> (bir işin çıktısının diğer işlerin girdisiyle örtüşmesi), genel aygıt sürücüsü arayüzü ve belirli aygıtlar için sürücüler.' },
-          { t: 'h', text: 'Koruma ve güvenlik' },
-          { t: 'compare', cols: [
-            { title: 'Koruma (protection)', items: ['İşlemlerin/kullanıcıların işletim sistemi kaynaklarına <b>erişimini denetleyen</b> mekanizma'] },
-            { title: 'Güvenlik (security)', items: ['Sistemin <b>iç ve dış saldırılara</b> karşı savunması', 'DoS, solucan, virüs, kimlik hırsızlığı, hizmet hırsızlığı'] }
-          ] },
-          { t: 'p', html: 'Sistemler kullanıcıları <b>kullanıcı kimliği (user ID)</b> ve <b>grup kimliği (group ID)</b> ile ayırt eder; bunlar her dosya ve işlemle ilişkilendirilir. <b>Ayrıcalık yükseltme (privilege escalation)</b>, kullanıcının daha fazla hakla etkin bir kimliğe geçmesini sağlar.' }
+          ] }
         ],
         checks: [
           { q: 'Program ile işlem arasındaki fark nedir?', a: 'Program diskte duran pasif bir varlıktır (komutlar). İşlem ise yürütülmekte olan programdır: aktiftir, program sayacı, yazmaçları ve kaynakları vardır.' },
           { q: 'İşletim sisteminin işlem yönetimindeki beş sorumluluğunu say.', a: 'Oluşturma/silme, askıya alma/devam ettirme, senkronizasyon mekanizmaları, iletişim mekanizmaları, kilitlenme (deadlock) ile başa çıkma mekanizmaları.' },
-          { q: 'Koruma ile güvenlik arasındaki fark nedir?', a: 'Koruma, kaynaklara erişimi denetleyen içsel mekanizmadır. Güvenlik, sistemi iç ve dış saldırılara (virüs, DoS vb.) karşı savunmaktır.' }
+          { q: 'Bellek yönetimi hangi işleri yapar?', a: 'Belleğin hangi kısımlarını kimin kullandığını izler, hangi işlemlerin ve verilerin belleğe girip çıkacağına karar verir, gerektikçe bellek ayırır ve serbest bırakır.' }
+        ]
+      },
+      {
+        id: 'depolama-yonetimi',
+        title: 'Depolama, Dosya ve G/Ç Yönetimi',
+        en: 'Storage, File & I/O Management',
+        slides: '1.67 – 1.69, 1.73',
+        minutes: 4,
+        blocks: [
+          { t: 'h', text: 'Neden depolama yönetimi gerekir?' },
+          { t: 'p', html: 'Ana bellek kalıcı değildir ve bütün programlar için çok küçüktür. Bu yüzden veriler ikincil depolamada tutulur. Disk, teyp ve optik disk gibi aygıtların özellikleri ve fiziksel düzenleri farklıdır.' },
+          { t: 'p', html: 'İşletim sistemi bu aygıtları üç düzeyde yönetir: kullanıcıya <b>dosya</b> görünümü sunar, diskleri <b>kütle depolama yönetimi</b> ile idare eder, aygıtlarla iletişimi <b>G/Ç alt sistemi</b> üzerinden yürütür.' },
+          { t: 'h', text: 'Dosya yönetimi' },
+          { t: 'def', term: 'Dosya', en: 'File', html: 'Birbiriyle ilişkili bilgilerin bir araya getirildiği mantıksal depolama birimi. Anlamı yaratıcısı tarafından belirlenen bit, bayt ve satır dizilerinden oluşur; genellikle program ve veriyi temsil eder.' },
+          { t: 'list', items: [
+            'Dosya ve dizin <b>oluşturma ve silme</b>',
+            'Dosya ve dizinleri değiştirmek için temel işlemler',
+            'Dosyaları ikincil depolamaya <b>eşleme (mapping)</b>',
+            'Dosyaları kalıcı ortama <b>yedekleme</b>'
+          ] },
+          { t: 'h', text: 'Kütle depolama yönetimi' },
+          { t: 'list', items: [
+            '<b>Boş alan yönetimi:</b> diskte nerelerin boş olduğunu izlemek',
+            '<b>Diskin paylaşımı (depolama tahsisi):</b> diskteki alanı paylaştırmak',
+            '<b>Disk planlaması:</b> bekleyen disk isteklerinin sırasını belirlemek'
+          ] },
+          { t: 'h', text: 'G/Ç alt sistemi' },
+          { t: 'p', html: 'Amaç, donanım aygıtlarının ayrıntılarını kullanıcıdan <b>gizlemek</b>tir. Alt sistem, <b>genel aygıt sürücüsü arayüzünü</b> ve belirli aygıtlara ait <b>sürücüleri</b> içerir. G/Ç belleğini de şu yöntemlerle yönetir:' },
+          { t: 'list', items: [
+            '<b>Buffering:</b> veriyi aktarım sırasında geçici olarak depolama',
+            '<b>Caching:</b> verinin bir kısmını performans için daha hızlı bellekte tutma',
+            '<b>Spooling:</b> bir işin çıktısının diğer işlerin girdileriyle örtüşmesi'
+          ] },
+          { t: 'note', kind: 'extra', attach: true, html: '<b>Spooling örneği:</b> Yazıcıya gönderilen belgeler diskte sıraya alınır. Programlar yazıcıyı beklemeden çalışmaya devam eder, yazıcı da belgeleri sırayla basar.' }
+        ],
+        checks: [
+          { q: 'Dosya nedir ve işletim sistemi dosya yönetiminde ne yapar?', a: 'Dosya, ilişkili bilgilerin oluşturduğu mantıksal depolama birimidir. İşletim sistemi dosya ve dizinleri oluşturur ve siler, bunları değiştirmek için temel işlemler sağlar, dosyaları ikincil depolamaya eşler ve kalıcı ortama yedekler.' },
+          { q: 'Buffering, caching ve spooling arasındaki fark nedir?', a: 'Buffering, veriyi aktarım sırasında geçici olarak tutar. Caching, verinin bir kısmını performans için hızlı bellekte tutar. Spooling, bir işin çıktısının diğer işlerin girdileriyle örtüşmesidir; yazıcı kuyruğu buna örnektir.' }
+        ]
+      },
+      {
+        id: 'koruma-guvenlik',
+        title: 'Koruma ve Güvenlik',
+        en: 'Protection & Security',
+        slides: '1.74',
+        minutes: 3,
+        blocks: [
+          { t: 'h', text: 'Koruma ve güvenlik farkı' },
+          { t: 'compare', cols: [
+            { title: 'Koruma (protection)', items: ['İşlemlerin/kullanıcıların işletim sistemi kaynaklarına <b>erişimini denetleyen</b> mekanizma'] },
+            { title: 'Güvenlik (security)', items: ['Sistemin <b>iç ve dış saldırılara</b> karşı savunması', 'DoS, solucan, virüs, kimlik hırsızlığı, hizmet hırsızlığı'] }
+          ] },
+          { t: 'h', text: 'Kimin neyi yapabileceği nasıl belirlenir?' },
+          { t: 'p', html: 'Sistemler kullanıcıları <b>kullanıcı kimliği (user ID)</b> ve <b>grup kimliği (group ID)</b> ile ayırt eder; bunlar her dosya ve işlemle ilişkilendirilir. <b>Ayrıcalık yükseltme (privilege escalation)</b>, kullanıcının daha fazla hakla etkin bir kimliğe geçmesini sağlar.' }
+        ],
+        checks: [
+          { q: 'Koruma ile güvenlik arasındaki fark nedir?', a: 'Koruma, kaynaklara erişimi denetleyen içsel mekanizmadır. Güvenlik, sistemi iç ve dış saldırılara (virüs, DoS vb.) karşı savunmaktır.' },
+          { q: 'Kullanıcı ve grup kimlikleri ne işe yarar?', a: 'Kullanıcıları ve kullanıcı gruplarını ayırt eder. Dosya ve işlemlerle ilişkilendirildikleri için erişim kontrolünde kimin neyi yapabileceğini belirlemeye yarar.' }
         ]
       },
       {
@@ -340,20 +427,20 @@
           { t: 'h', text: 'Sanallaştırma' },
           { t: 'compare', cols: [
             { title: 'Emülasyon (emulation)', items: ['Kaynak CPU türü hedeften <b>farklı</b> olduğunda (ör. PowerPC → Intel x86)', 'Genellikle <b>en yavaş</b> yöntem', 'Dil yerel koda derlenmiyorsa: <b>yorumlama (interpretation)</b>'] },
-            { title: 'Sanallaştırma (virtualization)', items: ['İşletim sistemi CPU için <b>yerel derlenmiş</b>; konuk (guest) işletim sistemleri de yerel derlenmiş', '<b>VMM</b> (sanal makine yöneticisi) sanallaştırma hizmetlerini sağlar', 'Konak (host) üzerinde birden çok konuk çalışır'] }
+            { title: 'Sanallaştırma (virtualization)', items: ['İşletim sistemi CPU için <b>yerel derlenmiş</b>; konuk (guest) işletim sistemleri de yerel derlenmiş', '<b>VMM</b> (sanal makine yöneticisi) sanallaştırma hizmetlerini sağlar', 'Konak (host) üzerinde birden çok konuk çalışır; ör. yerel WinXP üzerinde WinXP konukları çalıştıran VMware'] }
           ] },
           { t: 'dg', id: 'vm' },
-          { t: 'p', html: 'Kullanım alanları: bir dizüstünde birden çok işletim sistemi (macOS konak, Windows konuk), birden çok sistem olmadan farklı işletim sistemleri için uygulama geliştirme ve test, veri merkezlerinde hesaplama ortamlarını yönetme. VMM doğrudan donanım üzerinde de çalışabilir; o zaman genel amaçlı bir konak yoktur (VMware ESX, Citrix XenServer).' },
+          { t: 'p', html: 'Kullanım alanları: bir dizüstünde birden çok işletim sistemi (macOS konak, Windows konuk), birden çok sistem olmadan farklı işletim sistemleri için uygulama geliştirme ve kalite güvence testi, veri merkezlerinde hesaplama ortamlarını yönetme. VMM doğrudan donanım üzerinde de çalışabilir; o zaman genel amaçlı bir konak yoktur (VMware ESX, Citrix XenServer).' },
           { t: 'h', text: 'Dağıtık sistemler' },
           { t: 'p', html: 'Ağ ile birbirine bağlı, ayrı ve muhtemelen heterojen sistemler topluluğu. Ağ bir iletişim yoludur (en yaygını <b>TCP/IP</b>): <b>LAN</b> (yerel), <b>WAN</b> (geniş), <b>MAN</b> (kentsel), <b>PAN</b> (kişisel). <b>Ağ işletim sistemi</b> sistemler arasında mesaj alışverişi sağlar ve <b>tek bir sistem yanılsaması</b> oluşturur.' },
           { t: 'h', text: 'Bilgi işlem ortamları' },
           { t: 'table', head: ['Ortam', 'Özellik'], rows: [
             ['Geleneksel', 'Bağımsız genel amaçlı makineler; portallar, ince istemciler (thin client), kablosuz ağlar, evde bile güvenlik duvarı'],
             ['Mobil', 'Akıllı telefon, tablet; GPS, jiroskop gibi ek özellikler, artırılmış gerçeklik; IEEE 802.11 / hücresel ağ; iOS ve Android'],
-            ['İstemci–sunucu', 'Sunucular istemci isteklerine yanıt verir: <b>hesaplama sunucusu</b> (ör. veritabanı) ve <b>dosya sunucusu</b>'],
-            ['Eşler arası (P2P)', 'İstemci–sunucu ayrımı yok; her düğüm istemci, sunucu veya ikisi; merkezi arama servisi ya da <b>keşif protokolü</b> (Napster, Gnutella, Skype/VoIP)'],
+            ['İstemci–sunucu', 'Aptal terminallerin yerini akıllı PC\'ler aldı; sunucular istemci isteklerine yanıt verir: <b>hesaplama sunucusu</b> (ör. veritabanı) ve <b>dosya sunucusu</b>'],
+            ['Eşler arası (P2P)', 'İstemci–sunucu ayrımı yok; her düğüm istemci, sunucu veya ikisi. Düğüm ağa katılmalıdır: servisini merkezi arama servisine kaydeder ya da <b>keşif protokolüyle</b> istek yayınlar (Napster, Gnutella, Skype/VoIP)'],
             ['Bulut bilişim', 'Hesaplama, depolama ve uygulamaları ağ üzerinden hizmet olarak sunar; sanallaştırmanın mantıksal uzantısı (Amazon EC2)'],
-            ['Gerçek zamanlı gömülü', 'En yaygın bilgisayar türü; <b>kesin zaman kısıtları</b> vardır, işlem bu süre içinde bitmelidir, yoksa çalışma doğru sayılmaz']
+            ['Gerçek zamanlı gömülü', 'En yaygın bilgisayar türü; özel veya sınırlı amaçlı işletim sistemi ya da gerçek zamanlı işletim sistemi kullanır, bazı özel ortamlarda hiç işletim sistemi olmayabilir. <b>Kesin zaman kısıtları</b> vardır, işlem bu süre içinde bitmelidir, yoksa çalışma doğru sayılmaz']
           ] },
           { t: 'table', head: ['Bulut türü', 'Açıklama'], rows: [
             ['Public / Private / Hybrid', 'Herkese açık (ücretli) / şirketin kendi kullanımı / ikisinin birleşimi'],
@@ -361,8 +448,9 @@
             ['PaaS', 'Platform hizmeti: uygulamaya hazır yazılım yığını (ör. veritabanı sunucusu)'],
             ['IaaS', 'Altyapı hizmeti: sunucu veya depolama (ör. yedekleme alanı)']
           ] },
+          { t: 'p', html: 'Bulut ortamı; geleneksel işletim sistemleri, VMM\'ler ve bulut yönetim araçlarından oluşur. İnternet bağlantısı <b>güvenlik duvarı</b> gerektirir, <b>yük dengeleyiciler</b> trafiği birden çok uygulamaya dağıtır.' },
           { t: 'h', text: 'Ücretsiz ve açık kaynak işletim sistemleri' },
-          { t: 'p', html: 'Yalnızca ikili değil <b>kaynak kodu</b> ile dağıtılır; kapalı kaynak ve <b>DRM</b> hareketine karşıdır. <b>Free Software Foundation (FSF)</b> "copyleft" <b>GNU GPL</b> lisansıyla başlatmıştır. Örnekler: <b>GNU/Linux</b>, <b>BSD UNIX</b> (macOS çekirdeğinin temeli). VirtualBox gibi VMM\'lerle bunlar konuk olarak denenebilir.' },
+          { t: 'p', html: 'Yalnızca ikili değil <b>kaynak kodu</b> ile dağıtılır; kapalı kaynak ve <b>DRM</b> hareketine karşıdır. <b>Free Software Foundation (FSF)</b> "copyleft" <b>GNU GPL</b> lisansıyla başlatmıştır. Özgür yazılım ve açık kaynak, farklı gruplarca savunulan <b>iki ayrı fikirdir</b>. Örnekler: <b>GNU/Linux</b>, <b>BSD UNIX</b> (macOS çekirdeğinin temeli). VMware Player veya VirtualBox gibi VMM\'lerle bunlar konuk olarak denenebilir; açık kaynak, işletim sistemini kodundan öğrenmeyi de kolaylaştırır.' },
           { t: 'h', text: 'Çekirdek veri yapıları' },
           { t: 'p', html: 'Tekli, çift yönlü ve dairesel <b>bağlı listeler</b>; <b>ikili arama ağacı</b> (arama O(n), dengeli ağaçta O(lg n)); <b>hash map</b>; <b>bitmap</b> (n öğenin durumunu gösteren n bitlik dizi). Linux\'ta &lt;linux/list.h&gt;, &lt;linux/kfifo.h&gt;, &lt;linux/rbtree.h&gt; içinde tanımlıdır.' }
         ],

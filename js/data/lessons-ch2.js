@@ -51,7 +51,7 @@
             { title: 'Yerleşik komutlar', items: ['Komutun kodu kabuğun içindedir', 'Yeni komut eklemek için kabuk değişmeli'] },
             { title: 'Program adları (UNIX yaklaşımı)', items: ['Kabuk, komutla aynı adlı programı bulup çalıştırır (ör. <code>rm file.txt</code> → <code>rm</code> programı)', 'Yeni özellik eklemek için <b>kabuğu değiştirmek gerekmez</b>'] }
           ] },
-          { t: 'def', term: 'Grafik kullanıcı arayüzü', en: 'GUI', html: 'Fare, klavye ve monitörle kullanılan masaüstü arayüzü. Simgeler dosyaları, programları, eylemleri temsil eder. <b>Xerox PARC</b>\'ta icat edildi.' },
+          { t: 'def', term: 'Grafik kullanıcı arayüzü', en: 'GUI', html: 'Fare, klavye ve monitörle kullanılan masaüstü arayüzü. Simgeler dosyaları, programları, eylemleri temsil eder; fare düğmeleri bilgi alma, seçenekler, yürütme veya klasör açma gibi eylemler sağlar. <b>Xerox PARC</b>\'ta icat edildi.' },
           { t: 'list', items: [
             'Microsoft Windows: GUI + CLI "command" kabuğu',
             'macOS: "Aqua" GUI, altında UNIX çekirdeği ve kabukları',
@@ -104,12 +104,12 @@
           { t: 'note', kind: 'exam', html: '<b>Blok ve yığın</b> yöntemleri parametre sayısını veya uzunluğunu sınırlamaz. Linux ve Solaris blok (tablo) yaklaşımını benimser.' },
           { t: 'h', text: 'Sistem çağrısı türleri' },
           { t: 'table', head: ['Tür', 'Örnek işlemler', 'Windows', 'UNIX'], rows: [
-            ['İşlem kontrolü', 'oluştur, sonlandır, yükle, çalıştır, bekle, bellek ayır, hata dökümü, kilitler', 'CreateProcess(), ExitProcess(), WaitForSingleObject()', 'fork(), exit(), wait()'],
-            ['Dosya yönetimi', 'oluştur, sil, aç, kapat, oku, yaz, öznitelikler', 'CreateFile(), ReadFile(), WriteFile(), CloseHandle()', 'open(), read(), write(), close()'],
-            ['Aygıt yönetimi', 'aygıt iste/bırak, oku, yaz, öznitelikler, bağla/ayır', 'SetConsoleMode(), ReadConsole(), WriteConsole()', 'ioctl(), read(), write()'],
-            ['Bilgi bakımı', 'saat/tarih, sistem verisi, işlem öznitelikleri', 'GetCurrentProcessID(), SetTimer(), Sleep()', 'getpid(), alarm(), sleep()'],
-            ['İletişim', 'bağlantı oluştur/sil, mesaj gönder/al, paylaşılan bellek', 'CreatePipe(), CreateFileMapping(), MapViewOfFile()', 'pipe(), shm_open(), mmap()'],
-            ['Koruma', 'erişim denetimi, izinleri al/ayarla', 'SetFileSecurity(), InitializeSecurityDescriptor()', 'chmod(), umask(), chown()']
+            ['İşlem kontrolü', 'oluştur, sonlandır, yükle, çalıştır, öznitelikler, süre bekle, olay bekle/sinyal, bellek ayır/bırak, hata dökümü, hata ayıklayıcı (tek adım), kilitler', 'CreateProcess(), ExitProcess(), WaitForSingleObject()', 'fork(), exit(), wait()'],
+            ['Dosya yönetimi', 'oluştur, sil, aç, kapat, oku, yaz, konumlandır (reposition), öznitelikler', 'CreateFile(), ReadFile(), WriteFile(), CloseHandle()', 'open(), read(), write(), close()'],
+            ['Aygıt yönetimi', 'aygıt iste/bırak, oku, yaz, konumlandır, öznitelikler, mantıksal bağla/ayır', 'SetConsoleMode(), ReadConsole(), WriteConsole()', 'ioctl(), read(), write()'],
+            ['Bilgi bakımı', 'saat/tarih, sistem verisi, işlem/dosya/aygıt öznitelikleri', 'GetCurrentProcessID(), SetTimer(), Sleep()', 'getpid(), alarm(), sleep()'],
+            ['İletişim', 'bağlantı oluştur/sil, mesaj gönder/al, paylaşılan bellek, durum aktar, uzak aygıt bağla/ayır', 'CreatePipe(), CreateFileMapping(), MapViewOfFile()', 'pipe(), shm_open(), mmap()'],
+            ['Koruma', 'erişim denetimi, izinleri al/ayarla, kullanıcıya izin ver/engelle', 'SetFileSecurity(), InitializeSecurityDescriptor()', 'chmod(), umask(), chown()']
           ] },
           { t: 'h', text: 'İki örnek sistem' },
           { t: 'compare', cols: [
@@ -207,7 +207,7 @@
         slides: '2.38 – 2.40',
         minutes: 6,
         blocks: [
-          { t: 'p', html: 'İşletim sistemi tasarımının "kesin bir çözümü" yoktur ama bazı yaklaşımlar başarılı olmuştur. Tasarım <b>hedefler ve gereksinimler</b> belirlenerek başlar; donanım ve sistem türü seçiminden etkilenir.' },
+          { t: 'p', html: 'İşletim sistemi tasarımının "kesin bir çözümü" yoktur ama bazı yaklaşımlar başarılı olmuştur. Farklı sistemlerin iç yapısı çok değişebilir. Tasarım <b>hedefler ve gereksinimler</b> belirlenerek başlar; donanım ve sistem türü seçiminden etkilenir. Yaratıcı bir yazılım mühendisliği işidir.' },
           { t: 'compare', cols: [
             { title: 'Kullanıcı hedefleri', items: ['Kullanımı rahat', 'Öğrenmesi kolay', 'Güvenilir, güvenli, hızlı'] },
             { title: 'Sistem hedefleri', items: ['Tasarlaması, gerçekleştirmesi ve bakımı kolay', 'Esnek, güvenilir, hatasız, verimli'] }
@@ -242,7 +242,7 @@
           { t: 'dg', id: 'structures' },
           { t: 'table', head: ['Yapı', 'Ana fikir', 'Örnek'], rows: [
             ['Basit (simple)', 'Küçük bellekte çok işlev; modüllere bölünmez, arayüzler ve seviyeler kesin ayrılmaz, uygulamalar donanıma doğrudan erişebilir', 'MS-DOS'],
-            ['Monolitik', 'Sistem çağrısı arayüzünün altı ve donanımın üstündeki her şey tek çekirdekte; bir katmanda çok sayıda işlev', 'Orijinal UNIX'],
+            ['Monolitik', 'İki parça: sistem programları ve çekirdek. Sistem çağrısı arayüzünün altı ve donanımın üstündeki her şey (dosya sistemi, CPU planlama, bellek yönetimi) çekirdekte; bir katmanda çok sayıda işlev', 'Orijinal UNIX'],
             ['Katmanlı (layered)', 'Katman 0 donanım, katman N kullanıcı arayüzü; her katman yalnızca alt katmanları kullanır ve ayrıntılarını üst katmanlardan gizler', '(Kavramsal model)'],
             ['Mikroçekirdek', 'Çekirdekte yalnızca en temel işlevler; servisler kullanıcı alanında, mesaj geçişiyle iletişim', 'Mach (macOS Darwin), QNX'],
             ['Modüler (LKM)', 'Temel çekirdek + gerektikçe yüklenen modüller; nesne yönelimli, arayüzlerle haberleşme; katmanlıya benzer ama daha esnek', 'Linux, Solaris'],
@@ -257,7 +257,7 @@
             '<b>Linux</b>: monolitik + modüler. Çekirdek tek adres alanında çalışır, işlevsellik çalışma anında modüllerle eklenir.',
             '<b>Windows</b>: çoğunlukla monolitik, farklı alt sistemler için mikroçekirdek özellikleri (hibrit).',
             '<b>macOS / iOS</b>: hibrit ve katmanlı. Katmanlar: uygulamalar → kullanıcı deneyimi → uygulama çerçeveleri → çekirdek çerçeveleri → çekirdek ortamı (<b>Darwin</b>). Darwin = <b>Mach mikroçekirdeği + BSD UNIX</b>; ayrıca iokit ve çekirdek uzantıları (kexts).',
-            '<b>Android</b>: değiştirilmiş Linux çekirdeği (güç yönetimi eklenmiş); çalışma zamanı ortamı (ART/Dalvik VM), Java + Android API ile uygulamalar, Bionic (küçük libc), HAL, SQLite, OpenGL, webkit.'
+            '<b>Android</b>: Open Handset Alliance (çoğunlukla Google) geliştirir, açık kaynaktır, yığını iOS\'a benzer. Değiştirilmiş Linux çekirdeği işlem, bellek ve sürücü yönetimi sağlar, güç yönetimi ekler. Uygulamalar Java + Android API ile yazılır; Java bayt kodu Dalvik/ART sanal makinesinde çalışır. Ayrıca Bionic (küçük libc), HAL, SQLite, OpenGL, webkit.'
           ] },
           { t: 'h', text: 'Temel katmanlı yapı (slayt 2.52 – 2.53)' },
           { t: 'list', items: [
@@ -297,19 +297,19 @@
           { t: 'dg', id: 'boot' },
           { t: 'list', items: [
             'Güç verildiğinde yürütme <b>sabit bir bellek konumunda</b> başlar.',
-            '<b>Bootstrap loader</b>: ROM veya EEPROM\'da saklanan küçük kod parçası (BIOS). Çekirdeği bulur, belleğe yükler ve başlatır.',
+            '<b>Bootstrap loader</b>: Anakart üzerindeki ROM veya EEPROM\'da saklanan küçük kod parçası (BIOS). Çekirdeği bulur, belleğe yükler ve başlatır.',
             'Bazen <b>iki adımlıdır</b>: ROM kodu sabit konumdaki <b>boot block</b>\'u yükler, o da diskten asıl önyükleyiciyi yükler.',
             'Modern sistemler BIOS\'un yerine <b>UEFI</b> (Unified Extensible Firmware Interface) kullanır.',
             '<b>GRUB</b>: yaygın önyükleyici; birden çok diskten, sürümden ve çekirdek seçenekleriyle <b>çekirdek seçmeye</b> izin verir.',
             'Çekirdek yüklenir ve sistem <b>çalışır (running)</b> duruma gelir. Önyükleyiciler genellikle <b>tek kullanıcı modu (single user mode)</b> gibi farklı başlatma durumlarına izin verir.'
           ] },
           { t: 'compare', cols: [
-            { title: 'BIOS', items: ['Eski firmware, ROM/EEPROM\'da', 'Diskin ilk sektöründeki <b>boot block</b>\'u (MBR) yükler, o da önyükleyiciyi yükler', '(Ek) 16-bit gerçek mod, MBR bölümleme (2 TB sınırı)'] },
+            { title: 'BIOS', items: ['Eski firmware, anakart üzerindeki ROM/EEPROM\'da', 'Diskin ilk sektöründeki <b>boot block</b>\'u (MBR) yükler, o da önyükleyiciyi yükler', '(Ek) 16-bit gerçek mod, MBR bölümleme (2 TB sınırı)'] },
             { title: 'UEFI', items: ['BIOS\'un modern yerine geçeni', '(Ek) Kendi önyükleme yöneticisi vardır, EFI sistem bölümündeki dosyayı doğrudan yükler', '(Ek) GPT diskler (&gt;2 TB), 64-bit, daha hızlı açılış, Secure Boot'] }
           ] }
         ],
         checks: [
-          { q: 'Bootstrap loader nedir ve nerede saklanır?', a: 'Güç verildiğinde çalışan, çekirdeği bulup belleğe yükleyen ve başlatan küçük kod parçası. ROM veya EEPROM\'da (firmware) saklanır.' },
+          { q: 'Bootstrap loader nedir ve nerede saklanır?', a: 'Güç verildiğinde çalışan, çekirdeği bulup belleğe yükleyen ve başlatan küçük kod parçası. Anakart üzerindeki ROM veya EEPROM\'da (firmware) saklanır.' },
           { q: 'GRUB ne işe yarar?', a: 'Önyükleme sırasında birden çok disk, çekirdek sürümü ve çekirdek seçeneği arasından seçim yapmayı sağlar; tek kullanıcı modu gibi başlatma durumlarına izin verir.' },
           { q: 'Linux çekirdek derlemesinin adımlarını sırala.', a: 'kernel.org\'dan kaynak indir → make menuconfig → make (vmlinuz) → make modules → make modules_install → make install → yeniden başlat.' }
         ]

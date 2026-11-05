@@ -27,7 +27,7 @@
         slides: '3.4 – 3.8',
         minutes: 7,
         blocks: [
-          { t: 'def', term: 'İşlem', en: 'Process', html: '<b>Yürütülmekte olan program</b>. İşlemin yürütülmesi <b>sıralı</b> ilerlemelidir. "İş (job)" ve "işlem (process)" aynı anlamda kullanılır.' },
+          { t: 'def', term: 'İşlem', en: 'Process', html: '<b>Yürütülmekte olan program</b>. İşlemin yürütülmesi <b>sıralı</b> ilerlemelidir. "İş (job)" ve "işlem (process)" aynı anlamda kullanılır. Program, fare tıklamasıyla (ör. .exe dosyası) veya adı komut satırına yazılarak başlatılır; Word, tarayıcı ve e-posta programı aynı anda çalışabilir.' },
           { t: 'compare', cols: [
             { title: 'Program', items: ['Diskte duran <b>pasif</b> varlık', 'Çalıştırılabilir dosya (executable file)'] },
             { title: 'İşlem', items: ['<b>Aktif</b> varlık', 'Çalıştırılabilir dosya <b>belleğe yüklendiğinde</b> program işleme dönüşür', 'Bir program <b>birden fazla işlem</b> olarak yürütülebilir (aynı programı çalıştıran birden çok kullanıcı)'] }
@@ -333,7 +333,7 @@
             'Uzaktan iletişimde yerelden daha fazla hata senaryosu vardır.',
             'İşletim sistemi istemci ile sunucuyu buluşturmak için genellikle bir <b>buluşma (matchmaker)</b> servisi sağlar.'
           ] },
-          { t: 'note', kind: 'warn', html: 'Slayt 3.74\'te iki hata var: (1) "XDL" yazıyor, doğrusu <b>XDR</b> (External Data Representation). (2) "Mesajlar en fazla bir kez değil, tam olarak bir kez teslim edilebilir" çevirisi kitabın anlamını karıştırıyor. Kitabın söylediği: ağ hataları yüzünden RPC\'nin <b>"en fazla bir kez" (at most once)</b> yerine <b>"tam olarak bir kez" (exactly once)</b> çalıştığından emin olmak gerekir. Bir mesaj kaybolup tekrar gönderilirse yordam iki kez çalışmamalıdır.' },
+          { t: 'note', kind: 'info', html: '<b>Teslim garantisi:</b> Ağ hataları yüzünden bir mesaj kaybolup yeniden gönderilebilir. RPC bunun için yalnızca <b>en fazla bir kez (at most once)</b> değil, <b>tam olarak bir kez (exactly once)</b> çalışmayı hedefler; yeniden gönderilen istek yordamı iki kez çalıştırmamalıdır.' },
           { t: 'p', html: 'RPC\'nin yürütülmesi (slayt 3.75), matchmaker ile port bulma dahil:' },
           { t: 'dg', id: 'rpc' }
         ],

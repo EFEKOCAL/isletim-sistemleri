@@ -219,13 +219,13 @@ gcc -o main main.o -lm  → linker: main (libm bağlandı)
     {
       id: 'h23', set: 'Liste 1', lesson: 'ch2/boot',
       q: '"Bootstrap Loader" ne işe yarar? BIOS ve UEFI arasındaki farkları açıklayın.',
-      a: `<p><b>Bootstrap loader:</b> Güç verildiğinde yürütme sabit bir bellek konumunda başlar. Orada <b>ROM veya EEPROM'da</b> saklanan küçük bir kod parçası olan bootstrap loader bulunur. Görevi <b>çekirdeği bulmak, belleğe yüklemek ve başlatmaktır</b> (slayt 2.61). Bazen süreç iki adımlıdır: ROM kodu sabit konumdaki <b>boot block</b>'u yükler, o da diskten asıl önyükleyiciyi (ör. GRUB) yükler.</p>
+      a: `<p><b>Bootstrap loader:</b> Güç verildiğinde yürütme sabit bir bellek konumunda başlar. Orada <b>anakart üzerindeki ROM veya EEPROM'da</b> saklanan küçük bir kod parçası olan bootstrap loader bulunur. Görevi <b>çekirdeği bulmak, belleğe yüklemek ve başlatmaktır</b> (slayt 2.61; anakart ayrıntısı Ek). Bazen süreç iki adımlıdır: ROM kodu sabit konumdaki <b>boot block</b>'u yükler, o da diskten asıl önyükleyiciyi (ör. GRUB) yükler.</p>
 <table class="mini-table"><tr><td></td><td><b>BIOS</b></td><td><b>UEFI</b></td></tr>
-<tr><td>Konum</td><td>Eski firmware, ROM/EEPROM</td><td>BIOS'un modern yerine geçeni</td></tr>
+<tr><td>Konum</td><td>Eski firmware, anakart üzerindeki ROM/EEPROM</td><td>BIOS'un modern yerine geçeni</td></tr>
 <tr><td>Önyükleme</td><td>Diskin ilk sektöründeki boot block'u (MBR, 512 bayt) yükler, o da sonraki aşamayı yükler</td><td>(Ek) Kendi önyükleme yöneticisi vardır; EFI sistem bölümündeki önyükleyici dosyasını doğrudan yükler</td></tr>
 <tr><td>Disk</td><td>(Ek) MBR bölümleme: en fazla 2 TB, 4 birincil bölüm</td><td>(Ek) GPT: çok büyük diskler, çok sayıda bölüm</td></tr>
 <tr><td>Diğer</td><td>(Ek) 16-bit gerçek mod, sınırlı</td><td>(Ek) 32/64-bit, daha hızlı açılış, <b>Secure Boot</b> (imzasız önyükleyiciyi reddeder), ağdan önyükleme</td></tr></table>`,
-      keys: ['Güç verilince sabit adreste çalışır, ROM/EEPROM\'da (firmware)', 'Çekirdeği bulur, belleğe yükler, başlatır', 'İki adımlı olabilir: boot block → önyükleyici', 'BIOS: eski, MBR boot block, sınırlı', 'UEFI: modern yerine geçen; GPT, Secure Boot, hızlı']
+      keys: ['Güç verilince sabit adreste çalışır, anakart üzerindeki ROM/EEPROM\'da (firmware)', 'Çekirdeği bulur, belleğe yükler, başlatır', 'İki adımlı olabilir: boot block → önyükleyici', 'BIOS: eski, MBR boot block, sınırlı', 'UEFI: modern yerine geçen; GPT, Secure Boot, hızlı']
     },
     {
       id: 'h24', set: 'Liste 1', lesson: 'ch2/boot',
@@ -256,6 +256,44 @@ gcc -o main main.o -lm  → linker: main (libm bağlandı)
       a: `<p><code>vmlinuz</code>, <b>Linux çekirdek imajıdır</b>. Çekirdek kaynak kodu <code>make</code> ile derlendiğinde üretilir (slayt 2.60) ve önyükleyicinin (GRUB) belleğe yükleyip başlattığı çalıştırılabilir çekirdektir.</p>
 <ul><li>(Ek) Genellikle <code>/boot/vmlinuz-&lt;sürüm&gt;</code> yolunda bulunur; sistemde birden çok sürüm olabilir.</li><li>(Ek) Adı: "vm" <b>sanal bellek</b> desteğini, sondaki "z" ise imajın <b>sıkıştırılmış</b> olduğunu belirtir. Önyüklemede kendi kendini açar.</li><li>Çekirdek modülleri (<code>make modules_install</code>) ayrı dosyalardır ve gerektiğinde bu çekirdeğe yüklenir.</li></ul>`,
       keys: ['Linux çekirdek imajı', 'make ile derleme sonucu üretilir', 'Önyükleyicinin yüklediği çalıştırılabilir çekirdek', '/boot altında, sürüm adıyla (Ek)', 'z = sıkıştırılmış, vm = sanal bellek (Ek)']
+    },
+    {
+      id: 'h27', set: 'Lab Uygulaması', lesson: 'ch3/olusturma',
+      q: 'Chrome tarayıcısının yapısını açıklayın. Tarayıcının tek işlem veya birden fazla işlem olarak çalışmasını avantaj ve dezavantajlarıyla karşılaştırın.',
+      a: `<p><b>Chrome çok işlemlidir:</b> <b>Browser</b> işlemi arayüzü, disk ve ağ G/Ç'sini yönetir. Her site için ayrı <b>Renderer</b> işlemi HTML ve JavaScript'i işler ve kısıtlı bir korumalı alanda (sandbox) çalışır. Eklentiler ayrı <b>Plug-in</b> işlemlerinde çalışır.</p>
+<table class="mini-table"><tr><th></th><th>Tek işlem</th><th>Çok işlem</th></tr>
+<tr><td>Hata yalıtımı</td><td>Bir sekme çökerse tüm tarayıcı çöker</td><td>Yalnızca o sekmenin işlemi çöker</td></tr>
+<tr><td>Güvenlik</td><td>Tüm siteler aynı adres alanında</td><td>Her renderer ayrı adres alanında ve sandbox içinde</td></tr>
+<tr><td>Bellek</td><td>Az bellek kullanır</td><td>Her işlemin kendi belleği olduğu için çok bellek kullanır</td></tr>
+<tr><td>Oluşturma ve geçiş</td><td>Maliyet düşük</td><td>İşlem oluşturma ve bağlam değişimi daha pahalı</td></tr>
+<tr><td>İletişim</td><td>Aynı bellek üzerinden, hızlı</td><td>IPC gerekir, daha yavaş ve karmaşık</td></tr>
+<tr><td>Paralellik</td><td>Ağır bir sayfa arayüzü dondurabilir</td><td>Sayfalar çok çekirdekte ayrı çalışır, arayüz yanıt verir</td></tr></table>
+<p><b>Sonuç:</b> Çok işlem, daha fazla kaynak harcama pahasına <b>kararlılık, güvenlik ve yanıt verebilirlik</b> sağlar.</p>`,
+      keys: ['Browser, Renderer ve Plug-in işlemleri', 'Renderer sandbox içinde çalışır', 'Çok işlemde bir sekme çökünce tarayıcı çökmez', 'Adres alanı ayrımı güvenlik sağlar', 'Dezavantaj: daha fazla bellek', 'Dezavantaj: IPC ve bağlam değişimi maliyeti', 'Tek işlemin avantajı: az kaynak, hızlı iletişim']
+    },
+    {
+      id: 'h28', set: 'Lab Uygulaması', lesson: 'ch1/coklu-program',
+      q: 'Non-multi-programming, multi-programming, multi-processing, multi-tasking ve multi-threading yapılarını açıklayın.',
+      a: `<table class="mini-table"><tr><th>Yapı</th><th>Anlamı</th><th>Temel özellik</th></tr>
+<tr><td><b>Non-multi-programming</b></td><td>Bellekte aynı anda <b>tek program</b> bulunur</td><td>Program G/Ç beklerken CPU boşta kalır</td></tr>
+<tr><td><b>Multi-programming</b></td><td>Bellekte <b>birden çok program</b> bulunur; biri G/Ç beklerken CPU diğerine geçer</td><td>Amaç: <b>CPU kullanımını</b> artırmak</td></tr>
+<tr><td><b>Multi-tasking</b></td><td>CPU görevler arasında <b>zaman dilimleriyle</b> çok sık geçiş yapar</td><td>Amaç: <b>kısa yanıt süresi</b>; görevler aynı anda çalışıyor gibi görünür</td></tr>
+<tr><td><b>Multi-processing</b></td><td>Sistemde <b>birden çok CPU veya çekirdek</b> bulunur</td><td>İşler <b>gerçekten aynı anda</b> (paralel) çalışır</td></tr>
+<tr><td><b>Multi-threading</b></td><td>Bir işlem içinde <b>birden çok iş parçacığı</b> çalışır</td><td>İş parçacıkları kodu, veriyi ve kaynakları paylaşır; her birinin kendi yazmaç ve yığını vardır</td></tr></table>
+<p><b>Ayrım:</b> Multi-programming ve multi-tasking tek CPU'da da olur (eşzamanlılık). Multi-processing donanım gerektirir (paralellik). Multi-threading ise bir işlemin içindeki yapıdır.</p>`,
+      keys: ['Non-multi: bellekte tek program, G/Ç sırasında CPU boşta', 'Multi-programming: birden çok program, hedef CPU kullanımı', 'Multi-tasking: zaman dilimleri, hedef yanıt süresi', 'Multi-processing: birden çok CPU/çekirdek, gerçek paralellik', 'Multi-threading: işlem içinde birden çok iş parçacığı, kaynak paylaşımı', 'Eşzamanlılık ve paralellik ayrımı']
+    },
+    {
+      id: 'h29', set: 'Lab Uygulaması', lesson: 'ch1/ortamlar',
+      q: 'Virtualization (sanallaştırma) kavramını, donanım kaynakları ve işletim sistemi açısından oluşan farkları belirterek açıklayın.',
+      a: `<p><b>Sanallaştırma:</b> Tek bir fiziksel makinenin donanımını soyutlayarak birden çok <b>sanal makine</b> gibi kullanılmasını sağlar. Bu işi <b>VMM</b> (hypervisor) yapar.</p>
+<table class="mini-table"><tr><th>Açı</th><th>Sanallaştırma olmadan</th><th>Sanallaştırma ile</th></tr>
+<tr><td><b>Donanım kaynakları</b></td><td>CPU, bellek, disk ve ağ tek işletim sistemine aittir; kullanılmayan kapasite boşa gider</td><td>VMM kaynakları sanal makineler arasında paylaştırır: sanal CPU, sanal bellek, sanal disk. Kullanım oranı artar</td></tr>
+<tr><td><b>İşletim sistemi</b></td><td>Donanımda aynı anda doğrudan tek işletim sistemi çalışır</td><td>Birden çok <b>konuk (guest)</b> işletim sistemi aynı anda çalışır; her biri kendine ait bir makinesi varmış gibi davranır</td></tr>
+<tr><td><b>Yalıtım</b></td><td>Çöken işletim sistemi tüm makineyi durdurur</td><td>Çöken konuk diğer konukları etkilemez</td></tr></table>
+<p><b>Emülasyondan farkı:</b> Sanallaştırmada konuk, aynı CPU türü için derlenmiştir ve komutları büyük ölçüde doğrudan çalışır. Emülasyonda CPU türü farklıdır ve komutlar çevrilir; bu yüzden daha yavaştır.</p>
+<p><b>Bedeli:</b> (Ek) VMM ek yük getirir ve sanal makineler aynı donanımı paylaştığı için birbirinin başarımını etkileyebilir.</p>`,
+      keys: ['Tanım: donanımı soyutlayıp birden çok sanal makine oluşturmak', 'VMM / hypervisor', 'Donanım: CPU, bellek, disk paylaştırılır, kullanım artar', 'İşletim sistemi: birden çok konuk aynı anda çalışır', 'Konuklar birbirinden yalıtılmıştır', 'Emülasyondan farkı', 'Ek yük / başarım maliyeti']
     }
   ];
 })(window.OSLab = window.OSLab || {});

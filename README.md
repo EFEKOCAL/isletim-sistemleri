@@ -8,13 +8,17 @@
 
 Site, ortasında büyük bir **Başla** düğmesi ve tepesinde konu konu dolan bir ilerleme çubuğu olan sade bir ekranla açılır. Dersler tek ekranlık kartlar halinde, kısa video akışı gibi dikey olarak ilerler: kaydır, ok tuşlarını veya **Devam** düğmesini kullan. Kartlar, ders verisindeki bloklardan otomatik üretilir. Menü (☰) laboratuvarları, Hocanın Sorularını ve dönem planını açar.
 
-Ders PDF'leri (Silberschatz, 10. baskı) slayt sırasıyla 31 kısa derse bölünmüştür:
+Ders PDF'leri (Silberschatz, 10. baskı) slayt sırasıyla kısa derslere bölünmüştür:
 
 | Bölüm | Kaynak | Dersler |
 |---|---|---|
 | 1 · Giriş | ch01_TR.pdf | İşletim sistemi nedir, organizasyon, kesmeler, G/Ç ve DMA, depolama hiyerarşisi, mimari, çoklu programlama, çift mod ve zamanlayıcı, bileşenler, bilgi işlem ortamları |
-| 2 · İşletim Sistemi Yapıları | ch02_TR.pdf | Servisler, arayüz, sistem çağrıları, parametre geçişi, sistem programları, linker/loader, ABI, policy/mechanism, yapılar, önyükleme, hata ayıklama |
+| 2 · İşletim Sistemi Yapıları | ch02_TR.pdf, Shell Programlama | Servisler, arayüz, **shell (komutlar, izinler, betik, pipe, awk)**, sistem çağrıları, parametre geçişi, sistem programları, linker/loader, ABI, policy/mechanism, yapılar, önyükleme, hata ayıklama |
 | 3 · İşlemler | ch03_TR.pdf | İşlem kavramı, durumlar, PCB ve bağlam değişimi, planlama, fork/exec/wait, IPC, paylaşılan bellek, mesaj geçişi, POSIX/Mach/pipe, soket ve RPC |
+| 4 · İş Parçacıkları | ch04_TR.pdf | Thread kavramı, çok çekirdek ve Amdahl, modeller, kütüphaneler, örtük iş parçacığı, sorunlar, Windows ve Linux |
+| 5 · CPU Zamanlama | ch05_TR.pdf, CPU Scheduling LAB ve Ödev | Temel kavramlar, FCFS, SJF, SRTF, öncelikli planlama, Round Robin, çok düzeyli kuyruklar, çözümlü ödev, thread ve çok işlemcili planlama, gerçek zamanlı planlama, Linux/Windows/Solaris, değerlendirme |
+| 6 · Senkronizasyon | ch06_TR.pdf | Kritik bölüm, Peterson, bellek bariyeri, donanım komutları, mutex, semafor, monitör, canlılık |
+| 7 · Senkronizasyon Örnekleri | ch07.pdf | Sınırlı tampon, okuyucu-yazar, filozoflar, Windows ve Linux, POSIX, Java, alternatif yaklaşımlar |
 
 Her ders aynı öğrenme döngüsünü izler:
 
@@ -86,10 +90,13 @@ js/
   synchronization.js        semafor, mutex, yarış durumu, bounded buffer
   architecture.js           sistem çağrısı adımları, bağlama/yükleme, mimari yolları
   data/info-content.js      laboratuvarların Bilgi & Sınav paneli içerikleri
-  data/lessons-ch1..3.js    ders notları (bölüm başına bir dosya)
+  data/lessons-ch1..7.js    ders notları (bölüm başına bir dosya)
+  data/lessons-shell.js     shell dersleri (Bölüm 2'ye, arayüz dersinin arkasına eklenir)
+  scheduler-trace.js        ders Gantt şekillerinin çizelge hesabı (SRTF ve öncelik dahil)
   data/teacher-questions.js hocanın soruları, model cevaplar, anahtar noktalar
   views/learn-view.js       Ders Notları: ana sayfa, dersler, soru tekrarı
   views/diagrams.js         ders notlarındaki etkileşimli şekiller
+  views/diagrams-lab.js     Bölüm 4–7 şekilleri (Gantt, Amdahl, Peterson, semafor), chmod, ls -l, pipe
   views/                    her laboratuvarın arayüz ve animasyon katmanı
 ```
 

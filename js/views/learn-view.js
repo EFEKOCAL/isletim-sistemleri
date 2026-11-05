@@ -62,6 +62,7 @@
   }
 
   const lessonHref = (ch, l) => `#/learn/${ch.id}/${l.id}`;
+  const lessonSource = (l) => l.src || `slayt ${l.slides}`;
 
   /* ------------------------------------------------------------ blok çizimi */
 
@@ -85,6 +86,7 @@
       case 'code': return `<pre class="l-code">${esc(bl.text)}</pre>`;
       case 'note': return `<div class="l-note ${bl.kind}"><span class="l-note-label">${NOTE[bl.kind] || 'Not'}</span><div>${bl.html}</div></div>`;
       case 'dg': return OSLab.diagrams.render(bl.id);
+      case 'solve': return `<div class="l-solve"><span class="tag">${bl.title}</span><p class="l-solve-q">${bl.q}</p><button class="btn btn-primary btn-sm" type="button" data-act="solve">Çözümü göster</button><div class="l-solve-a" hidden>${bl.dg ? OSLab.diagrams.render(bl.dg) : ''}<p>${bl.a}</p></div></div>`;
       default: return '';
     }
   }
@@ -111,8 +113,8 @@
       ['1', 'Dersin tanıtımı, İşletim sistemleri, Temel kavramlar', 'ch1', null],
       ['2', 'Bilgisayar Sistem Yapıları', 'ch2', null],
       ['3', 'İşletim sistemi yapıları, işlemler (processes), iş parçacıkları', 'ch3', null],
-      ['4', 'CPU zamanlama (Scheduling)', null, 'scheduling'],
-      ['5', 'Çoklu iş parçacığı (Multithreading)', null, null],
+      ['4', 'CPU zamanlama (Scheduling)', 'ch5', 'scheduling'],
+      ['5', 'Çoklu iş parçacığı (Multithreading)', 'ch4', null],
       ['6–7', 'Bellek Yönetimi', null, null],
       ['8', 'Ara Sınav', null, null],
       ['9', 'Sanal Bellek Yönetimi', null, null],
@@ -149,11 +151,19 @@
         </a>`;
       }).join('')}</div>
 
+      <h3 class="l-section">Değerlendirme ve devam</h3>
+      <div class="card"><div class="table-wrap"><table class="l-plan"><tbody>
+        <tr><td>Ara sınav (vize)</td><td class="num">%25</td></tr>
+        <tr><td>Laboratuvar</td><td class="num">%25</td></tr>
+        <tr><td>Final</td><td class="num">%50</td></tr>
+        <tr><td>Devam zorunluluğu</td><td>Teori %70, laboratuvar %80</td></tr>
+      </tbody></table></div></div>
+
       <h3 class="l-section">Dönem planı</h3>
       <div class="card"><div class="table-wrap"><table class="l-plan"><thead><tr><th>Hafta</th><th>Konu</th><th>Bu sitede</th></tr></thead><tbody>
-        ${plan.map(([w, t, ch, lab]) => `<tr><td class="num">${w}</td><td>${t}</td><td>${ch ? `<a class="pill ok" href="#/learn/${ch}">Ders notu ✓</a>` : ''}${lab ? `<a class="pill lab" href="#/${lab}">Laboratuvar</a> <span class="muted">· ders notu PDF gelince eklenecek</span>` : ''}${!ch && !lab ? '<span class="muted">PDF gelince eklenecek</span>' : ''}</td></tr>`).join('')}
+        ${plan.map(([w, t, ch, lab]) => `<tr><td class="num">${w}</td><td>${t}</td><td>${ch ? `<a class="pill ok" href="#/learn/${ch}">Ders notu ✓</a>` : ''}${lab ? `<a class="pill lab" href="#/${lab}">Laboratuvar</a>` : ''}${!ch && !lab ? '<span class="muted">PDF gelince eklenecek</span>' : ''}</td></tr>`).join('')}
       </tbody></table></div>
-      <p class="hint">Senkronizasyon laboratuvarı, Bölüm 3'teki üretici–tüketici ve yarış durumu konularının (slayt 3.34–3.45) devamıdır.</p></div>`;
+      <p class="hint">Senkronizasyon laboratuvarı, Bölüm 3'teki üretici–tüketici ve yarış durumu konularına ve Bölüm 6–7'ye karşılık gelir. Slayt sırası ile hafta sırası her zaman aynı değildir: iş parçacığı Bölüm 4, CPU zamanlama Bölüm 5'tir.</p></div>`;
   }
 
   function pageChapter(ch) {
@@ -175,7 +185,7 @@
       <ol class="l-lessonlist">${ch.lessons.map((l, i) => `
         <li><a class="card l-lessonrow${isRead(ch, l) ? ' read' : ''}" href="${lessonHref(ch, l)}">
           <span class="l-ln">${isRead(ch, l) ? '✓' : i + 1}</span>
-          <span><b>${l.title}</b><small>${l.en} · slayt ${l.slides} · ~${l.minutes} dk${questionsFor(lessonKey(ch, l)).length ? ` · ${questionsFor(lessonKey(ch, l)).length} hoca sorusu` : ''}${l.lab ? ' · laboratuvar' : ''}</small></span>
+          <span><b>${l.title}</b><small>${l.en} · ${lessonSource(l)} · ~${l.minutes} dk${questionsFor(lessonKey(ch, l)).length ? ` · ${questionsFor(lessonKey(ch, l)).length} hoca sorusu` : ''}${l.lab ? ' · laboratuvar' : ''}</small></span>
         </a></li>`).join('')}</ol>`;
   }
 
@@ -188,6 +198,7 @@
 
   // Ders bloklarını tek ekranlık kartlara böler: tanım, not, şekil ve tablolar kendi kartındadır;
   // başlık yeni kart açar; uzun listeler bölünür. Şekli tanıtan paragraf şekille aynı kartta kalır.
+  // attach: true olan not, kendi kartını açmak yerine bir önceki karta eklenir.
   function buildCards(l) {
     if (cardCache.has(l)) return cardCache.get(l);
     const cards = [{ kind: 'open' }];
@@ -237,6 +248,12 @@
           size += lens[i];
         });
         cur.push(Object.assign({}, bl, { items: part, start }));
+      } else if (bl.t === 'solve') {
+        flush();
+        cards.push({ kind: 'wide', h: null, blocks: [bl] });
+      } else if (bl.t === 'note' && bl.attach) {
+        flush();
+        cards[cards.length - 1].blocks.push(bl);
       } else if (bl.t === 'def' || bl.t === 'note') {
         flush();
         cards.push({ kind: bl.t, h: sec, blocks: [bl] });
@@ -307,7 +324,7 @@
       const pre = l.checks && l.checks[0];
       inner = `<span class="tag">Bölüm ${ch.num} · Ders ${idx + 1} / ${ch.lessons.length}</span>
         <h2 class="fx-title">${l.title}</h2>
-        <p class="fx-sub">${l.en} · slayt ${l.slides} · ~${l.minutes} dk</p>
+        <p class="fx-sub">${l.en} · ${lessonSource(l)} · ~${l.minutes} dk</p>
         ${pre ? `<div class="fx-pre"><span class="l-note-label">Okumadan önce düşün</span><p>${pre.q}</p><small>Bilmiyorsan da tahmin et. Ders sonunda kontrol edeceksin.</small></div>` : ''}`;
     } else if (card.kind === 'check') {
       const c = card.check;
@@ -349,8 +366,8 @@
       ${renderTop(l, caption)}
       <div class="fx-scroll" id="fx-scroll">${ctx.cards.map((c, i) => renderCard(c, i, ctx)).join('')}</div>
       <div class="fx-nav" id="fx-nav">
-        <button class="btn fx-up" type="button" data-act="prev" aria-label="Önceki kart">↑</button>
-        <button class="btn btn-primary fx-down" type="button" data-act="next">Devam ↓</button>
+        <button class="btn fx-up" type="button" data-act="card-prev" aria-label="Önceki kart">↑</button>
+        <button class="btn btn-primary fx-down" type="button" data-act="card-next">Devam ↓</button>
       </div>
     </div>`;
   }
@@ -596,8 +613,13 @@
     const a = act.dataset.act;
 
     if (a === 'menu') { OSLab.app.toggleSidebar(true); return; }
-    if (a === 'next' && F) { step(1); return; }
-    if (a === 'prev' && F) { step(-1); return; }
+    if (a === 'solve') {
+      act.closest('.l-solve').querySelector('.l-solve-a').hidden = false;
+      act.hidden = true;
+      return;
+    }
+    if (a === 'card-next' && F) { step(1); return; }
+    if (a === 'card-prev' && F) { step(-1); return; }
 
     if (a === 'reveal' && qx) {
       const ans = qx.querySelector('.qx-answer');
