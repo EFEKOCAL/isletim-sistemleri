@@ -179,10 +179,10 @@
   reg('tmodels', {
     kind: 'tabs',
     panes: [
-      { label: 'Çoktan-bire', html: colOf(rowOf(threadRow(4)), '<div class="dg-ar dg-ar-down">↓</div>', rowOf(threadRow(1, 'dg-os')), '<p class="hint">Bir iş parçacığı bloklanırsa hepsi bloklanır. Aynı anda yalnızca biri çekirdekte olabilir, paralel çalışamazlar.</p>') },
-      { label: 'Bire-bir', html: colOf(rowOf(threadRow(4)), '<div class="dg-ar dg-ar-down">↓ ↓ ↓ ↓</div>', rowOf(threadRow(4, 'dg-os')), '<p class="hint">Her kullanıcı iş parçacığı için çekirdek iş parçacığı oluşur. Eşzamanlılık iyidir; ek yük yüzünden sayı sınırlanabilir.</p>') },
-      { label: 'Çoktan-çoğa', html: colOf(rowOf(threadRow(4)), '<div class="dg-ar dg-ar-down">⇣ çoklanır ⇣</div>', rowOf(threadRow(3, 'dg-os')), '<p class="hint">İşletim sistemi yeterli sayıda çekirdek iş parçacığı oluşturabilir.</p>') },
-      { label: 'İki seviyeli', html: colOf(rowOf(threadRow(4)), '<div class="dg-ar dg-ar-down">⇣ çoklanır, biri bağlı ⇣</div>', rowOf(threadRow(3, 'dg-os')), '<p class="hint">Çoktan-çoğa gibidir, ayrıca bir kullanıcı iş parçacığı bir çekirdek iş parçacığına bağlanabilir.</p>') }
+      { label: 'Çoktan-bire', html: colOf(rowOf(threadRow(4)), '<div class="dg-ar dg-ar-down">↓</div>', rowOf(threadRow(1, 'dg-os'))), text: 'Bir iş parçacığı bloklanırsa hepsi bloklanır. Aynı anda yalnızca biri çekirdekte olabilir, paralel çalışamazlar.' },
+      { label: 'Bire-bir', html: colOf(rowOf(threadRow(4)), '<div class="dg-ar dg-ar-down">↓ ↓ ↓ ↓</div>', rowOf(threadRow(4, 'dg-os'))), text: 'Her kullanıcı iş parçacığı için çekirdek iş parçacığı oluşur. Eşzamanlılık iyidir; ek yük yüzünden sayı sınırlanabilir.' },
+      { label: 'Çoktan-çoğa', html: colOf(rowOf(threadRow(4)), '<div class="dg-ar dg-ar-down">⇣ çoklanır ⇣</div>', rowOf(threadRow(3, 'dg-os'))), text: 'İşletim sistemi yeterli sayıda çekirdek iş parçacığı oluşturabilir.' },
+      { label: 'İki seviyeli', html: colOf(rowOf(threadRow(4)), '<div class="dg-ar dg-ar-down">⇣ çoklanır, biri bağlı ⇣</div>', rowOf(threadRow(3, 'dg-os'))), text: 'Çoktan-çoğa gibidir, ayrıca bir kullanıcı iş parçacığı bir çekirdek iş parçacığına bağlanabilir.' }
     ]
   });
 
