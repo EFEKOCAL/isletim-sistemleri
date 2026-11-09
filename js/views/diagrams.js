@@ -308,7 +308,7 @@
     steps: [
       { on: ['pw'], text: 'Güç verildiğinde CPU, yürütmeye <b>sabit bir bellek konumunda</b> başlar. Orada kalıcı bellekte duran kod vardır.' },
       { on: ['fw'], text: '<b>Bootstrap loader</b> (BIOS): anakart üzerindeki ROM veya EEPROM\'da saklanan küçük kod. Donanımı sınar ve çekirdeği ya da onu yükleyecek kodu bulur. Modern sistemlerde BIOS\'un yerini <b>UEFI</b> almıştır.' },
-      { on: ['bb'], text: 'Çoğu zaman <b>iki adımlıdır</b>: ROM kodu diskteki sabit konumdan <b>boot block</b>\'u yükler, o da asıl önyükleyiciyi yükler. <b>GRUB</b>, birden çok diskten, çekirdek sürümünden ve seçenekten seçim yapmaya izin verir.' },
+      { on: ['bb'], text: 'Çoğu zaman <b>iki adımlıdır</b>: ROM kodu diskteki sabit konumdan <b>boot block</b>\'u yükler, o da asıl önyükleyiciyi yükler. <b>GRUB</b>, hangi çekirdeğin (farklı disk ya da sürüm) ve hangi seçeneklerle yükleneceğini seçtirir.' },
       { on: ['k'], text: 'Seçilen çekirdek imajı (<b>vmlinuz</b>) belleğe yüklenir ve kontrol ona verilir.' },
       { on: ['init'], text: 'Çekirdek donanımı tanır, kök dosya sistemini bağlar ve ilk kullanıcı işlemini (Linux\'ta <b>systemd</b>, pid 1) başlatır. Önyükleyici <b>tek kullanıcı modu</b> gibi başlatma durumlarına da izin verebilir.' },
       { on: ['run'], text: 'Arka plan servisleri (<b>daemon</b>\'lar) başlar; sistem artık <b>çalışıyor</b> ve kesmelerle yönetiliyor.' }

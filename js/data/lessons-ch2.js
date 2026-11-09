@@ -307,7 +307,7 @@
             '<b>Bootstrap loader</b>: Anakart üzerindeki ROM veya EEPROM\'da saklanan küçük kod parçası (BIOS). Çekirdeği bulur, belleğe yükler ve başlatır.',
             'Bazen <b>iki adımlıdır</b>: ROM kodu sabit konumdaki <b>boot block</b>\'u yükler, o da diskten asıl önyükleyiciyi yükler.',
             'Modern sistemler BIOS\'un yerine <b>UEFI</b> (Unified Extensible Firmware Interface) kullanır.',
-            '<b>GRUB</b>: yaygın önyükleyici; birden çok diskten, sürümden ve çekirdek seçenekleriyle <b>çekirdek seçmeye</b> izin verir.',
+            '<b>GRUB</b>: yaygın önyükleyici; açılışta <b>hangi çekirdeğin</b> (farklı disklerdeki ya da farklı sürümlerdeki) ve <b>hangi çekirdek seçenekleriyle</b> yükleneceğini seçmeye izin verir.',
             'Çekirdek yüklenir ve sistem <b>çalışır (running)</b> duruma gelir. Önyükleyiciler genellikle <b>tek kullanıcı modu (single user mode)</b> gibi farklı başlatma durumlarına izin verir.'
           ] },
           { t: 'compare', cols: [
@@ -317,7 +317,7 @@
         ],
         checks: [
           { q: 'Bootstrap loader nedir ve nerede saklanır?', a: 'Güç verildiğinde çalışan, çekirdeği bulup belleğe yükleyen ve başlatan küçük kod parçası. Anakart üzerindeki ROM veya EEPROM\'da (firmware) saklanır.' },
-          { q: 'GRUB ne işe yarar?', a: 'Önyükleme sırasında birden çok disk, çekirdek sürümü ve çekirdek seçeneği arasından seçim yapmayı sağlar; tek kullanıcı modu gibi başlatma durumlarına izin verir.' },
+          { q: 'GRUB ne işe yarar?', a: 'GRUB bir önyükleyicidir: açılışta hangi çekirdeğin yükleneceğini (farklı disklerdeki ya da farklı sürümlerdeki çekirdeklerden biri) ve çekirdeğin hangi seçeneklerle başlatılacağını seçtirir. Böylece tek kullanıcı modu (single user mode) gibi başlatma durumları da mümkün olur.' },
           { q: 'Linux çekirdek derlemesinin adımlarını sırala.', a: 'kernel.org\'dan kaynak indir → make menuconfig → make (vmlinuz) → make modules → make modules_install → make install → yeniden başlat.' }
         ]
       },
