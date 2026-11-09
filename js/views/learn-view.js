@@ -372,7 +372,7 @@
       const groups = [];
       unit.forEach((bl, i) => {
         const prev = groups[groups.length - 1];
-        const leadIn = prev && prev.length === 1 && prev[0].t === 'p' && unit[i - 1] === prev[0] && bl.t !== 'p' && bl.t !== 'def';
+        const leadIn = prev && prev.length === 1 && (prev[0].t === 'p' || prev[0].keep) && unit[i - 1] === prev[0] && bl.t !== 'p' && bl.t !== 'def';
         if (prev && (bl.t === 'note' || leadIn)) prev.push(bl);
         else groups.push([bl]);
       });

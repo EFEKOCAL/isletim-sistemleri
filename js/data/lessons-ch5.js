@@ -51,7 +51,13 @@
           ] },
           { t: 'note', kind: 'info', attach: true, html: '<b>Yarış koşulu riski:</b> Veri paylaşan iki işlemden biri veriyi güncellerken kesilirse, diğeri tutarsız veriyi okuyabilir. Bu sorun Bölüm 6\'da ele alınır.' },
           { t: 'h', text: 'Görev dağıtıcısı' },
-          { t: 'def', term: 'Görev dağıtıcısı', en: 'Dispatcher', html: 'Zamanlayıcının seçtiği işleme CPU\'nun kontrolünü verir: <b>bağlam değişimi</b> yapar, <b>kullanıcı moduna</b> geçer ve programdaki doğru konuma atlar. Bir işlemi durdurup diğerini başlatmak için geçen süreye <b>gönderim gecikmesi</b> (dispatch latency) denir.' },
+          { t: 'def', keep: true, term: 'Görev dağıtıcısı', en: 'Dispatcher', html: 'Zamanlayıcı (CPU scheduler) <b>hangi</b> işlemin çalışacağına karar verir; dağıtıcı bu kararı <b>uygular</b> ve CPU\'nun kontrolünü seçilen işleme verir. Bunu üç adımda yapar.' },
+          { t: 'list', ordered: true, items: [
+            '<b>Bağlam değişimi (context switch):</b> İşlemin "bağlamı", CPU\'yu bıraktığı andaki durumudur (program sayacı, yazmaçlar) ve <b>PCB</b>\'sinde tutulur. Dağıtıcı eski işlemin durumunu PCB\'sine <b>kaydeder</b>, yeni işleminkini PCB\'sinden <b>geri yükler</b>.',
+            '<b>Kullanıcı moduna geçiş (switching to user mode):</b> Dağıtıcı işletim sisteminin parçasıdır ve <b>çekirdek modunda</b> çalışır. Seçilen işlem sıradan bir program olduğu için CPU ona verilmeden önce mod biti <b>kullanıcı moduna</b> çekilir (Bölüm 1, çift mod).',
+            '<b>Programda doğru konuma atlama:</b> İşlem baştan değil, <b>kaldığı komuttan</b> devam eder. Geri yüklenen program sayacı bu adresi gösterir; CPU oraya atlar.'
+          ] },
+          { t: 'note', kind: 'exam', attach: true, html: '<b>Gönderim gecikmesi (dispatch latency):</b> Bu üç adımın süresi, yani bir işlemi durdurup diğerini başlatmak için geçen zaman (slayt 5.9: P0 → PCB0\'a kaydet → PCB1\'den yükle → P1). Bu sırada hiçbir kullanıcı işlemi ilerlemez; kısa olması istenir.' },
           { t: 'h', text: 'Planlama kriterleri' },
           { t: 'table', head: ['Kriter', 'Anlamı', 'Hedef'], rows: [
             ['CPU kullanımı (utilization)', 'CPU\'yu olabildiğince meşgul tutmak', 'En yüksek'],
@@ -68,7 +74,7 @@
         checks: [
           { q: 'Kesmeli ve kesmesiz zamanlama arasındaki fark nedir?', a: 'Kesmesizde işlem CPU\'yu bitince veya G/Ç için kendisi bırakınca verir. Kesmelide işletim sistemi çalışan işlemi durdurup CPU\'yu başka işleme verebilir.' },
           { q: 'Bir işlem t=3\'te geldi, burst süresi 4, t=12\'de bitti. Turnaround ve bekleme süresi kaçtır?', a: 'Turnaround = 12 − 3 = 9. Bekleme = 9 − 4 = 5.' },
-          { q: 'Dağıtıcı (dispatcher) hangi üç işi yapar?', a: 'Bağlam değişimi yapar, kullanıcı moduna geçer ve programın kaldığı adrese atlar.' },
+          { q: 'Dağıtıcı (dispatcher) hangi üç işi yapar?', a: 'Bağlam değişimi (context switch) yapar: eski işlemin durumunu PCB\'sine kaydeder, yenisininkini yükler. Kullanıcı moduna geçer. Programın kaldığı adrese atlar.' },
           { q: 'CPU zamanlayıcısı dört durumda karar verir: işlem (1) running → waiting, (2) running → ready, (3) waiting → ready geçtiğinde ve (4) sonlandığında. Bunlardan hangilerinde seçim yoktur, neden?', a: 'Running → waiting ve sonlanma durumlarında. CPU boşaldığı için yeni işlem seçilmelidir. Running → ready ve waiting → ready durumlarında seçim vardır.' }
         ]
       },
@@ -190,7 +196,7 @@
           { t: 'h', text: 'Kuantum nasıl seçilir?' },
           { t: 'table', head: ['Kuantum', 'Sonuç'], rows: [
             ['Çok büyük', 'Hiçbir iş kesilmez; RR, <b>FCFS gibi</b> davranır'],
-            ['Çok küçük', 'Yanıt iyi olur ama sürekli <b>bağlam değişimi</b> CPU zamanını harcar'],
+            ['Çok küçük', 'Yanıt iyi olur ama sürekli <b>bağlam değişimi</b> (context switch) CPU zamanını harcar'],
             ['Dengeli', 'CPU burst\'lerinin yaklaşık <b>%80</b>\'i q\'dan kısa olmalıdır']
           ] },
           { t: 'p', html: 'Tipik değerler: <b>q = 10–100 ms</b>, bağlam değişimi <b>&lt; 10 µs</b>. q, bağlam değişimi süresine göre büyük olmalıdır.' },
