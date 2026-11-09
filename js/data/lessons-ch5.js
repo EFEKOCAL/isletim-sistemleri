@@ -106,7 +106,7 @@
         src: 'slayt 5.15 – 5.19, CPU Scheduling LAB s. 4–5',
         minutes: 8,
         blocks: [
-          { t: 'def', term: 'SJF', en: 'Shortest Job First', html: 'CPU boşaldığında hazır işlemlerden <b>burst süresi en kısa</b> olan seçilir. Bu ders kesmesiz sürümü anlatır; kesmeli sürümü bir sonraki derste.' },
+          { t: 'def', term: 'SJF', en: 'Shortest Job First', html: 'CPU boşaldığında hazır işlemlerden <b>burst süresi en kısa</b> olan seçilir.' },
           { t: 'h', text: 'Örnek' },
           { t: 'dg', id: 'g-sjf' },
           { t: 'h', text: 'Güçlü ve zayıf yanları' },
