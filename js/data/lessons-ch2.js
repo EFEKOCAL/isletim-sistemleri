@@ -232,7 +232,7 @@
           ] }
         ],
         checks: [
-          { q: 'Timer örneğinde policy ve mechanism hangileridir?', a: 'Mekanizma: timer\'ın kendisi (nasıl kesme üretileceği). Politika: timer\'ın kaç saniyeye ayarlanacağı (ne zaman/ne sıklıkla).' },
+          { q: 'İşletim sistemi bir zamanlayıcıyla (timer) "her 100 saniyede bir kesme üret" kuralını uyguluyor. Bu örnekte policy (ne yapılacak) nedir, mechanism (nasıl yapılacak) nedir?', a: 'Policy: "her 100 saniyede bir kesme üret" kararı, yani zamanlayıcının kaç saniyeye ayarlanacağı. Mechanism: kesmeyi üreten zamanlayıcının kendisi. Policy 100\'den 200\'e değişse bile mechanism aynı kalır.' },
           { q: 'İşletim sistemlerinde neden en alt seviye assembly ile yazılır?', a: 'Donanıma özgü işler (yazmaç erişimi, kesme girişi, bağlam değişimi, ayrıcalıklı komutlar) yüksek seviyeli dille ifade edilemez veya yeterince verimli olmaz.' }
         ]
       },

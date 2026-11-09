@@ -69,7 +69,7 @@
           { q: 'Kesmeli ve kesmesiz zamanlama arasındaki fark nedir?', a: 'Kesmesizde işlem CPU\'yu bitince veya G/Ç için kendisi bırakınca verir. Kesmelide işletim sistemi çalışan işlemi durdurup CPU\'yu başka işleme verebilir.' },
           { q: 'Bir işlem t=3\'te geldi, burst süresi 4, t=12\'de bitti. Turnaround ve bekleme süresi kaçtır?', a: 'Turnaround = 12 − 3 = 9. Bekleme = 9 − 4 = 5.' },
           { q: 'Dağıtıcı (dispatcher) hangi üç işi yapar?', a: 'Bağlam değişimi yapar, kullanıcı moduna geçer ve programın kaldığı adrese atlar.' },
-          { q: 'Zamanlayıcının karar verdiği dört durumdan hangilerinde seçim yoktur?', a: 'Running → waiting ve sonlanma durumlarında. CPU boşaldığı için yeni işlem seçilmelidir. Running → ready ve waiting → ready durumlarında seçim vardır.' }
+          { q: 'CPU zamanlayıcısı dört durumda karar verir: işlem (1) running → waiting, (2) running → ready, (3) waiting → ready geçtiğinde ve (4) sonlandığında. Bunlardan hangilerinde seçim yoktur, neden?', a: 'Running → waiting ve sonlanma durumlarında. CPU boşaldığı için yeni işlem seçilmelidir. Running → ready ve waiting → ready durumlarında seçim vardır.' }
         ]
       },
       {
