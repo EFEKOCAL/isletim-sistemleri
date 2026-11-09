@@ -7,6 +7,7 @@
  *  - Sonra önce gelen, o da eşitse tablo sırası.
  *  - tie: 'sjf' verilirse aynı öncelikte kalan süresi kısa olan seçilir.
  *  - RR: kuantumu dolan işlemle aynı anda gelen yeni işlem kuyruğa önce girer.
+ *  - PRIO_RR: en yüksek öncelikli grup çalışır; grupta birden çok işlem varsa aralarında RR uygulanır.
  */
 (function (OSLab) {
   'use strict';
@@ -15,7 +16,7 @@
 
   /**
    * @param {{pid:string, at:number, bt:number, pri?:number}[]} input
-   * @param {{algo:'FCFS'|'SJF'|'SRTF'|'PRIO'|'PRIO_P'|'RR', q?:number, tie?:'sjf'}} opt
+   * @param {{algo:'FCFS'|'SJF'|'SRTF'|'PRIO'|'PRIO_P'|'RR'|'PRIO_RR', q?:number, tie?:'sjf'}} opt
    */
   function trace(input, opt) {
     const procs = input.map((p, index) => Object.assign({ index, rem: p.bt, finish: null }, p));
@@ -52,6 +53,11 @@
         case 'SJF': return `Hazır (burst): ${names((x) => `${x.pid}=${x.bt}`)}. En kısa iş seçilir: <b>${p.pid}</b>.`;
         case 'SRTF': return `Kalan süreler: ${names((x) => `${x.pid}=${x.rem}`)}. En kısa kalan seçilir: <b>${p.pid}</b>.`;
         case 'RR': return `Kuyruk: ${names((x) => x.pid)}. Baştaki <b>${p.pid}</b> en fazla q=${q} çalışır.`;
+        case 'PRIO_RR': {
+          const top = Math.min(...ready.map((x) => x.pri));
+          const peers = ready.filter((x) => x.pri === top);
+          return `Hazır (öncelik no): ${names((x) => `${x.pid}=${x.pri}`)}. En yüksek öncelik ${top}: ${peers.length > 1 ? `${peers.map((x) => x.pid).join(', ')} aralarında RR yapar, sıradaki <b>${p.pid}</b> en fazla q=${q} çalışır.` : `bu öncelikte tek işlem <b>${p.pid}</b> var, bitene kadar çalışır.`}`;
+        }
         default: return `Hazır (öncelik no): ${names((x) => `${x.pid}=${x.pri}`)}. En küçük numara en yüksek önceliktir: <b>${p.pid}</b>.`;
       }
     };
@@ -68,12 +74,15 @@
 
       let p;
       if (algo === 'RR') p = queue[0];
+      else if (algo === 'PRIO_RR') { const top = Math.min(...queue.map((x) => x.pri)); p = queue.find((x) => x.pri === top); }
       else p = queue.slice().sort(prefer)[0];
       const reason = describe(queue, p);
       const preempted = preemptive && current && current !== p && current.finish === null ? current.pid : null;
 
       let run = p.rem;
       if (algo === 'RR') run = Math.min(q, p.rem);
+      if (algo === 'PRIO_RR' && queue.some((x) => x !== p && x.pri === p.pri)) run = Math.min(q, p.rem);
+      if (algo === 'PRIO_RR' && admitted < byArrival.length) run = Math.min(run, q);
       if (preemptive && admitted < byArrival.length) run = Math.min(run, byArrival[admitted].at - t);
 
       queue.splice(queue.indexOf(p), 1);

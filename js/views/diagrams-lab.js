@@ -63,6 +63,7 @@
   gantt('g-prio-n', LAB_PRIO, { algo: 'PRIO' }, 'Kesmesiz: çalışan iş bitmeden CPU bırakılmaz; seçim ancak iş bitince yapılır.');
   gantt('g-rr4', LAB_FCFS, { algo: 'RR', q: 4 }, 'q=4. Her iş en fazla 4 birim çalışır, bitmediyse kuyruğun sonuna döner.');
   gantt('g-prio-slide', [['P1', 0, 10, 3], ['P2', 0, 1, 1], ['P3', 0, 2, 4], ['P4', 0, 1, 5], ['P5', 0, 5, 2]], { algo: 'PRIO' }, 'Slayt 5.26: hepsi t=0\'da hazır. Küçük numara yüksek önceliktir.');
+  gantt('g-prio-rr', [['P1', 0, 4, 3], ['P2', 0, 5, 2], ['P3', 0, 8, 2], ['P4', 0, 7, 1], ['P5', 0, 3, 3]], { algo: 'PRIO_RR', q: 2 }, 'Slayt 5.27: hepsi t=0\'da hazır, q=2. Önce en yüksek öncelik çalışır; aynı öncelikteki işler sırayla 2 birimlik dilimler alır.');
 
   gantt('hw1a', HW1, { algo: 'FCFS' });
   gantt('hw1b', HW1, { algo: 'SJF' });

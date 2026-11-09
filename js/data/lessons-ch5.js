@@ -170,8 +170,8 @@
           { t: 'h', text: 'Fark nerede oluştu?' },
           { t: 'p', html: 'P2 (öncelik 1), t=1\'de geldi. Kesmeli sürümde P1\'i hemen kesti ve hiç beklemedi. Kesmesiz sürümde P1\'in bitmesini bekledi: <b>bekleme 0\'dan 9\'a</b> çıktı. Ortalama bekleme de <b>7\'den 9\'a</b> yükseldi.' },
           { t: 'h', text: 'Aynı önceliğe Round Robin' },
-          { t: 'p', html: 'Slayt 5.27: İşlemler önceliğe göre çalışır, aynı öncelikte olanlara <b>RR</b> uygulanır. Burst/öncelik: P1 4/3, P2 5/2, P3 8/2, P4 7/1, P5 3/3; q = 2.' },
-          { t: 'code', text: 'P4 | P2 | P3 | P2 | P3 | P2 | P3 | P1 | P5 | P1 | P5\n0  7    9   11   13   15   16   20   22   24   26   27' },
+          { t: 'p', html: 'Slayt 5.27: İşlemler önceliğe göre çalışır, aynı öncelikte olanlara <b>RR</b> uygulanır.' },
+          { t: 'dg', id: 'g-prio-rr' },
           { t: 'h', text: 'Açlık ve yaşlandırma' },
           { t: 'compare', cols: [
             { title: 'Sorun: açlık (starvation)', items: ['Sürekli yüksek öncelikli iş gelirse düşük öncelikli iş hiç CPU alamayabilir'] },
