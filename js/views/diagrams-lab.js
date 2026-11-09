@@ -90,7 +90,7 @@
       </div>`,
     info: {
       tat: { text: '<b>Turnaround</b> = bitiş − geliş. İşlemin sistemde geçirdiği toplam süre: 12 − 2 = 10.', hl: ['w1', 'r1', 'w2', 'r2'] },
-      wt: { text: '<b>Bekleme</b> = turnaround − burst. Hazır kuyruğunda geçen toplam süre: 2 + 3 = 5, yani 10 − 5.', hl: ['w1', 'w2'] },
+      wt: { text: '<b>Bekleme</b> = hazır kuyruğunda geçen toplam süre. Doğrudan sayarsan bekleme parçaları 2 + 3 = 5. Formülle: turnaround <b>10</b> (sistemde kalınan süre) − burst <b>5</b> (çalışma parçaları 2 + 3) = 5. İki yol aynı sonucu verir.', hl: ['w1', 'w2'] },
       rt: { text: '<b>Yanıt</b> = ilk çalışma − geliş. İlk kez CPU alana kadar geçen süre: 4 − 2 = 2.', hl: ['w1'] }
     }
   });
