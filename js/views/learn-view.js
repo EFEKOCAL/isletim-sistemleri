@@ -74,13 +74,22 @@
     return reviewCache.get(ch);
   }
 
-  // Bir sonraki / önceki ders: bölümün son dersinden sonra o bölümün tekrarı gelir
+  // Her bölüm, hocanın PDF'indeki konu listesini gösteren bir giriş sayfasıyla başlar
+  const introCache = new Map();
+  function introOf(ch) {
+    if (!introCache.has(ch)) introCache.set(ch, { id: 'konular', intro: true, ch, title: `Bölüm ${ch.num}: ${ch.title}`, en: ch.en, checks: [] });
+    return introCache.get(ch);
+  }
+  const hasIntro = (ch) => !!(OSLab.chapterOutlines && OSLab.chapterOutlines[ch.id]);
+
+  // Bir sonraki / önceki sayfa: bölüm girişi → dersler → bölüm tekrarı → sonraki bölümün girişi
   function nextOf(ch, l) {
     const ci = chapters().indexOf(ch);
     if (l.review) {
       const nc = chapters()[ci + 1];
-      return nc ? { ch: nc, l: nc.lessons[0] } : null;
+      return nc ? { ch: nc, l: hasIntro(nc) ? introOf(nc) : nc.lessons[0] } : null;
     }
+    if (l.intro) return { ch, l: ch.lessons[0] };
     const i = ch.lessons.indexOf(l);
     return i < ch.lessons.length - 1 ? { ch, l: ch.lessons[i + 1] } : { ch, l: reviewOf(ch) };
   }
@@ -88,6 +97,7 @@
     if (l.review) return { ch, l: ch.lessons[ch.lessons.length - 1] };
     const i = ch.lessons.indexOf(l);
     if (i > 0) return { ch, l: ch.lessons[i - 1] };
+    if (i === 0 && hasIntro(ch)) return { ch, l: introOf(ch) };
     const pc = chapters()[chapters().indexOf(ch) - 1];
     return pc ? { ch: pc, l: reviewOf(pc) } : null;
   }
@@ -267,6 +277,7 @@
         <h4>Bu bölümün sonunda şunları yapabilmelisin</h4>
         <ul class="l-list">${ch.objectives.map((o) => `<li>${o}</li>`).join('')}</ul>
         <div class="btn-row"><a class="btn btn-primary" href="${lessonHref(ch, firstUnread)}">▶ ${p.read ? 'Devam et' : 'Başla'}: ${firstUnread.title}</a>
+        ${hasIntro(ch) ? `<a class="btn" href="#/learn/${ch.id}/konular">Konular ve kavramlar</a>` : ''}
         <a class="btn" href="#/learn/${ch.id}/tekrar">Bölüm ${ch.num} tekrarı</a>
         ${qn.length ? `<a class="btn" href="#/learn/sorular">Bu bölümden ${qn.length} hoca sorusu</a>` : ''}</div>
       </section>
@@ -308,6 +319,10 @@
     if (cardCache.has(l)) return cardCache.get(l);
     if (l.review) {
       cardCache.set(l, buildReview(l));
+      return cardCache.get(l);
+    }
+    if (l.intro) {
+      cardCache.set(l, [{ kind: 'chintro' }]);
       return cardCache.get(l);
     }
     const cards = [{ kind: 'open' }];
@@ -399,8 +414,10 @@
   function pageHome() {
     const nl = nextLesson();
     const started = allLessons().some(({ ch, l }) => isRead(ch, l) || seenCard(ch, l) > 0);
+    // Bölümün ilk dersine henüz başlanmadıysa önce bölümün konular sayfası açılır
+    const toIntro = nl && nl.l === nl.ch.lessons[0] && !seenCard(nl.ch, nl.l) && hasIntro(nl.ch) && !isRead(nl.ch, introOf(nl.ch));
     const action = nl
-      ? `<a class="fx-start-btn" href="${lessonHref(nl.ch, nl.l)}">▶ ${started ? 'Devam et' : 'Başla'}</a>
+      ? `<a class="fx-start-btn" href="${toIntro ? lessonHref(nl.ch, introOf(nl.ch)) : lessonHref(nl.ch, nl.l)}">▶ ${started ? 'Devam et' : 'Başla'}</a>
          <p class="fx-start-next">Sıradaki: <b>${nl.l.title}</b></p>`
       : `<a class="fx-start-btn" href="#/learn/sorular">▶ Tekrar et</a>
          <p class="fx-start-next">Tüm dersleri bitirdin. Şimdi hocanın sorularıyla tekrar et.</p>`;
@@ -419,7 +436,32 @@
   function renderCard(card, i, ctx) {
     const { ch, l, key, idx, cards, next } = ctx;
     let inner;
-    if (l.review && card.kind === 'open') {
+    if (card.kind === 'chintro') {
+      const o = OSLab.chapterOutlines[ch.id];
+      const num = (id) => ch.lessons.findIndex((x) => x.id === id) + 1;
+      const range = (ids) => {
+        const ns = ids.map(num).filter((n) => n > 0);
+        if (!ns.length) return '';
+        const lo = Math.min(...ns);
+        const hi = Math.max(...ns);
+        return lo === hi ? `Ders ${lo}` : `Ders ${lo}–${hi}`;
+      };
+      inner = `<span class="tag">Bölüm ${ch.num} · ${ch.lessons.length} ders · ${ch.source}</span>
+        <h2 class="fx-title">${ch.title}</h2>
+        <p class="fx-sub">${ch.en}</p>
+        <div class="ci-grid">
+          <section><h4 class="ci-h">Bu bölümde işlenecek konular <small>(slayt ${o.slide})</small></h4>
+            <ol class="ci-topics">${o.topics.map(([t, ids]) => {
+              const first = ids.length && ch.lessons.find((x) => x.id === ids[0]);
+              return `<li>${first ? `<a href="${lessonHref(ch, first)}">${t}</a>` : `<span>${t}</span>`}${ids.length ? `<small>${range(ids)}</small>` : ''}</li>`;
+            }).join('')}</ol>
+          </section>
+          <section><h4 class="ci-h">Öğrenilecek kavramlar</h4>
+            <div class="ci-chips">${o.concepts.map((c) => `<span>${c}</span>`).join('')}</div>
+          </section>
+        </div>
+        <div class="btn-row ci-go"><a class="btn btn-primary fx-next" href="${lessonHref(ch, ch.lessons[0])}">Başla: ${ch.lessons[0].title} ▶</a></div>`;
+    } else if (l.review && card.kind === 'open') {
       const range = card.before.length > 1 ? `Bölüm 1–${card.before.length}` : 'Bölüm 1';
       inner = `<span class="tag">Bölüm ${ch.num} · Tekrar</span>
         <h2 class="fx-title">${l.title}</h2>
@@ -597,6 +639,10 @@
     if (cardParam === 'son') i = last;
     else if (cardParam) i = Math.min(Math.max((parseInt(cardParam, 10) || 1) - 1, 0), last);
     F = { ch, l, idx: i, wheelAt: 0, wheelGo: 0 };
+    if (l.intro && !isRead(ch, l)) {
+      Store.data.read[lessonKey(ch, l)] = today();
+      Store.save();
+    }
     const sc = feedScroller();
     sc.scrollTop = feedCard(i).offsetTop;
     sc.addEventListener('scroll', () => requestAnimationFrame(() => { if (F && feedScroller() === sc) onFeedScroll(); }), { passive: true });
@@ -840,7 +886,7 @@
     let focus = false;
     let header = { num: 'T', title: 'Ders Notları', sub: 'Önce teori, sonra laboratuvar' };
     const ch = findChapter(a);
-    const l = ch && b2 && (b2 === 'tekrar' ? reviewOf(ch) : ch.lessons.find((x) => x.id === b2));
+    const l = ch && b2 && (b2 === 'tekrar' ? reviewOf(ch) : b2 === 'konular' && hasIntro(ch) ? introOf(ch) : ch.lessons.find((x) => x.id === b2));
     F = null;
     if (a === 'plan') {
       html = pageOverview();

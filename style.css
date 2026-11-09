@@ -1608,6 +1608,24 @@ a.src-web:hover { text-decoration: underline; }
 .rq-answer { font-size: 16px; line-height: 1.55; }
 .rq-answer p, .rq-answer ul { margin: 0 0 8px; }
 .rv-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+/* --- bölüm giriş sayfası: konular ve kavramlar */
+.fx-chintro .fx-inner { max-width: 980px; }
+.ci-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 18px 28px; margin-top: 20px; }
+.ci-h { margin: 0 0 10px; font: 700 12.5px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+.ci-h small { color: var(--faint); text-transform: none; letter-spacing: 0; font-weight: 500; }
+.ci-topics { margin: 0; padding-left: 22px; }
+.ci-topics li { margin-bottom: 7px; font-size: 15.5px; line-height: 1.4; }
+.ci-topics a { color: var(--text, inherit); text-decoration: none; border-bottom: 1px dashed rgba(56, 189, 248, 0.45); }
+.ci-topics a:hover { color: var(--accent); }
+.ci-topics small { margin-left: 8px; color: var(--faint); font: 500 12px var(--mono); }
+.ci-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.ci-chips span { padding: 5px 11px; border-radius: 999px; border: 1px solid rgba(167, 139, 250, 0.4); background: rgba(167, 139, 250, 0.08); font-size: 13.5px; }
+.ci-go { margin-top: 18px; }
+.ci-go .fx-next { margin-top: 0; }
+@media (max-width: 760px) {
+  .ci-grid { grid-template-columns: 1fr; }
+  .ci-topics li { font-size: 15px; }
+}
 .fx-check.ok .fx-check-q { color: var(--ok); }
 .fx-check.bad .fx-check-q { color: var(--warn); }
 .fx-check .l-check-a { margin-top: 2px; font-size: 16px; }
