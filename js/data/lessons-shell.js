@@ -59,6 +59,7 @@
       blocks: [
         { t: 'h', text: 'ls -l çıktısını okumak' },
         { t: 'dg', id: 'lsl' },
+        { t: 'p', html: 'İlk karakter <b>dosya türüdür</b>: <code>-</code> normal dosya, <code>d</code> dizin (directory), <code>l</code> sembolik bağ. Aynı klasörde bir dizin şöyle görünür: <code><b>d</b>rwxr-xr-x 2 ali ogr 4096 Oct 9 14:20 odevler</code>. Burada <code>d</code> girdinin dizin olduğunu, kalan dokuz karakter yine sahip, grup ve diğerlerinin izinlerini gösterir.' },
         { t: 'h', text: 'İzin sayıları' },
         { t: 'p', html: 'Her izinin bir değeri vardır: <b>r (okuma) = 4</b>, <b>w (yazma) = 2</b>, <b>x (çalıştırma) = 1</b>. Değerler toplanır ve sırasıyla sahip, grup, diğerleri için üç rakam oluşur. Kutuları değiştirip dene:' },
         { t: 'dg', id: 'chmod' },
@@ -74,7 +75,7 @@
       checks: [
         { q: 'chmod 644 dosya ne anlama gelir?', a: 'Sahip okur ve yazar (6 = rw-), grup yalnızca okur (4 = r--), diğerleri yalnızca okur (4 = r--).' },
         { q: '-rwxr-x--- izninin sayısal karşılığı nedir?', a: '750. rwx = 7, r-x = 5, --- = 0.' },
-        { q: 'ls -l çıktısının başındaki d ne demektir?', a: 'Girdinin bir dizin (directory) olduğunu gösterir. Normal dosyada bu alan - olur.' }
+        { q: 'Bir ls -l satırı drwxr-xr-x ile başlıyorsa baştaki d ne demektir?', a: 'Girdinin bir dizin (directory) olduğunu gösterir. Normal dosyada bu alan - olur (ör. -rwxr-x---).' }
       ]
     },
     {
