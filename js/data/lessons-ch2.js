@@ -224,12 +224,14 @@
           ] },
           { t: 'note', kind: 'exam', html: 'Önemli ilke: <b>politikayı mekanizmadan ayır</b>. Böylece politika kararları sonradan değişirse maksimum esneklik sağlanır. Örnek: 100\'ü 200 yapmak yalnızca bir parametre değişikliğidir, zamanlayıcı mekanizmasına dokunulmaz.' },
           { t: 'h', text: 'Gerçekleştirme (implementation)' },
+          { t: 'p', html: '<b>Tasarım</b> işletim sisteminin ne yapacağını belirler; <b>gerçekleştirme</b> ise bu tasarımın koda dökülmesidir. Slayt 2.40 bunu en temel sorudan anlatır: işletim sistemi <b>hangi programlama diliyle</b> yazılır?' },
           { t: 'list', items: [
             'İlk işletim sistemleri <b>assembly</b>; sonra Algol, PL/1 gibi sistem programlama dilleri; bugün <b>C, C++</b>.',
             'Pratikte dillerin <b>karışımı</b> kullanılır: en alt seviyeler <b>assembly</b>, ana gövde <b>C</b>, sistem programları C, C++ ve PERL, Python, shell gibi betik dilleri.',
             'Yüksek seviyeli dille yazılan sistem başka donanıma <b>taşınması (port) daha kolaydır</b>, ama daha yavaş olabilir.',
             '<b>Emülasyon</b>, bir işletim sisteminin kendi donanımı olmayan bir donanımda çalışmasını sağlayabilir.'
-          ] }
+          ] },
+          { t: 'note', kind: 'extra', html: '<b>Neden bu karışım?</b> Kesme girişi, bağlam değişimi gibi donanıma doğrudan dokunan küçük kısımlar assembly ister; geri kalanı C ile yazılınca hem okunur hem de başka işlemciye taşınması kolaylaşır. Yüksek seviyeli dilin yavaşlığı bugün küçüktür: modern derleyiciler iyi kod üretir ve performansı asıl belirleyen, iyi veri yapıları ve algoritmalardır.' }
         ],
         checks: [
           { q: 'İşletim sistemi bir zamanlayıcıyla (timer) "her 100 saniyede bir kesme üret" kuralını uyguluyor. Bu örnekte policy (ne yapılacak) nedir, mechanism (nasıl yapılacak) nedir?', a: 'Policy: "her 100 saniyede bir kesme üret" kararı, yani zamanlayıcının kaç saniyeye ayarlanacağı. Mechanism: kesmeyi üreten zamanlayıcının kendisi. Policy 100\'den 200\'e değişse bile mechanism aynı kalır.' },
