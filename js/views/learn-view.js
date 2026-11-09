@@ -315,6 +315,35 @@
   // tamamı aynı ekranda kalır. Sığmazsa yalnızca blok sınırlarından bölünür: liste, tablo ve
   // karşılaştırma hiçbir zaman parçalanmaz; şekli veya listeyi tanıtan paragraf onunla birlikte kalır;
   // not, açıkladığı bloğun yanında durur. { t: 'br' } yazar tarafından konan zorunlu ekran sonudur.
+  // Hocanın sorularının değindiği kartları işaretler: sorunun "focus" ifadesi kartın
+  // başlığında ya da metninde geçiyorsa o karta uyarı kutusu çıkar. Hiçbir kart
+  // eşleşmezse soru dersin ilk içerik kartında gösterilir.
+  function markTeacherCards(l, cards) {
+    const ch = chapters().find((c) => c.lessons.includes(l));
+    if (!ch) return;
+    const qs = questionsFor(lessonKey(ch, l));
+    if (!qs.length) return;
+    const content = cards.filter((c) => c.blocks);
+    const text = (c) => `${c.h || ''} ${JSON.stringify(c.blocks)}`.replace(/<[^>]+>/g, ' ');
+    qs.forEach((q) => {
+      const rx = q.focus ? new RegExp(q.focus, 'i') : null;
+      let hits = q.focusH ? content.filter((c) => c.h && c.h.startsWith(q.focusH))
+        : rx ? content.filter((c) => rx.test(text(c))) : [];
+      if (!hits.length && content.length) hits = [content[0]];
+      hits.forEach((c) => (c.tq = c.tq || []).push(q));
+    });
+  }
+
+  function teacherFlag(list) {
+    const shown = list.slice(0, 2);
+    const more = list.length - shown.length;
+    return `<aside class="tq-flag" role="note">
+      <span class="tq-flag-label">★ Hocanın sorularında geçiyor</span>
+      <ul>${shown.map((q) => `<li><a href="#/learn/sorular/${q.id}">${esc(q.q)}</a></li>`).join('')}</ul>
+      ${more > 0 ? `<small>ve ${more} soru daha. Bu kartı dikkatle oku.</small>` : '<small>Bu kartı dikkatle oku.</small>'}
+    </aside>`;
+  }
+
   function buildCards(l) {
     if (cardCache.has(l)) return cardCache.get(l);
     if (l.review) {
@@ -378,6 +407,7 @@
     });
     closeUnit();
 
+    markTeacherCards(l, cards);
     (l.checks || []).forEach((c, i) => cards.push({ kind: 'check', check: c, n: i }));
     cards.push({ kind: 'end' });
     cardCache.set(l, cards);
@@ -501,6 +531,7 @@
       inner = `<span class="tag">Bölüm ${ch.num} · Ders ${idx + 1} / ${ch.lessons.length}</span>
         <h2 class="fx-title">${l.title}</h2>
         <p class="fx-sub">${l.en} · ${lessonSource(l)} · ~${l.minutes} dk</p>
+        ${questionsFor(key).length ? `<p class="tq-lesson">★ Bu derste <b>${questionsFor(key).length} hoca sorusu</b> var. İlgili kartlarda sarı uyarı kutusu çıkar.</p>` : ''}
         ${pre ? `<div class="fx-pre"><span class="l-note-label">Okumadan önce düşün</span><p>${pre.q}</p><small>Bilmiyorsan da tahmin et. Ders sonunda kontrol edeceksin.</small></div>` : ''}`;
     } else if (card.kind === 'check') {
       const c = card.check;
@@ -528,7 +559,7 @@
         </div>
       </div>`;
     } else {
-      inner = `${card.h ? `<h3 class="fx-h">${card.h}</h3>` : ''}<div class="l-body fx-body">${card.blocks.map(renderBlock).join('')}</div>`;
+      inner = `${card.tq ? teacherFlag(card.tq) : ''}${card.h ? `<h3 class="fx-h">${card.h}</h3>` : ''}<div class="l-body fx-body">${card.blocks.map(renderBlock).join('')}</div>`;
     }
     return `<section class="fx-card fx-${card.kind}" data-i="${i}" aria-label="Kart ${i + 1} / ${cards.length}"><div class="fx-inner">${inner}</div></section>`;
   }

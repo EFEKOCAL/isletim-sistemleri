@@ -1955,3 +1955,13 @@ a.src-web:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) {
   .chip, .log li, .q-answer, .cpu-core.pulse, tr.flash td { animation: none; }
 }
+
+/* Hocanın sorularının değindiği kartlar */
+.tq-flag { margin: 0 0 16px; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(251, 191, 36, 0.55); border-left-width: 4px; background: rgba(251, 191, 36, 0.09); }
+.tq-flag-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--warn); }
+.tq-flag ul { margin: 6px 0 4px; padding-left: 18px; }
+.tq-flag li { margin: 2px 0; font-size: 14px; line-height: 1.4; }
+.tq-flag a { color: var(--text); text-decoration: underline; text-decoration-color: rgba(251, 191, 36, 0.5); text-underline-offset: 3px; }
+.tq-flag a:hover { color: var(--warn); }
+.tq-flag small { color: var(--muted); font-size: 12px; }
+.tq-lesson { margin: 14px 0 0; font-size: 14px; color: var(--warn); }
