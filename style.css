@@ -1965,3 +1965,35 @@ a.src-web:hover { text-decoration: underline; }
 .tq-flag a:hover { color: var(--warn); }
 .tq-flag small { color: var(--muted); font-size: 12px; }
 .tq-lesson { margin: 14px 0 0; font-size: 14px; color: var(--warn); }
+
+/* Sınav kapsamı dışı (exam-scope.js) */
+.scope-flag { display: flex; flex-direction: column; gap: 4px; margin: 0 0 16px; padding: 12px 16px; border-radius: 10px; border: 2px solid rgba(248, 113, 113, 0.75); background: repeating-linear-gradient(135deg, rgba(248, 113, 113, 0.13) 0 12px, rgba(248, 113, 113, 0.06) 12px 24px); }
+.scope-flag b { font-size: 14px; letter-spacing: 0.08em; color: var(--danger); }
+.scope-flag span { font-size: 14px; line-height: 1.45; color: var(--text); }
+.scope-flag.soft { border-width: 1px; border-color: rgba(251, 191, 36, 0.6); background: rgba(251, 191, 36, 0.08); }
+.scope-flag.soft b { color: var(--warn); font-size: 12.5px; }
+.fx-card.scope-out .fx-body, .fx-card.scope-out .fx-h, .fx-card.scope-out .fx-check { opacity: 0.72; }
+.src-out { color: var(--danger); border-color: rgba(248, 113, 113, 0.6); background: rgba(248, 113, 113, 0.12); }
+.scope-tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font: 700 10.5px/1.6 var(--mono); font-style: normal; letter-spacing: 0.04em; text-transform: uppercase; color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.6); background: rgba(248, 113, 113, 0.12); vertical-align: 2px; white-space: nowrap; }
+.scope-note { color: var(--danger); }
+.fx-seg.scope-out span, .fx-seg.scope-partial span { background-image: repeating-linear-gradient(135deg, rgba(248, 113, 113, 0.55) 0 3px, transparent 3px 6px); }
+.fx-seg.scope-partial span { background-image: linear-gradient(90deg, transparent 50%, rgba(248, 113, 113, 0.45) 50%); }
+.fx-scopebar { position: relative; height: 12px; margin-top: 2px; }
+.fx-scopebar span { position: absolute; top: 0; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-top: 2px solid var(--danger); padding-top: 0; font: 700 9px/10px var(--mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--danger); text-align: center; }
+.nav-item .badge-out { color: var(--danger); border-color: rgba(248, 113, 113, 0.6); background: rgba(248, 113, 113, 0.12); }
+
+/* Açıklamalı kod (satır | açıklama) */
+.l-codex { margin: 12px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg); }
+.cx-title { padding: 6px 12px; font: 600 11.5px/1.4 var(--mono); letter-spacing: 0.03em; color: var(--accent); border-bottom: 1px solid var(--border); background: rgba(56, 189, 248, 0.06); }
+.cx-row { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); border-top: 1px solid var(--border); }
+.cx-title + .cx-row, .cx-row:first-child { border-top: 0; }
+.cx-c { margin: 0; padding: 5px 12px; overflow-x: auto; font: 12.5px/1.5 var(--mono); color: var(--text); white-space: pre; border-right: 1px solid var(--border); }
+.cx-n { padding: 5px 12px; font-size: 13.5px; line-height: 1.42; color: var(--muted); }
+.cx-n b, .cx-n code { color: var(--text); }
+@media (max-width: 720px) {
+  .cx-row { grid-template-columns: 1fr; }
+  .cx-c { border-right: 0; padding-bottom: 1px; }
+  .cx-n { padding-top: 1px; }
+}
+.scope-flag.strip { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 7px 12px; margin-bottom: 10px; }
+.scope-flag.strip span { font-size: 13px; color: var(--muted); }

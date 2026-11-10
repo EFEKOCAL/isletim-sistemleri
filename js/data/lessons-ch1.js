@@ -274,7 +274,7 @@
         slides: '1.54 – 1.56',
         minutes: 5,
         blocks: [
-          { t: 'def', term: 'Çoklu programlama', en: 'Multiprogramming', html: 'Sistemdeki işlerin (job) bir alt kümesi aynı anda bellekte tutulur. Bir iş beklemek zorunda kaldığında (örneğin G/Ç için) <b>CPU başka bir işe devredilir</b>. Amaç: tek bir kullanıcının CPU\'yu ve G/Ç aygıtlarını sürekli meşgul tutamamasına karşı <b>CPU\'yu hiç boşta bırakmamak</b>. Hangi işin çalışacağına <b>iş planlaması (job scheduling)</b> ile karar verilir.' },
+          { t: 'def', term: 'Çoklu programlama', en: 'Multiprogramming (Batch system)', html: 'Slayt bunu <b>toplu iş sistemi (batch system)</b> diye de anar: işler (job) kullanıcıyla etkileşim olmadan sıraya konup toplu halde çalıştırılır. Sistemdeki işlerin bir alt kümesi aynı anda bellekte tutulur. Bir iş beklemek zorunda kaldığında (örneğin G/Ç için) <b>CPU başka bir işe devredilir</b>. Amaç: tek bir kullanıcının CPU\'yu ve G/Ç aygıtlarını sürekli meşgul tutamamasına karşı <b>CPU\'yu hiç boşta bırakmamak</b>. Hangi işin çalışacağına <b>iş planlaması (job scheduling)</b> ile karar verilir.' },
           { t: 'dg', id: 'multiprog' },
           { t: 'def', term: 'Çoklu görev / zaman paylaşımı', en: 'Multitasking / Timesharing', html: 'Çoklu programlamanın mantıksal uzantısı: CPU işler arasında <b>o kadar sık geçiş yapar ki</b> kullanıcılar her işle etkileşimli çalışabilir. <b>Yanıt süresi &lt; 1 saniye</b> olmalıdır.' },
           { t: 'list', items: [

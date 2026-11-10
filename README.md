@@ -97,6 +97,7 @@ js/
   scheduler-trace.js        ders Gantt şekillerinin çizelge hesabı (SRTF ve öncelik dahil)
   data/teacher-questions.js hocanın soruları, model cevaplar, anahtar noktalar
   data/web-questions.js     bölüm tekrarları için internetten sorular (kaynak bağlantılı)
+  data/exam-scope.js        yaklaşan sınavın kapsamı: hocanın işlemediği dersler "vize dışı" işaretlenir (active: false ile kapanır)
   views/learn-view.js       Ders Notları: ana sayfa, dersler, soru tekrarı
   views/diagrams.js         ders notlarındaki etkileşimli şekiller
   views/diagrams-lab.js     Bölüm 4–7 şekilleri (Gantt, Amdahl, Peterson, semafor), chmod, ls -l, pipe

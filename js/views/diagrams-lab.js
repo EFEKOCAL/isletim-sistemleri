@@ -75,6 +75,11 @@
   gantt('hw5q4', HW5, { algo: 'RR', q: 4 }, 'q=4');
   gantt('hw5q5', HW5, { algo: 'RR', q: 5 }, 'q=5');
   gantt('hw6', [['P1', 0, 8, 2], ['P2', 1, 3, 1], ['P3', 2, 6, 3], ['P4', 3, 1, 2], ['P5', 2, 4, 1], ['P6', 4, 5, 3]], { algo: 'PRIO_P', tie: 'sjf' });
+  const QZ = [['P1', 0, 7], ['P2', 2, 4], ['P3', 4, 1], ['P4', 5, 4], ['P5', 6, 3]];
+  gantt('qz-fcfs', QZ, { algo: 'FCFS' });
+  gantt('qz-sjf', QZ, { algo: 'SJF' });
+  gantt('qz-srtf', QZ, { algo: 'SRTF' });
+  gantt('qz-rr', QZ, { algo: 'RR', q: 2 });
 
   /* ------------------------------------------------------------ ölçütler */
 

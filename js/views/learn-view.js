@@ -107,11 +107,12 @@
   function reviewPool(ch) {
     const pool = [];
     questions().filter((q) => q.lesson.split('/')[0] === ch.id)
-      .forEach((q) => pool.push({ id: `tq:${q.id}`, kind: 'teacher', ch, q: q.q, a: q.a, tq: q.id }));
+      .forEach((q) => pool.push({ id: `tq:${q.id}`, kind: 'teacher', ch, q: q.q, a: q.a, tq: q.id, out: scopeOf(ch, ch.lessons.find((x) => x.id === q.lesson.split('/')[1])) === 'out' }));
+    // İnternet sorusu, bölümü ya da "lesson" alanındaki dersi kapsam dışıysa vize dışı sayılır
     (OSLab.webQuestions || []).filter((w) => w.ch === ch.id)
-      .forEach((w) => pool.push({ id: `web:${w.id}`, kind: 'web', ch, q: w.q, a: w.a, from: w.from, url: w.url }));
+      .forEach((w) => pool.push({ id: `web:${w.id}`, kind: 'web', ch, q: w.q, a: w.a, from: w.from, url: w.url, out: !!(scope() && scope().chapters[ch.id]) || (w.lesson && scopeOf(ch, ch.lessons.find((x) => x.id === w.lesson)) === 'out') }));
     ch.lessons.forEach((l) => (l.checks || [])
-      .forEach((c, n) => pool.push({ id: `${lessonKey(ch, l)}#${n}`, kind: 'lesson', ch, l, q: c.q, a: c.a })));
+      .forEach((c, n) => pool.push({ id: `${lessonKey(ch, l)}#${n}`, kind: 'lesson', ch, l, q: c.q, a: c.a, out: checkOut(ch, l, n) })));
     return pool;
   }
 
@@ -181,6 +182,8 @@
       case 'compare': return `<div class="l-compare">${bl.cols.map((c) => `<div class="l-cmp"><b>${c.title}</b><ul>${c.items.map((x) => `<li>${x}</li>`).join('')}</ul></div>`).join('')}</div>`;
       case 'table': return `<div class="table-wrap l-table"><table><thead><tr>${bl.head.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${bl.rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
       case 'code': return `<pre class="l-code">${esc(bl.text)}</pre>`;
+      // Açıklamalı kod: her satır grubunun yanında ne yaptığı yazar
+      case 'codex': return `<div class="l-codex">${bl.title ? `<div class="cx-title">${bl.title}</div>` : ''}${bl.rows.map(([code, note]) => `<div class="cx-row"><pre class="cx-c">${esc(code)}</pre><div class="cx-n">${note}</div></div>`).join('')}</div>`;
       case 'note': return `<div class="l-note ${bl.kind}"><span class="l-note-label">${NOTE[bl.kind] || 'Not'}</span><div>${bl.html}</div></div>`;
       case 'dg': return OSLab.diagrams.render(bl.id);
       case 'solve': return `<div class="l-solve"><span class="tag">${bl.title}</span><p class="l-solve-q">${bl.q}</p><button class="btn btn-primary btn-sm" type="button" data-act="solve">Çözümü göster</button><div class="l-solve-a" hidden>${bl.dg ? OSLab.diagrams.render(bl.dg) : ''}<p>${bl.a}</p></div></div>`;
@@ -284,7 +287,7 @@
       <ol class="l-lessonlist">${ch.lessons.map((l, i) => `
         <li><a class="card l-lessonrow${isRead(ch, l) ? ' read' : ''}" href="${lessonHref(ch, l)}">
           <span class="l-ln">${isRead(ch, l) ? '✓' : i + 1}</span>
-          <span><b>${l.title}</b><small>${l.en} · ${lessonSource(l)} · ~${l.minutes} dk${questionsFor(lessonKey(ch, l)).length ? ` · ${questionsFor(lessonKey(ch, l)).length} hoca sorusu` : ''}${l.lab ? ' · laboratuvar' : ''}</small></span>
+          <span><b>${l.title}${scopeOf(ch, l) ? ` <em class="scope-tag">${scopeOf(ch, l) === 'partial' ? 'kısmen ' : ''}${scope().label.toLowerCase()}</em>` : ''}</b><small>${l.en} · ${lessonSource(l)} · ~${l.minutes} dk${questionsFor(lessonKey(ch, l)).length ? ` · ${questionsFor(lessonKey(ch, l)).length} hoca sorusu` : ''}${l.lab ? ' · laboratuvar' : ''}</small></span>
         </a></li>`).join('')}</ol>`;
   }
 
@@ -305,11 +308,13 @@
       case 'compare': return bl.cols.reduce((s, c) => s + c.items.reduce((a, x) => a + textLen(x) + 20, 60), 0);
       case 'table': return (bl.rows.length + 1) * 55 + bl.rows.flat().reduce((s, x) => s + textLen(x), 0) * 0.6;
       case 'code': return bl.text.split('\n').length * 38;
+      // Her satır grubu iki sütunlu: yükseklik, kod satırı ile açıklama metninden uzun olanıdır
+      case 'codex': return bl.rows.reduce((s, [c, n]) => s + Math.max(c.split('\n').length * 50, textLen(n) * 1.9 + 45), 60);
       case 'dg': return 650;
       default: return 400;
     }
   }
-  const WIDE = new Set(['dg', 'table', 'compare', 'code', 'solve']);
+  const WIDE = new Set(['dg', 'table', 'compare', 'code', 'codex', 'solve']);
 
   // Ders bloklarını ekranlara böler. Başlık (h) bir konu birimidir ve yeni ekran açar; birim sığıyorsa
   // tamamı aynı ekranda kalır. Sığmazsa yalnızca blok sınırlarından bölünür: liste, tablo ve
@@ -331,6 +336,41 @@
         : rx ? content.filter((c) => rx.test(text(c))) : [];
       if (!hits.length && content.length) hits = [content[0]];
       hits.forEach((c) => (c.tq = c.tq || []).push(q));
+    });
+  }
+
+  /* ------------------------------------------------------------ sınav kapsamı (exam-scope.js) */
+
+  const scope = () => (OSLab.examScope && OSLab.examScope.active ? OSLab.examScope : null);
+  const scopeReason = (ch) => (scope() && scope().reason[ch.id]) || '';
+  // Dersin kapsam durumu: 'out' (tamamı dışarıda), 'partial' (bir kısmı) veya null
+  function scopeOf(ch, l) {
+    const s = scope();
+    if (!s || !ch || !l || l.review || l.intro) return null;
+    if (s.chapters[ch.id]) return 'out';
+    const v = s.lessons[lessonKey(ch, l)];
+    return v === true ? 'out' : v ? 'partial' : null;
+  }
+  const scopeRule = (ch, l) => (scopeOf(ch, l) === 'partial' ? scope().lessons[lessonKey(ch, l)] : null);
+  // Bir "Kendini yokla" sorusu kapsam dışı mı?
+  function checkOut(ch, l, n) {
+    const st = scopeOf(ch, l);
+    return st === 'out' || (st === 'partial' && (scopeRule(ch, l).checks || []).includes(n));
+  }
+  const outBadge = () => `<span class="src-badge src-out">${scope() ? scope().label : ''}</span>`;
+  const outFlag = (ch, extra) => `<div class="scope-flag" role="note"><b>⛔ ${scope().label.toUpperCase()}</b><span>${extra || scopeReason(ch)} Sınavdan sonra çalışabilirsin.</span></div>`;
+
+  function markScopeCards(ch, l, cards) {
+    const st = scopeOf(ch, l);
+    if (!st) return;
+    const content = cards.filter((c) => c.blocks);
+    if (st === 'out') { content.forEach((c) => { c.out = true; }); return; }
+    const rule = scopeRule(ch, l);
+    let past = false;
+    content.forEach((c) => {
+      if (c.h && c.h.startsWith(rule.from)) past = true;
+      if (past) c.out = true;
+      else if (rule.partial && c.h && c.h.startsWith(rule.partial)) c.partial = rule.partialNote;
     });
   }
 
@@ -408,6 +448,7 @@
     closeUnit();
 
     markTeacherCards(l, cards);
+    markScopeCards(chapters().find((c) => c.lessons.includes(l)), l, cards);
     (l.checks || []).forEach((c, i) => cards.push({ kind: 'check', check: c, n: i }));
     cards.push({ kind: 'end' });
     cardCache.set(l, cards);
@@ -425,12 +466,29 @@
 
   /* ------------------------------------------------------------ ilerleme çubuğu */
 
+  // İlerleme çubuğunda kapsam dışı derslerin altına "vize dışı" yazısı
+  function chapterScopeTag(ch) {
+    const idx = ch.lessons.map((l, i) => (scopeOf(ch, l) ? i : -1)).filter((i) => i >= 0);
+    if (!scope() || !Object.keys(scope().lessons).length && !Object.keys(scope().chapters).length) return '';
+    // Boş satır da çizilir ki tüm bölümlerin adları aynı hizada kalsın
+    if (!idx.length) return '<div class="fx-scopebar"></div>';
+    const n = ch.lessons.length;
+    const from = idx[0];
+    const to = idx[idx.length - 1] + 1;
+    return `<div class="fx-scopebar"><span style="margin-left:${(from / n) * 100}%;width:${((to - from) / n) * 100}%" title="${esc(scopeReason(ch))}">${scope().label.toLowerCase()}</span></div>`;
+  }
+
   function renderTop(active, caption) {
     return `<header class="fx-top">
       <button class="icon-btn fx-menu" type="button" data-act="menu" aria-label="Menüyü aç">☰</button>
       <div class="fx-progress">
         <div class="fx-bar">${chapters().map((ch) => `<div class="fx-ch" style="flex-grow:${ch.lessons.length}">
-          <div class="fx-segs">${ch.lessons.map((l) => `<a class="fx-seg${isRead(ch, l) ? ' read' : ''}${active === l ? ' active' : ''}" href="${lessonHref(ch, l)}" title="Bölüm ${ch.num} · ${esc(l.title)}" aria-label="Bölüm ${ch.num}: ${esc(l.title)}"><span><i style="width:${lessonFill(ch, l)}%"></i></span></a>`).join('')}</div>
+          <div class="fx-segs">${ch.lessons.map((l) => {
+            const st = scopeOf(ch, l);
+            const tag = st ? ` · ${st === 'partial' ? 'kısmen ' : ''}${scope().label.toLowerCase()}` : '';
+            return `<a class="fx-seg${isRead(ch, l) ? ' read' : ''}${active === l ? ' active' : ''}${st ? ` scope-${st}` : ''}" href="${lessonHref(ch, l)}" title="Bölüm ${ch.num} · ${esc(l.title)}${tag}" aria-label="Bölüm ${ch.num}: ${esc(l.title)}${tag}"><span><i style="width:${lessonFill(ch, l)}%"></i></span></a>`;
+          }).join('')}</div>
+          ${chapterScopeTag(ch)}
           ${caption ? '' : `<div class="fx-chname"><span>${ch.title}</span><small>${chapterProgress(ch).read}/${ch.lessons.length}</small></div>`}
         </div>`).join('')}</div>
         ${caption || ''}
@@ -479,11 +537,14 @@
       inner = `<span class="tag">Bölüm ${ch.num} · ${ch.lessons.length} ders · ${ch.source}</span>
         <h2 class="fx-title">${ch.title}</h2>
         <p class="fx-sub">${ch.en}</p>
+        ${scopeReason(ch) ? outFlag(ch) : ''}
         <div class="ci-grid">
           <section><h4 class="ci-h">Bu bölümde işlenecek konular <small>(slayt ${o.slide})</small></h4>
             <ol class="ci-topics">${o.topics.map(([t, ids]) => {
               const first = ids.length && ch.lessons.find((x) => x.id === ids[0]);
-              return `<li>${first ? `<a href="${lessonHref(ch, first)}">${t}</a>` : `<span>${t}</span>`}${ids.length ? `<small>${range(ids)}</small>` : ''}</li>`;
+              const sts = ids.map((id) => scopeOf(ch, ch.lessons.find((x) => x.id === id))).filter(Boolean);
+              const tag = sts.length ? ` <em class="scope-tag">${sts.length === ids.length && sts.every((x) => x === 'out') ? '' : 'kısmen '}${scope().label.toLowerCase()}</em>` : '';
+              return `<li>${first ? `<a href="${lessonHref(ch, first)}">${t}</a>` : `<span>${t}</span>`}${tag}${ids.length ? `<small>${range(ids)}</small>` : ''}</li>`;
             }).join('')}</ol>
           </section>
           <section><h4 class="ci-h">Öğrenilecek kavramlar</h4>
@@ -496,6 +557,7 @@
       inner = `<span class="tag">Bölüm ${ch.num} · Tekrar</span>
         <h2 class="fx-title">${l.title}</h2>
         <p class="fx-sub">${card.own} soru bu bölümden${card.prev ? ` · ardından ${card.prev} soru ${range}'den karışık` : ''}</p>
+        ${scope() && cards.some((c) => c.kind === 'rq' && c.item.out) ? `<p class="tq-lesson scope-note">⛔ "${scope().label}" etiketli sorular ${scope().exam.toLowerCase()} kapsamında değil; onları sınavdan sonraya bırakabilirsin.</p>` : ''}
         <div class="fx-pre"><span class="l-note-label">Nasıl çalışır?</span>
           <p class="rv-legend">${sourceBadge({ kind: 'teacher' })} ${sourceBadge({ kind: 'web', url: '#', from: 'kaynak' }).replace(/<a [^>]*>/, '<span class="src-badge src-web">').replace('</a>', '</span>')} ${sourceBadge({ kind: 'lesson' })}</p>
           <small>Her sorunun üstünde nereden geldiği yazar. Önce cevabı kendin düşün, sonra aç ve "Bildim / Bilemedim" de. Bilemediklerin sonraki tekrarlarda önce gelir.</small></div>`;
@@ -506,7 +568,7 @@
     } else if (card.kind === 'rq') {
       const it = card.item;
       const st = Store.data.checks[it.id];
-      inner = `<div class="rq-head"><span class="tag">Bölüm ${it.ch.num} · Soru ${card.n} / ${card.total}</span>${sourceBadge(it)}</div>
+      inner = `<div class="rq-head"><span class="tag">Bölüm ${it.ch.num} · Soru ${card.n} / ${card.total}</span>${sourceBadge(it)}${it.out ? outBadge() : ''}</div>
         ${it.l ? `<p class="rq-lesson">${esc(it.l.title)}</p>` : ''}
         <div class="fx-check${st ? ' ' + st : ''}" data-check="${it.id}">
           <p class="fx-check-q">${it.q}</p>
@@ -531,13 +593,15 @@
       inner = `<span class="tag">Bölüm ${ch.num} · Ders ${idx + 1} / ${ch.lessons.length}</span>
         <h2 class="fx-title">${l.title}</h2>
         <p class="fx-sub">${l.en} · ${lessonSource(l)} · ~${l.minutes} dk</p>
+        ${scopeOf(ch, l) === 'out' ? outFlag(ch, `Bu dersin tamamı ${scope().exam.toLowerCase()} kapsamında değil. ${scopeReason(ch)}`) : ''}
+        ${scopeOf(ch, l) === 'partial' ? outFlag(ch, `Bu dersin bir kısmı ${scope().exam.toLowerCase()} kapsamında değil: ${scopeRule(ch, l).summary} İlgili kartlarda uyarı çıkar.`) : ''}
         ${questionsFor(key).length ? `<p class="tq-lesson">★ Bu derste <b>${questionsFor(key).length} hoca sorusu</b> var. İlgili kartlarda sarı uyarı kutusu çıkar.</p>` : ''}
         ${pre ? `<div class="fx-pre"><span class="l-note-label">Okumadan önce düşün</span><p>${pre.q}</p><small>Bilmiyorsan da tahmin et. Ders sonunda kontrol edeceksin.</small></div>` : ''}`;
     } else if (card.kind === 'check') {
       const c = card.check;
       const id = `${key}#${card.n}`;
       const st = Store.data.checks[id];
-      inner = `<div class="rq-head"><span class="tag">Kendini yokla · ${card.n + 1} / ${l.checks.length}</span>${sourceBadge({ kind: 'lesson' })}</div>
+      inner = `<div class="rq-head"><span class="tag">Kendini yokla · ${card.n + 1} / ${l.checks.length}</span>${sourceBadge({ kind: 'lesson' })}${checkOut(ch, l, card.n) ? outBadge() : ''}</div>
         <div class="fx-check${st ? ' ' + st : ''}" data-check="${id}">
           <p class="fx-check-q">${c.q}</p>
           <button class="btn" type="button" data-act="reveal">Cevabı göster</button>
@@ -559,14 +623,16 @@
         </div>
       </div>`;
     } else {
-      inner = `${card.tq ? teacherFlag(card.tq) : ''}${card.h ? `<h3 class="fx-h">${card.h}</h3>` : ''}<div class="l-body fx-body">${card.blocks.map(renderBlock).join('')}</div>`;
+      inner = `${card.out ? `<div class="scope-flag strip" role="note"><b>⛔ ${scope().label.toUpperCase()}</b><span>${scopeReason(ch)}</span></div>` : ''}${card.partial ? `<div class="scope-flag soft" role="note"><b>⚠ KISMEN ${scope().label.toUpperCase()}</b><span>${card.partial}</span></div>` : ''}${card.tq ? teacherFlag(card.tq) : ''}${card.h ? `<h3 class="fx-h">${card.h}</h3>` : ''}<div class="l-body fx-body">${card.blocks.map(renderBlock).join('')}</div>`;
     }
-    return `<section class="fx-card fx-${card.kind}" data-i="${i}" aria-label="Kart ${i + 1} / ${cards.length}"><div class="fx-inner">${inner}</div></section>`;
+    const isOut = card.out || (card.kind === 'check' && checkOut(ch, l, card.n)) || (card.kind === 'rq' && card.item.out);
+    return `<section class="fx-card fx-${card.kind}${isOut ? ' scope-out' : ''}" data-i="${i}" aria-label="Kart ${i + 1} / ${cards.length}"><div class="fx-inner">${inner}</div></section>`;
   }
 
   function pageFeed(ch, l) {
     const ctx = { ch, l, key: lessonKey(ch, l), idx: ch.lessons.indexOf(l), cards: buildCards(l), next: nextOf(ch, l) };
-    const caption = `<div class="fx-caption"><span>${ch.title} › <b>${l.title}</b></span><span class="fx-count" id="fx-count"></span></div>`;
+    const st = scopeOf(ch, l);
+    const caption = `<div class="fx-caption"><span>${ch.title} › <b>${l.title}</b>${st ? ` <em class="scope-tag">${st === 'partial' ? 'kısmen ' : ''}${scope().label.toLowerCase()}</em>` : ''}</span><span class="fx-count" id="fx-count"></span></div>`;
     return `<div class="fx">
       ${renderTop(l, caption)}
       <div class="fx-scroll" id="fx-scroll">${ctx.cards.map((c, i) => renderCard(c, i, ctx)).join('')}</div>

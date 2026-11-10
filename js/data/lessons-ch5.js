@@ -292,7 +292,13 @@
             ['5', '21.25', '13.25', '6', '11']
           ] },
           { t: 'p', html: 'Ortalama, q büyüdükçe düzenli olarak iyileşmez: q=4 en kötü sonucu verdi, q=3 ve q=5 eşit çıktı. Düzenli değişen şeyler başkadır: q büyüdükçe <b>bağlam değişimi azalır</b>, ama 1 ms\'lik P3 gibi kısa işler <b>daha geç</b> biter. Yani asıl ödünleşim, yanıt süresi ile bağlam değişimi maliyeti arasındadır.' },
-          { t: 'solve', title: 'Soru 6 · Kesmeli öncelik + SJF', q: 'Geliş, öncelik, burst: P1 (0, 2, 8), P2 (1, 1, 3), P3 (2, 3, 6), P4 (3, 2, 1), P5 (2, 1, 4), P6 (4, 3, 5). Aynı öncelikte kısa olan önce çalışır. Turnaround ve ortalama beklemeyi hesapla.', dg: 'hw6', a: 'Turnaround P1=16, P2=3, P3=25, P4=6, P5=6, P6=17. <b>Ortalama bekleme = 46 / 6 ≈ 7.67 ms.</b> t=2\'de P5 geldiğinde P2 ile öncelikleri eşittir; P2\'nin kalanı (2), P5\'ten (4) kısa olduğu için P2 devam eder.' }
+          { t: 'solve', title: 'Soru 6 · Kesmeli öncelik + SJF', q: 'Geliş, öncelik, burst: P1 (0, 2, 8), P2 (1, 1, 3), P3 (2, 3, 6), P4 (3, 2, 1), P5 (2, 1, 4), P6 (4, 3, 5). Aynı öncelikte kısa olan önce çalışır. Turnaround ve ortalama beklemeyi hesapla.', dg: 'hw6', a: 'Turnaround P1=16, P2=3, P3=25, P4=6, P5=6, P6=17. <b>Ortalama bekleme = 46 / 6 ≈ 7.67 ms.</b> t=2\'de P5 geldiğinde P2 ile öncelikleri eşittir; P2\'nin kalanı (2), P5\'ten (4) kısa olduğu için P2 devam eder.' },
+          { t: 'h', text: 'Quiz tipi soru: dört algoritma aynı veriyle' },
+          { t: 'p', html: '10 Kasım quizinin son sorusu bu tipteydi: P1–P5\'in geliş ve burst süreleri verilir; FCFS, SJF, SRTF ve RR (q=2) için Gantt şeması çizilip ortalama bekleme ve turnaround istenir. Quizdeki sayılar elimizde olmadığı için aşağıda aynı tipte bir veri çözülür. <b>Geliş / burst:</b> P1 (0, 7), P2 (2, 4), P3 (4, 1), P4 (5, 4), P5 (6, 3).' },
+          { t: 'solve', title: 'Quiz tipi · FCFS', q: 'Geliş sırasına göre çalıştır. Ortalama bekleme ve turnaround?', dg: 'qz-fcfs', a: 'Bekleme 0, 5, 7, 7, 10. <b>Ortalama bekleme 5.8, ortalama turnaround 9.6.</b>' },
+          { t: 'solve', title: 'Quiz tipi · SJF (kesmesiz)', q: 'CPU boşalınca hazır olanlardan burst\'ü en kısa olanı seç.', dg: 'qz-sjf', a: 't=7\'de P2 ile P4\'ün burst\'ü eşit (4); önce gelen P2 seçilir. <b>Ortalama bekleme 4.8, ortalama turnaround 8.6.</b>' },
+          { t: 'solve', title: 'Quiz tipi · SRTF (kesmeli SJF)', q: 'Her gelişte kalan süreleri karşılaştır; daha kısası gelirse çalışanı kes.', dg: 'qz-srtf', a: 'P1 t=2\'de kesilir ve en sona kalır. <b>Ortalama bekleme 3.8, ortalama turnaround 7.6</b>: dördünün en iyisi.' },
+          { t: 'solve', title: 'Quiz tipi · Round Robin (q=2)', q: 'Her işlem en fazla 2 birim çalışır, bitmediyse kuyruğun sonuna döner.', dg: 'qz-rr', a: 'Kural: kuantumu biten işlemle aynı anda gelen yeni işlem kuyruğa <b>önce</b> girer (ör. t=2\'de P2, P1\'in önüne geçer). <b>Ortalama bekleme 6.8, ortalama turnaround 10.6.</b>' }
         ]
       },
       {

@@ -296,6 +296,88 @@ gcc -o main main.o -lm  → linker: main (libm bağlandı)
 <p><b>Emülasyondan farkı:</b> Sanallaştırmada konuk, aynı CPU türü için derlenmiştir ve komutları büyük ölçüde doğrudan çalışır. Emülasyonda CPU türü farklıdır ve komutlar çevrilir; bu yüzden daha yavaştır.</p>
 <p><b>Bedeli:</b> (Ek) VMM ek yük getirir ve sanal makineler aynı donanımı paylaştığı için birbirinin başarımını etkileyebilir.</p>`,
       keys: ['Tanım: donanımı soyutlayıp birden çok sanal makine oluşturmak', 'VMM / hypervisor', 'Donanım: CPU, bellek, disk paylaştırılır, kullanım artar', 'İşletim sistemi: birden çok konuk aynı anda çalışır', 'Konuklar birbirinden yalıtılmıştır', 'Emülasyondan farkı', 'Ek yük / başarım maliyeti']
+    },
+
+    /* ---- Quiz 1 (10 Kasım 2026). Soru tipleri quizdekiyle aynı; quizdeki cümleler ve
+            sayılar elimizde olmadığı için içerik aynı tipte yeniden kuruldu. ---- */
+    {
+      id: 'h30', set: 'Quiz 1', lesson: 'ch1/ortamlar', focusH: 'Sanallaştırma',
+      q: 'Sanallaştırma ile ilgili aşağıdaki cümleler doğru mu, yanlış mı? (1) Sanallaştırma, tek bir fiziksel makinede birden çok işletim sisteminin aynı anda çalışmasını sağlar. (2) Sanallaştırmada konuk işletim sistemi, konak CPU\'sundan farklı bir CPU türü için derlenmiş olabilir. (3) Konuk işletim sistemlerini VMM (sanal makine yöneticisi) çalıştırır. (4) VMM her zaman genel amaçlı bir konak işletim sisteminin üzerinde çalışmak zorundadır. (5) Emülasyon, genellikle sanallaştırmadan daha yavaştır.',
+      a: `<p><i>Quizdeki cümleler hatırlanmadığı için aynı konuyu yoklayan beş cümle kuruldu.</i></p>
+<table class="mini-table"><tr><th>#</th><th>Cevap</th><th>Neden</th></tr>
+<tr><td>1</td><td><b>Doğru</b></td><td>Sanallaştırmanın amacı budur: ör. macOS konak üzerinde Windows konuk.</td></tr>
+<tr><td>2</td><td><b>Yanlış</b></td><td>Farklı CPU türü <b>emülasyondur</b>. Sanallaştırmada konuk da aynı CPU için yerel derlenmiştir.</td></tr>
+<tr><td>3</td><td><b>Doğru</b></td><td>VMM konukları çalıştırır ve donanımı onlara paylaştırır.</td></tr>
+<tr><td>4</td><td><b>Yanlış</b></td><td>VMM doğrudan donanım üzerinde de çalışabilir; o zaman genel amaçlı konak yoktur (VMware ESX, Citrix XenServer).</td></tr>
+<tr><td>5</td><td><b>Doğru</b></td><td>Emülasyon komutları çevirdiği için genellikle en yavaş yöntemdir.</td></tr></table>`,
+      keys: ['Birden çok işletim sistemi aynı anda: doğru', 'Farklı CPU türü emülasyondur: yanlış', 'Konukları VMM çalıştırır: doğru', 'VMM doğrudan donanımda da çalışabilir: yanlış', 'Emülasyon daha yavaş: doğru']
+    },
+    {
+      id: 'h31', set: 'Quiz 1', lesson: 'ch5/os-planlama', focusH: 'Windows',
+      q: 'Windows CPU planlamasında aşağıdakilerden hangileri kullanılır? Öncelikli planlama (priority), Round Robin, çok düzeyli kuyruk (multilevel queue), çok düzeyli geri bildirimli kuyruk (multilevel feedback queue), FCFS, SJF.',
+      a: `<p><b>Kullanılanlar:</b></p>
+<ul><li><b>Öncelikli ve kesmeli planlama:</b> en yüksek öncelikli hazır iş parçacığı çalışır; daha yüksek öncelikli biri gelirse çalışanı keser (slayt 5.65).</li>
+<li><b>Çok düzeyli kuyruk:</b> 32 öncelik seviyesinin <b>her biri için ayrı kuyruk</b> vardır.</li>
+<li><b>Round Robin:</b> aynı öncelikteki iş parçacıkları zaman dilimiyle (time slice) sırayla çalışır.</li>
+<li><b>Geri bildirim:</b> değişken sınıfta (1–15) dilimi biten iş parçacığının önceliği düşürülür (tabanın altına inmez), bekleyip uyanan iş parçacığının önceliği yükseltilir. Öncelik davranışa göre değiştiği için bu, <b>çok düzeyli geri bildirimli kuyruğa</b> benzer.</li></ul>
+<p><b>Kullanılmayanlar:</b> saf <b>FCFS</b> ve <b>SJF</b>. Windows burst süresini tahmin etmez; seçim önceliğe göredir.</p>`,
+      keys: ['Öncelikli ve kesmeli', 'Her öncelik için ayrı kuyruk (32 seviye)', 'Aynı öncelikte zaman dilimi / RR', 'Öncelik düşürme ve yükseltme: geri bildirim', 'FCFS ve SJF kullanılmaz']
+    },
+    {
+      id: 'h32', set: 'Quiz 1', lesson: 'ch2/shell-metin', focus: 'Pipe|sort|uniq',
+      q: 'Aşağıdaki ogrenci.txt verisi için pipe (|) kullanarak: (a) her şehirden kaç öğrenci olduğunu çoktan aza listeleyin, (b) Bilgisayar bölümündeki öğrenci sayısını bulun, (c) notu en yüksek 3 öğrenciyi yazdırın, (d) İstanbul\'daki öğrencilerin adını ve notunu yazdırın. Veri (ad;şehir;bölüm;not): Ahmet;Istanbul;Bilgisayar;85 · Zeynep;Ankara;Elektrik;72 · Mehmet;Istanbul;Bilgisayar;64 · Ayse;Izmir;Makine;91 · Can;Ankara;Bilgisayar;58 · Elif;Istanbul;Elektrik;77 · Burak;Izmir;Bilgisayar;69',
+      a: `<p><i>Quizdeki veri seti elimizde olmadığı için aynı tipte bir veri kullanıldı. Çıktılar bash'te çalıştırılarak alındı.</i></p>
+<p><b>Mantık:</b> <code>|</code> soldaki komutun çıktısını sağdakinin girdisi yapar. Önce <code>cat</code> dosyayı akıtır, sonraki her komut bu akışı bir adım işler.</p>
+<div class="formula">(a) cat ogrenci.txt | cut -d';' -f2 | sort | uniq -c | sort -nr
+      3 Istanbul
+      2 Izmir
+      2 Ankara</div>
+<p><code>cut -d';' -f2</code>: ";" ile ayrılmış 2. sütunu (şehir) al. <code>sort</code>: aynı şehirleri yan yana getir. <code>uniq -c</code>: yan yana aynıları say. <code>sort -nr</code>: sayıya göre büyükten küçüğe diz.</p>
+<div class="formula">(b) cat ogrenci.txt | grep 'Bilgisayar' | wc -l
+4</div>
+<p><code>grep</code>: içinde "Bilgisayar" geçen satırları süz. <code>wc -l</code>: satırları say.</p>
+<div class="formula">(c) cat ogrenci.txt | sort -t';' -k4 -nr | head -3
+Ayse;Izmir;Makine;91
+Ahmet;Istanbul;Bilgisayar;85
+Elif;Istanbul;Elektrik;77</div>
+<p><code>sort -t';' -k4 -nr</code>: ayırıcı ";", 4. sütuna (not) göre sayısal (-n), ters (-r) sırala. <code>head -3</code>: ilk 3 satırı al.</p>
+<div class="formula">(d) cat ogrenci.txt | grep 'Istanbul' | cut -d';' -f1,4 | tr ';' ' '
+Ahmet 85
+Mehmet 64
+Elif 77</div>
+<p><code>cut -f1,4</code>: 1. ve 4. sütunu al. <code>tr ';' ' '</code>: ";" karakterini boşluğa çevir.</p>
+<p><b>Ek:</b> ortalama not için <code>cat ogrenci.txt | awk -F';' '{t+=$4} END {print t/NR}'</code> → 73.7143.</p>`,
+      keys: ['| çıktıyı sonraki komutun girdisi yapar', 'cut -d ile ayırıcı, -f ile sütun', 'uniq -c öncesi sort gerekir', 'sort -n sayısal, -r ters, -t ayırıcı, -k sütun', 'grep ile süzme, wc -l ile sayma', 'head ile ilk satırlar']
+    },
+    {
+      id: 'h33', set: 'Quiz 1', lesson: 'ch1/mimari', focus: 'Kümelenmiş',
+      q: 'Boşlukları doldurun (kavramlar: kümelenmiş sistem, dağıtık sistem, donanım kesmesi, yazılım kesmesi, toplu iş sistemi, zaman paylaşımı). (1) Birlikte çalışan ve genellikle depolamayı SAN üzerinden paylaşan, bir düğüm çökünce hizmetin sürmesini sağlayan sistemlere ____ denir. (2) Ağ ile bağlanmış, ayrı ve çoğu zaman farklı türden bilgisayarların kaynaklarını paylaştığı sisteme ____ denir. (3) Disk okumasının bittiğini bildirmek için aygıtın veri yolu üzerinden CPU\'ya gönderdiği sinyal ____\'dir. (4) Sıfıra bölme hatası ya da sistem çağrısı sonucu yazılımın ürettiği kesmeye ____ (trap/exception) denir. (5) İşlerin kullanıcıyla etkileşim olmadan sıraya konup toplu halde çalıştırıldığı, CPU\'yu boşta bırakmamayı hedefleyen sisteme ____ denir. (6) CPU\'nun işler arasında çok sık geçiş yapıp her kullanıcıya etkileşimli çalışma ve kısa yanıt süresi sağladığı sisteme ____ denir.',
+      a: `<p><i>Quizdeki açıklamalar hatırlanmadığı için kavramların slayttaki tanımları kullanıldı. Quizde başka kavramlar da vardı; aynı yöntemle çalışılabilir.</i></p>
+<table class="mini-table"><tr><th>#</th><th>Cevap</th><th>Ayırt edici ipucu</th><th>Ders</th></tr>
+<tr><td>1</td><td><b>Kümelenmiş sistem</b> (clustered)</td><td>SAN, yüksek kullanılabilirlik, asimetrik/simetrik</td><td>Bölüm 1 · Mimari</td></tr>
+<tr><td>2</td><td><b>Dağıtık sistem</b> (distributed)</td><td>Ağ ile bağlı ayrı bilgisayarlar, kaynak paylaşımı</td><td>Bölüm 1 · Ortamlar</td></tr>
+<tr><td>3</td><td><b>Donanım kesmesi</b></td><td>Aygıt üretir, veri yolu üzerinden</td><td>Bölüm 1 · Kesmeler</td></tr>
+<tr><td>4</td><td><b>Yazılım kesmesi</b></td><td>Hata ya da sistem çağrısı, yazılım üretir</td><td>Bölüm 1 · Kesmeler</td></tr>
+<tr><td>5</td><td><b>Toplu iş sistemi</b> (batch / multiprogramming)</td><td>Etkileşim yok, hedef CPU kullanımı</td><td>Bölüm 1 · Çoklu programlama</td></tr>
+<tr><td>6</td><td><b>Zaman paylaşımı</b> (timesharing / multitasking)</td><td>Sık geçiş, etkileşim, yanıt &lt; 1 sn</td><td>Bölüm 1 · Çoklu programlama</td></tr></table>
+<p><b>Karıştırılan çift:</b> toplu iş sistemi CPU kullanımını, zaman paylaşımı yanıt süresini hedefler.</p>`,
+      keys: ['Kümelenmiş: SAN, yüksek kullanılabilirlik', 'Dağıtık: ağ ile bağlı ayrı bilgisayarlar', 'Donanım kesmesi: aygıt üretir', 'Yazılım kesmesi: trap, hata veya sistem çağrısı', 'Toplu iş: etkileşimsiz, CPU kullanımı', 'Zaman paylaşımı: etkileşimli, kısa yanıt']
+    },
+    {
+      id: 'h34', set: 'Quiz 1', lesson: 'ch5/odev', focus: 'dört algoritma aynı veriyle',
+      q: 'Geliş ve burst süreleri: P1 (0, 7), P2 (2, 4), P3 (4, 1), P4 (5, 4), P5 (6, 3). FCFS, SJF, SRTF ve RR (q=2) için Gantt şemalarını çizin; her biri için ortalama bekleme ve ortalama turnaround sürelerini bulun.',
+      a: `<p><i>Quizdeki sayılar elimizde olmadığı için aynı tipte bir veri çözüldü. Adım adım Gantt şemaları: Bölüm 5 · Çözümlü Ödev Soruları, "Quiz tipi" kartları.</i></p>
+<div class="formula">FCFS  P1 0–7 | P2 7–11 | P3 11–12 | P4 12–16 | P5 16–19
+SJF   P1 0–7 | P3 7–8 | P5 8–11 | P2 11–15 | P4 15–19
+SRTF  P1 0–2 | P2 2–4 | P3 4–5 | P2 5–7 | P5 7–10 | P4 10–14 | P1 14–19
+RR    P1 0–2 | P2 2–4 | P1 4–6 | P3 6–7 | P2 7–9 | P4 9–11 | P5 11–13 | P1 13–15 | P4 15–17 | P5 17–18 | P1 18–19</div>
+<table class="mini-table"><tr><th>Algoritma</th><th>Bekleme (P1…P5)</th><th>Ort. bekleme</th><th>Ort. turnaround</th></tr>
+<tr><td>FCFS</td><td>0, 5, 7, 7, 10</td><td>5.8</td><td>9.6</td></tr>
+<tr><td>SJF</td><td>0, 9, 3, 10, 2</td><td>4.8</td><td>8.6</td></tr>
+<tr><td>SRTF</td><td>12, 1, 0, 5, 1</td><td><b>3.8</b></td><td><b>7.6</b></td></tr>
+<tr><td>RR (q=2)</td><td>12, 3, 2, 8, 9</td><td>6.8</td><td>10.6</td></tr></table>
+<p><b>Formüller:</b> turnaround = bitiş − geliş, bekleme = turnaround − burst. <b>Kurallar:</b> SJF\'te eşitlikte önce gelen seçilir; RR\'de kuantumu biten işlemle aynı anda gelen yeni işlem kuyruğa önce girer.</p>`,
+      keys: ['Doğru Gantt şemaları', 'Turnaround = bitiş − geliş', 'Bekleme = turnaround − burst', 'SRTF en düşük ortalamayı verir', 'RR eşitlik kuralı: yeni gelen önce girer']
     }
   ];
 })(window.OSLab = window.OSLab || {});
