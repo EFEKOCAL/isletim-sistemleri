@@ -306,4 +306,57 @@
       { on: ['wc'], set: { out: '3' }, text: '<code>wc -l</code> gelen satırları sayar: sonuç <b>3</b>. Komutlar ayrı işlemlerdir; pipe, Bölüm 3\'te gördüğün işlemler arası iletişimin (IPC) kabuktaki karşılığıdır.' }
     ]
   });
+
+  /* ------------------------------------------------------------ pipe alıştırmaları */
+
+  // ogrenci.txt (ad;şehir;bölüm;not). Tüm çıktılar bash'te çalıştırılarak alınmıştır.
+  const OGR = 'Ahmet;Istanbul;Bilgisayar;85\nZeynep;Ankara;Elektrik;72\nMehmet;Istanbul;Bilgisayar;64\nAyse;Izmir;Makine;91\nCan;Ankara;Bilgisayar;58\nElif;Istanbul;Elektrik;77\nBurak;Izmir;Bilgisayar;69';
+
+  // Her aşamadan sonra akan veriyi gösteren adım adım pipe şeması.
+  // stages: [[komut, o komuttan sonraki çıktı, açıklama], ...]; ilk aşama "cat ogrenci.txt" eklenir.
+  function pipeline(id, intro, stages) {
+    const all = [['cat ogrenci.txt', OGR, '<code>cat</code> dosyanın 7 satırını akıtır. Her <code>|</code> bu akışı bir sonraki komutun girdisine bağlar.']].concat(stages);
+    reg(id, {
+      kind: 'stepper',
+      intro,
+      html: `<div class="dg-pline">${all.map(([cmd], i) => `${i ? '<span class="dg-pline-bar">|</span>' : ''}<code class="dg-b" data-k="p${i}">${esc(cmd)}</code>`).join('')}</div>
+        <pre class="l-code dg-pipe-out" data-v="out"></pre>`,
+      initSet: { out: '' },
+      steps: all.map(([, out, text], i) => ({ on: [`p${i}`], set: { out }, text: `<b>${i + 1}. adım.</b> ${text}` }))
+    });
+  }
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+  pipeline('px-say', 'Soru: Dosyada kaç öğrenci var?', [
+    ['wc -l', '7', '<code>wc -l</code> gelen satırları sayar. Her satır bir öğrenci olduğu için cevap <b>7</b>.']
+  ]);
+  pipeline('px-ankara', 'Soru: Ankara\'daki öğrencilerin yalnızca adlarını yazdır.', [
+    ['grep \'Ankara\'', 'Zeynep;Ankara;Elektrik;72\nCan;Ankara;Bilgisayar;58', '<code>grep</code> içinde "Ankara" geçen satırları bırakır, diğerlerini atar. <b>Önce süz</b>: sonraki adımlar daha az veriyle uğraşır.'],
+    ['cut -d\';\' -f1', 'Zeynep\nCan', '<code>cut -d\';\' -f1</code>: satırı ";" işaretlerinden böl (<code>-d</code> = ayırıcı) ve <b>1. sütunu</b> al (<code>-f</code> = alan). Sonuç: adlar.']
+  ]);
+  pipeline('px-sehir', 'Soru: Her şehirden kaç öğrenci var? Çoktan aza sırala.', [
+    ['cut -d\';\' -f2', 'Istanbul\nAnkara\nIstanbul\nIzmir\nAnkara\nIstanbul\nIzmir', 'Yalnızca 2. sütun (şehir) kalır.'],
+    ['sort', 'Ankara\nAnkara\nIstanbul\nIstanbul\nIstanbul\nIzmir\nIzmir', '<code>sort</code> aynı şehirleri <b>yan yana</b> getirir. Bu adım şarttır, çünkü bir sonraki komut yalnızca yan yana duranları sayar.'],
+    ['uniq -c', '      2 Ankara\n      3 Istanbul\n      2 Izmir', '<code>uniq -c</code> yan yana aynı satırları tek satıra indirir ve başına <b>kaç tane olduğunu</b> yazar.'],
+    ['sort -nr', '      3 Istanbul\n      2 Izmir\n      2 Ankara', '<code>sort -nr</code>: baştaki sayıya göre <b>sayısal</b> (<code>-n</code>) ve <b>büyükten küçüğe</b> (<code>-r</code>) sırala. İstanbul en üste çıkar.']
+  ]);
+  pipeline('px-uniq-hata', 'Hata örneği: sort unutulursa ne olur?', [
+    ['cut -d\';\' -f2', 'Istanbul\nAnkara\nIstanbul\nIzmir\nAnkara\nIstanbul\nIzmir', 'Şehirler dosyadaki sırayla gelir; aynı şehirler dağınık.'],
+    ['uniq -c', '      1 Istanbul\n      1 Ankara\n      1 Istanbul\n      1 Izmir\n      1 Ankara\n      1 Istanbul\n      1 Izmir', '<b>Yanlış sonuç.</b> Hiçbir şehir yan yana olmadığı için <code>uniq -c</code> her satırı ayrı sayar. Doğrusu <code>sort | uniq -c</code>.']
+  ]);
+  pipeline('px-dusuk', 'Soru: Notu en düşük 2 öğrencinin adını ve notunu yazdır.', [
+    ['sort -t\';\' -k4 -n', 'Can;Ankara;Bilgisayar;58\nMehmet;Istanbul;Bilgisayar;64\nBurak;Izmir;Bilgisayar;69\nZeynep;Ankara;Elektrik;72\nElif;Istanbul;Elektrik;77\nAhmet;Istanbul;Bilgisayar;85\nAyse;Izmir;Makine;91', '<code>sort -t\';\' -k4 -n</code>: ayırıcı ";" (<code>-t</code>), <b>4. sütuna</b> (<code>-k4</code>) göre, <b>sayısal</b> (<code>-n</code>) ve küçükten büyüğe sırala. <code>-n</code> unutulursa sayılar metin gibi sıralanır.'],
+    ['head -2', 'Can;Ankara;Bilgisayar;58\nMehmet;Istanbul;Bilgisayar;64', '<code>head -2</code> yalnızca <b>ilk 2 satırı</b> bırakır. (Son satırlar için <code>tail</code>.)'],
+    ['cut -d\';\' -f1,4', 'Can;58\nMehmet;64', '<code>-f1,4</code>: 1. ve 4. sütunu birlikte al. Sütunlar aradaki ";" ile yazılır.']
+  ]);
+  pipeline('px-bilg', 'Soru: Bilgisayar bölümündeki öğrencileri nota göre büyükten küçüğe, "ad not" biçiminde yazdır.', [
+    ['grep \'Bilgisayar\'', 'Ahmet;Istanbul;Bilgisayar;85\nMehmet;Istanbul;Bilgisayar;64\nCan;Ankara;Bilgisayar;58\nBurak;Izmir;Bilgisayar;69', 'Önce süz: yalnızca Bilgisayar satırları.'],
+    ['sort -t\';\' -k4 -nr', 'Ahmet;Istanbul;Bilgisayar;85\nBurak;Izmir;Bilgisayar;69\nMehmet;Istanbul;Bilgisayar;64\nCan;Ankara;Bilgisayar;58', '4. sütuna göre sayısal ve <b>ters</b> (<code>-r</code>) sırala: en yüksek not üstte.'],
+    ['cut -d\';\' -f1,4', 'Ahmet;85\nBurak;69\nMehmet;64\nCan;58', 'Ad ve not sütunlarını al.'],
+    ['tr \';\' \' \'', 'Ahmet 85\nBurak 69\nMehmet 64\nCan 58', '<code>tr \';\' \' \'</code> her ";" karakterini boşluğa çevirir: istenen biçim.']
+  ]);
+  pipeline('px-haric', 'Soru: İstanbul dışındaki öğrenci sayısı kaç?', [
+    ['grep -v \'Istanbul\'', 'Zeynep;Ankara;Elektrik;72\nAyse;Izmir;Makine;91\nCan;Ankara;Bilgisayar;58\nBurak;Izmir;Bilgisayar;69', '<code>grep -v</code> tersine çevirir: kalıbı <b>içermeyen</b> satırları bırakır.'],
+    ['wc -l', '4', 'Kalan satırları say: <b>4</b>.']
+  ]);
 })(window.OSLab = window.OSLab || {});

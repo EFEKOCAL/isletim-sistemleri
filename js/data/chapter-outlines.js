@@ -27,7 +27,7 @@
       topics: [
         ['İşletim sistemi servisleri', ['servisler']],
         ['Kullanıcı ve işletim sistemi arayüzü', ['arayuz']],
-        ['Shell programlama (lab dokümanı)', ['shell-temel', 'shell-izin', 'shell-script', 'shell-akis', 'shell-metin', 'shell-awk']],
+        ['Shell programlama (lab dokümanı)', ['shell-temel', 'shell-izin', 'shell-script', 'shell-akis', 'shell-metin', 'shell-pipe', 'shell-awk']],
         ['Sistem çağrıları', ['sistem-cagrisi', 'parametre']],
         ['Sistem servisleri', ['sistem-programlari']],
         ['Bağlayıcılar ve yükleyiciler (Linkers and Loaders)', ['baglayici']],

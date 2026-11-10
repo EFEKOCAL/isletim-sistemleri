@@ -176,6 +176,54 @@
       ]
     },
     {
+      id: 'shell-pipe',
+      title: 'Pipe ile Soru Çözme',
+      en: 'Building Pipelines Step by Step',
+      src: `${SRC} · Quiz 1 tipi`,
+      minutes: 14,
+      blocks: [
+        { t: 'p', html: 'Bu konu <b>shell programlamadır</b> (Linux komut satırı); hocanın laboratuvar dokümanlarından gelir ve 10 Kasım quizinde soruldu: bir veri dosyası verilir, <code>cat</code> ve diğer komutları <code>|</code> ile bağlayıp istenen çıktıyı üretmen beklenir. Kavram olarak Bölüm 3\'teki <b>sıradan pipe\'ın (ordinary pipe)</b> kabuktaki karşılığıdır: her komut ayrı bir işlemdir ve pipe birinin çıktısını diğerinin girdisine bağlar.' },
+        { t: 'h', text: 'Yöntem: soruyu adımlara çevir' },
+        { t: 'list', ordered: true, items: [
+          '<b>Veriye bak:</b> Ayırıcı ne (<code>;</code>, <code>,</code>, boşluk)? Hangi bilgi kaçıncı sütunda?',
+          '<b>Süz:</b> Soru belli satırları mı istiyor? <code>grep \'kalıp\'</code> (içerenler) ya da <code>grep -v</code> (içermeyenler).',
+          '<b>Sırala:</b> En yüksek / en düşük / alfabetik mi? <code>sort</code>, sayıysa <code>-n</code>, tersten <code>-r</code>, sütun <code>-t</code> ve <code>-k</code> ile.',
+          '<b>Say veya kes:</b> Kaç tane? <code>wc -l</code>. Gruplara göre kaç tane? <code>sort | uniq -c</code>. İlk / son N? <code>head -N</code>, <code>tail -N</code>.',
+          '<b>Biçimle:</b> Yalnızca bazı sütunlar mı? <code>cut -d\';\' -f1,4</code>. Ayırıcıyı değiştirmek? <code>tr \';\' \' \'</code>.'
+        ] },
+        { t: 'note', kind: 'exam', attach: true, html: 'Her adımı ayrı düşün ve <b>bir önceki adımın çıktısının neye benzediğini</b> kafanda yaz. Takılırsan pipe\'ı ortasından kes: <code>cat dosya | grep X</code> ne verir? Sonra bir komut daha ekle. <code>cat dosya | grep X</code> ile <code>grep X dosya</code> aynı sonucu verir.' },
+        { t: 'h', text: 'Araç kutusu' },
+        { t: 'table', head: ['Komut', 'Ne yapar', 'Örnek'], rows: [
+          ['<code>cat</code>', 'Dosyayı akıtır', '<code>cat ogrenci.txt</code>'],
+          ['<code>grep</code> / <code>grep -v</code>', 'Kalıbı içeren / içermeyen satırları bırakır', '<code>grep \'Ankara\'</code>'],
+          ['<code>cut -d\'X\' -f</code>', 'X ile böler, istenen sütunları alır', '<code>cut -d\';\' -f1,4</code>'],
+          ['<code>sort</code>', 'Sıralar. <code>-n</code> sayısal, <code>-r</code> ters, <code>-t</code> ayırıcı, <code>-k</code> sütun, <code>-u</code> tekrarsız', '<code>sort -t\';\' -k4 -nr</code>'],
+          ['<code>uniq</code> / <code>uniq -c</code>', 'Yan yana aynıları birleştirir / sayar (önce sort!)', '<code>sort | uniq -c</code>'],
+          ['<code>head -N</code> / <code>tail -N</code>', 'İlk / son N satır', '<code>head -3</code>'],
+          ['<code>wc -l</code>', 'Satır sayar', '<code>grep X | wc -l</code>'],
+          ['<code>tr \'a\' \'b\'</code>', 'Karakter değiştirir', '<code>tr \';\' \' \'</code>']
+        ] },
+        { t: 'h', text: 'Veri: ogrenci.txt' },
+        { t: 'codex', title: 'Her satır bir öğrenci; sütunlar ";" ile ayrılmış', rows: [
+          ['Ahmet;Istanbul;Bilgisayar;85\nZeynep;Ankara;Elektrik;72\nMehmet;Istanbul;Bilgisayar;64\nAyse;Izmir;Makine;91\nCan;Ankara;Bilgisayar;58\nElif;Istanbul;Elektrik;77\nBurak;Izmir;Bilgisayar;69', '<b>1. sütun</b> ad, <b>2.</b> şehir, <b>3.</b> bölüm, <b>4.</b> not. Ayırıcı ";" olduğu için <code>cut</code> ve <code>sort</code>\'a bunu söylemek gerekir: <code>-d\';\'</code> ve <code>-t\';\'</code>.']
+        ] },
+        { t: 'h', text: 'Alıştırmalar: önce kendin yaz, sonra çözümü aç' },
+        { t: 'solve', title: 'Alıştırma 1', q: 'Dosyada kaç öğrenci var?', dg: 'px-say', a: '<code>cat ogrenci.txt | wc -l</code> → <b>7</b>' },
+        { t: 'solve', title: 'Alıştırma 2', q: 'Ankara\'daki öğrencilerin yalnızca adlarını yazdır.', dg: 'px-ankara', a: '<code>cat ogrenci.txt | grep \'Ankara\' | cut -d\';\' -f1</code>' },
+        { t: 'solve', title: 'Alıştırma 3 · quizdeki tip', q: 'Her şehirden kaç öğrenci olduğunu çoktan aza listele.', dg: 'px-sehir', a: '<code>cat ogrenci.txt | cut -d\';\' -f2 | sort | uniq -c | sort -nr</code>' },
+        { t: 'h', text: 'En sık hata: sort olmadan uniq' },
+        { t: 'dg', id: 'px-uniq-hata' },
+        { t: 'solve', title: 'Alıştırma 4', q: 'Notu en düşük 2 öğrencinin adını ve notunu yazdır.', dg: 'px-dusuk', a: '<code>cat ogrenci.txt | sort -t\';\' -k4 -n | head -2 | cut -d\';\' -f1,4</code>' },
+        { t: 'solve', title: 'Alıştırma 5', q: 'Bilgisayar bölümündeki öğrencileri nota göre büyükten küçüğe, "ad not" biçiminde yazdır.', dg: 'px-bilg', a: '<code>cat ogrenci.txt | grep \'Bilgisayar\' | sort -t\';\' -k4 -nr | cut -d\';\' -f1,4 | tr \';\' \' \'</code>' },
+        { t: 'solve', title: 'Alıştırma 6', q: 'İstanbul dışındaki öğrenci sayısı kaç?', dg: 'px-haric', a: '<code>cat ogrenci.txt | grep -v \'Istanbul\' | wc -l</code> → <b>4</b>' }
+      ],
+      checks: [
+        { q: 'uniq -c\'den önce neden sort gerekir?', a: 'uniq yalnızca yan yana duran aynı satırları birleştirir. sort aynıları yan yana getirmezse her satır ayrı sayılır.' },
+        { q: 'sort -t\';\' -k4 -nr ne yapar?', a: 'Satırları ";" ile ayrılmış 4. sütuna göre sayısal olarak büyükten küçüğe sıralar.' },
+        { q: 'Bir sütuna göre "en yüksek 3" istenirse pipe\'ın sonu nasıl olur?', a: 'O sütuna göre sort -nr (ayırıcı için -t, sütun için -k) ve ardından head -3.' }
+      ]
+    },
+    {
       id: 'shell-awk',
       title: 'awk ile Sütun İşleme',
       en: 'Column Processing with awk',

@@ -324,7 +324,7 @@ gcc -o main main.o -lm  → linker: main (libm bağlandı)
       keys: ['Öncelikli ve kesmeli', 'Her öncelik için ayrı kuyruk (32 seviye)', 'Aynı öncelikte zaman dilimi / RR', 'Öncelik düşürme ve yükseltme: geri bildirim', 'FCFS ve SJF kullanılmaz']
     },
     {
-      id: 'h32', set: 'Quiz 1', lesson: 'ch2/shell-metin', focus: 'Pipe|sort|uniq',
+      id: 'h32', set: 'Quiz 1', lesson: 'ch2/shell-pipe', focus: 'quizinde soruldu',
       q: 'Aşağıdaki ogrenci.txt verisi için pipe (|) kullanarak: (a) her şehirden kaç öğrenci olduğunu çoktan aza listeleyin, (b) Bilgisayar bölümündeki öğrenci sayısını bulun, (c) notu en yüksek 3 öğrenciyi yazdırın, (d) İstanbul\'daki öğrencilerin adını ve notunu yazdırın. Veri (ad;şehir;bölüm;not): Ahmet;Istanbul;Bilgisayar;85 · Zeynep;Ankara;Elektrik;72 · Mehmet;Istanbul;Bilgisayar;64 · Ayse;Izmir;Makine;91 · Can;Ankara;Bilgisayar;58 · Elif;Istanbul;Elektrik;77 · Burak;Izmir;Bilgisayar;69',
       a: `<p><i>Quizdeki veri seti elimizde olmadığı için aynı tipte bir veri kullanıldı. Çıktılar bash'te çalıştırılarak alındı.</i></p>
 <p><b>Mantık:</b> <code>|</code> soldaki komutun çıktısını sağdakinin girdisi yapar. Önce <code>cat</code> dosyayı akıtır, sonraki her komut bu akışı bir adım işler.</p>

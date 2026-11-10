@@ -379,7 +379,7 @@
     const more = list.length - shown.length;
     return `<aside class="tq-flag" role="note">
       <span class="tq-flag-label">★ Hocanın sorularında geçiyor</span>
-      <ul>${shown.map((q) => `<li><a href="#/learn/sorular/${q.id}">${esc(q.q)}</a></li>`).join('')}</ul>
+      <ul>${shown.map((q) => `<li><a href="#/learn/sorular/${q.id}">${esc(q.q.length > 170 ? `${q.q.slice(0, 160).replace(/\s+\S*$/, '')} …` : q.q)}</a></li>`).join('')}</ul>
       ${more > 0 ? `<small>ve ${more} soru daha. Bu kartı dikkatle oku.</small>` : '<small>Bu kartı dikkatle oku.</small>'}
     </aside>`;
   }
