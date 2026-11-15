@@ -51,7 +51,7 @@ Menüdeki **Zihin Haritası** konuların birbiriyle ilgisini kaydırmasız tek e
 | 01 | **System & Architecture** | User ⇄ Kernel mode geçişi (sistem çağrısı, ayrıcalıklı komut ihlali) · Derle → Bağla → Yükle hattı (relocation, statik/dinamik bağlama) · Monolitik ve mikroçekirdek karşılaştırması (IPC paket animasyonu, çökme senaryosu) |
 | 02 | **CPU Scheduling** | FCFS, SJF (non-preemptive), Round Robin · canlı Gantt şeması · WT / TAT / RT hesapları · algoritma karşılaştırması |
 | 03 | **Synchronization** | Race condition (Silberschatz T0–T5 senaryosu) · Mutex ve semafor ile çözüm · Üretici–Tüketici (bounded buffer) ve deadlock gösterimi |
-| 04 | **Shell Atölyesi** | Tarayıcıda çalışan bir terminalde, Shell Programlama PDF'inin sırasıyla 6 aşamada 48 görev: gezinme ve dosyalar, izinler, değişken ve aritmetik, pipe ve metin araçları, awk, betikler · Karışık tekrar |
+| 04 | **Shell Atölyesi** | Tarayıcıda çalışan bir terminalde, Shell Programlama PDF'inin sırasıyla 6 aşamada 47 görev: gezinme ve dosyalar, izinler, değişken ve aritmetik, pipe ve metin araçları, awk, betikler · Karışık tekrar |
 
 ### Shell Atölyesi
 
