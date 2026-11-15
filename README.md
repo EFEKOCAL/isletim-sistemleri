@@ -51,6 +51,20 @@ Menüdeki **Zihin Haritası** konuların birbiriyle ilgisini kaydırmasız tek e
 | 01 | **System & Architecture** | User ⇄ Kernel mode geçişi (sistem çağrısı, ayrıcalıklı komut ihlali) · Derle → Bağla → Yükle hattı (relocation, statik/dinamik bağlama) · Monolitik ve mikroçekirdek karşılaştırması (IPC paket animasyonu, çökme senaryosu) |
 | 02 | **CPU Scheduling** | FCFS, SJF (non-preemptive), Round Robin · canlı Gantt şeması · WT / TAT / RT hesapları · algoritma karşılaştırması |
 | 03 | **Synchronization** | Race condition (Silberschatz T0–T5 senaryosu) · Mutex ve semafor ile çözüm · Üretici–Tüketici (bounded buffer) ve deadlock gösterimi |
+| 04 | **Shell Atölyesi** | Tarayıcıda çalışan bir terminalde, Shell Programlama PDF'inin sırasıyla 6 aşamada 48 görev: gezinme ve dosyalar, izinler, değişken ve aritmetik, pipe ve metin araçları, awk, betikler · Karışık tekrar |
+
+### Shell Atölyesi
+
+Shell Programlama PDF'ini okumak yerine terminalde **yaparak** öğrenmek için. Solda görev kartı, sağda gerçek bir bash gibi davranan terminal var. Terminal tamamen tarayıcıda çalışır, bilgisayara dokunmaz.
+
+- **Her görev kısa:** 1–3 cümlelik bilgi ve bir örnek, ardından komutu öğrencinin kendisinin yazdığı bir görev. Görev türleri: terminalde komut yazmak, çıktıyı tahmin etmek, seçmeli soru.
+- **Anında geri bildirim:** Her komuttan sonra görev denetlenir. Çıktı görevlerinde doğru çözüm terminalin bir kopyasında çalıştırılır ve iki çıktı karşılaştırılır; aynı sonucu veren her doğru komut kabul edilir. Yaygın hatalarda neyin yanlış olduğu söylenir: `grep -c` ile `grep -o | wc -l` farkı, virgülden sonra boşluklu `chmod`, `[$sayi`, `>` yerine `>>`, sort olmadan uniq.
+- **Basamaklı yardım:** hedef çıktı → ipuçları → çözüm. Çözümüne bakılan görev "tekrar edilecek" (sarı) sayılır.
+- **Karışık tekrar:** Aşamalardan 8 görev karışık sırayla gelir, önce tekrar bekleyenler. Bilgi kartı kapalıdır: önce hatırlamaya çalışılır.
+- **Gerçek terminal davranışı:** Hata iletileri bash ve GNU araçlarınınkiyle aynıdır. `read` girdi bekler, `nano` düzenleyici açılır (Ctrl+O kaydet, Ctrl+X çık), izin yoksa `./betik.sh` "Permission denied" der. `man KOMUT` kısa bir Türkçe özet verir. `help` desteklenen komutları listeler.
+- PDF'teki üç yazım hatası görevlerde doğru haliyle öğretilir: `chmod u=rwx, g=rx, o=` (boşluklar yüzünden geçersiz), `tr` örneklerindeki ters tırnak ve `echo "..." }` (kapanış süslü parantezinden önce `;` gerekir).
+
+İlerleme tarayıcıda (localStorage) saklanır. Terminaldeki dosyalar sayfa yenilenince ilk haline döner; **Sıfırla** düğmesi de aynısını yapar.
 
 Her modülün sağ alt köşesinde, o konunun **teorisini** ve **sınav sorularını** (cevaplı) içeren bir **Bilgi & Sınav paneli** bulunur. Hesaplama gerektiren sorular "▶ Simülatörde Dene" butonuyla doğrudan simülatöre yüklenip çalıştırılabilir.
 
@@ -113,10 +127,13 @@ js/
   views/learn-view.js       Ders Notları: ana sayfa, dersler, soru tekrarı
   views/diagrams.js         ders notlarındaki etkileşimli şekiller
   views/diagrams-lab.js     Bölüm 4–7 şekilleri (Gantt, Amdahl, Peterson, semafor), chmod, ls -l, pipe
+  shell-engine.js           Shell Atölyesi motoru: sanal dosya sistemi, bash ayrıştırıcı ve yorumlayıcı, grep/sort/cut/tr/awk...
+  data/shell-missions.js    Shell Atölyesi görevleri, denetimleri ve Bilgi & Sınav paneli içeriği
+  views/shell-view.js       Shell Atölyesi: görev kartı, terminal, nano düzenleyici, karışık tekrar
   views/                    her laboratuvarın arayüz ve animasyon katmanı
 ```
 
-Hesaplama dosyaları (`scheduler.js`, `synchronization.js`, `architecture.js`) arayüzden ayrıdır ve Node.js ile tek başına test edilebilir.
+Hesaplama dosyaları (`scheduler.js`, `synchronization.js`, `architecture.js`, `shell-engine.js`) arayüzden ayrıdır ve Node.js ile tek başına test edilebilir.
 
 ## Geliştirme talimatları
 
