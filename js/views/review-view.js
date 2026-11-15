@@ -10,7 +10,8 @@
  * Planda olmayan ders kendi başına bir sayfa olur; plandan kaçan başlık sona eklenir ki hiçbir bilgi
  * kaybolmasın. Kapsam (vize dışı dersler ve başlıklar) exam-scope.js'ten okunur.
  *
- * Sığdırma: sayfa sütunlara dökülür, yazı boyutu ekrana sığana kadar küçülür (en çok MAX, en az MIN).
+ * Sığdırma: sığan en büyük yazı boyutu (MAX → MIN) ve o boyutta sığan en az sütun seçilir; sütunlar
+ * dengeli dolar ve içerik sayfanın ortasında durur (boşluk sağda-solda, üstte-altta eşit).
  * OSLab.reviewView.audit() tüm sayfaları bu ekranda dener ve sığmayanları döndürür.
  *
  * Rota: #/learn/hizli[/<sayfa no>]
@@ -19,7 +20,7 @@
   'use strict';
 
   const HREF = '#/learn/hizli';
-  const MAX = 17;
+  const MAX = 20;
   const MIN = 12;
   const STEP = 0.5;
 
@@ -208,18 +209,44 @@
     });
   }
 
-  function fit(body) {
-    let size = MAX;
-    body.style.fontSize = `${size}px`;
+  // Yerleşim: önce sığan en büyük yazı boyutu, sonra o boyutta sığan en az sütun. Sütunlar dengeli
+  // doldurulur ve blok sayfanın ortasına konur; böylece boşluk sağda, solda, altta eşit kalır.
+  const GAP = 28;
+  const colW = (f) => 25 * f;
+  const minW = (f) => 19 * f;
+
+  function layout(body, f, n, W) {
+    body.style.fontSize = `${f}px`;
+    body.style.columnCount = String(n);
+    body.style.width = `${Math.min(W, n * colW(f) + (n - 1) * GAP)}px`;
     shrinkFigures(body);
-    while (overflows(body) && size > MIN) {
-      size -= STEP;
-      body.style.fontSize = `${size}px`;
-      shrinkFigures(body);
+    return !overflows(body);
+  }
+
+  function fit(body) {
+    // Kullanılabilir alanı ölç, sonra ölçüm için yüksekliği sabitle
+    body.style.cssText = '';
+    const W = body.clientWidth;
+    const H = body.clientHeight;
+    body.style.flex = 'none';
+    body.style.height = `${H}px`;
+    let size = MIN;
+    let cols = Math.max(1, Math.floor((W + GAP) / (minW(MIN) + GAP)));
+    let ok = false;
+    for (let f = MAX; f >= MIN && !ok; f -= STEP) {
+      const nMax = Math.max(1, Math.floor((W + GAP) / (minW(f) + GAP)));
+      // Az sütun her zaman daha kısa değildir: dar sütunda tablolar uzar. Bu yüzden her sütun sayısı denenir.
+      for (let n = 1; n <= nMax; n++) {
+        if (layout(body, f, n, W)) { size = f; cols = n; ok = true; break; }
+      }
     }
+    layout(body, size, cols, W);
     const bad = overflows(body);
+    // Sığdıysa yükseklik içeriğe göre kısalır ve blok dikeyde de ortalanır
+    if (!bad) body.style.height = 'auto';
+    body.style.maxHeight = `${H}px`;
     body.classList.toggle('rv-overflow', bad);
-    return { size, bad };
+    return { size, bad, cols };
   }
 
   /* ------------------------------------------------------------ olaylar */

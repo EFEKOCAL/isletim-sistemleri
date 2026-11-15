@@ -2023,7 +2023,7 @@ a.src-web:hover { text-decoration: underline; }
 .rv-tq { padding: 1px 8px; border-radius: 999px; border: 1px solid rgba(251, 191, 36, 0.5); background: rgba(251, 191, 36, 0.09); color: var(--warn); font: 700 12px var(--mono); text-decoration: none; }
 .rv-lesson { color: var(--muted); }
 .rv-count { font: 12px var(--mono); color: var(--faint); }
-.rv-body { flex: 1; min-height: 0; overflow: hidden; column-width: 380px; column-gap: 28px; column-fill: auto; column-rule: 1px solid var(--border); line-height: 1.5; }
+.rv-body { flex: 1; min-height: 0; width: 100%; margin: auto; overflow: hidden; column-gap: 28px; column-fill: balance; column-rule: 1px solid var(--border); line-height: 1.5; }
 .rv-body > * { margin-top: 0; }
 .rv-h { margin: 0 0 0.45em; padding-top: 0.2em; font-size: 1.12em; color: var(--accent); break-after: avoid; }
 .rv-b { break-inside: avoid; margin: 0 0 0.7em; }
