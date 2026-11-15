@@ -7,7 +7,8 @@
  *   #/learn/ch2             bölüm özeti
  *   #/learn/ch2/baglayici[/3|/son]   ders: dikey kart akışı (kart numarası isteğe bağlı)
  *   #/learn/sorular[/h5]    hocanın soruları (aralıklı tekrar)
- *   #/learn/hizli[/3]       hızlı tekrar: vize kapsamının özeti (quick-review.js), sonda shell'e yönlendirir
+ *   #/learn/harita[/ch3[/pcb]] zihin haritası: konuların ilgisi (mindmap-view.js)
+ *   #/learn/hizli[/<sayfa>]  hızlı tekrar: dersler konu konu, her konu tek ekranda (review-view.js)
  *
  * İlerleme tarayıcının localStorage'ında tutulur; erişilemezse sayfa yine çalışır.
  */
@@ -63,7 +64,7 @@
   }
 
   const QUICK_HREF = '#/learn/hizli';
-  const lessonHref = (ch, l) => (l.quick ? QUICK_HREF : `#/learn/${ch.id}/${l.id}`);
+  const lessonHref = (ch, l) => `#/learn/${ch.id}/${l.id}`;
   const lessonSource = (l) => l.src || `slayt ${l.slides}`;
 
   /* ------------------------------------------------------------ bölüm sonu tekrarı */
@@ -386,162 +387,10 @@
     </aside>`;
   }
 
-  /* ------------------------------------------------------------ hızlı tekrar (quick-review.js) */
-
-  // Hızlı tekrar, ders akışının kart düzenini kullanan sahte bir "ders"tir: #/learn/hizli[/kart]
-  const quickData = () => OSLab.quickReview || null;
-  const QCH = { id: 'hizli', num: '↻', title: 'Hızlı Tekrar', en: 'Quick review', lessons: [] };
-  const QL = { id: 'hizli', quick: true, title: 'Hızlı Tekrar', en: 'Quick review', checks: [] };
-
-  // '<bölüm>/<ders>' anahtarı vize dışı mı? (exam-scope.js'den türetilir)
-  function srcOut(key) {
-    const [chId, lId] = key.split('/');
-    const ch = findChapter(chId);
-    if (!ch) return true;
-    if (scope() && scope().chapters[ch.id]) return true;
-    return scopeOf(ch, ch.lessons.find((x) => x.id === lId)) === 'out';
-  }
-
-  // Kapsamdaki bölümler ve kartlar: bütün kaynakları vize dışı olan kart ve bölüm atlanır
-  function quickChapters() {
-    const d = quickData();
-    if (!d) return [];
-    return d.chapters
-      .map((c) => ({ ch: findChapter(c.ch), cards: c.cards.filter((k) => k.src.some((s) => !srcOut(s))), checks: c.checks || [] }))
-      .filter((c) => c.ch && !(scope() && scope().chapters[c.ch.id]) && c.cards.length);
-  }
-
-  function buildQuick() {
-    const cards = [{ kind: 'qopen' }];
-    const parts = [];
-    quickChapters().forEach(({ ch, cards: cs, checks }) => {
-      const total = cs.length + checks.length;
-      parts.push({ ch, start: cards.length, total, checks: checks.length });
-      cs.forEach((k, i) => cards.push({ kind: k.blocks.some((b) => WIDE.has(b.t)) ? 'wide' : 'read', qr: true, qch: ch, n: i + 1, total, h: k.h, blocks: k.blocks, src: k.src, slides: k.slides, tqs: k.tq || [] }));
-      checks.forEach((c, i) => cards.push({ kind: 'check', qr: true, qch: ch, n: cs.length + i + 1, total, ci: i, cn: checks.length, check: c, id: `qr:${ch.id}#${i}` }));
-    });
-    cards.push({ kind: 'qend' });
-    cards.parts = parts;
-    return cards;
-  }
-
-  // Shell dersleri burada özetlenmez; son kart doğrudan onlara yönlendirir
-  function shellLessons() {
-    const nx = quickData() && quickData().next;
-    const ch = nx && findChapter(nx.ch);
-    return ch ? ch.lessons.filter((l) => l.id.startsWith(nx.prefix)).map((l) => ({ ch, l })) : [];
-  }
-
-  const qNum = (id) => questions().findIndex((q) => q.id === id) + 1;
-  const tqLinks = (ids) => ids.map((id) => {
-    const q = questions().find((x) => x.id === id);
-    return q ? `<a href="#/learn/sorular/${id}" title="${esc(q.q)}">S${qNum(id)}</a>` : '';
-  }).join('');
-
-  function quickInner(card, cards) {
-    if (card.kind === 'qopen') {
-      const s = scope();
-      const qn = cards.filter((c) => c.kind === 'check').length;
-      return `<span class="tag">${s ? `${s.exam} öncesi` : 'Tekrar'} · ${cards.length - 2 - qn} özet kartı · ${qn} soru</span>
-        <h2 class="fx-title">${quickData().title}</h2>
-        <p class="fx-sub">${quickData().sub}</p>
-        <ol class="qr-toc">${cards.parts.map((p) => `<li><a href="${QUICK_HREF}/${p.start + 1}"><b>Bölüm ${p.ch.num}</b> ${p.ch.title}<small>${p.total - p.checks} kart · ${p.checks} soru</small></a></li>`).join('')}</ol>
-        ${s ? `<p class="tq-lesson scope-note">⛔ ${Object.values(s.reason).join(' ')} Bu kartlarda yalnızca vize kapsamı var.</p>` : ''}
-        <div class="fx-pre"><span class="l-note-label">Nasıl kullanılır?</span>
-          <small>Her kartta slayt numarası ve kaynak ders yazar. <b class="qr-star">★ S13</b> gibi etiketler, kartın hangi hoca sorusunu cevapladığını gösterir. Her bölüm birkaç hızlı soruyla biter: önce kendin cevapla, sonra aç.</small></div>
-        <div class="btn-row"><button class="btn btn-primary" type="button" data-act="card-next">Başla ↓</button></div>`;
-    }
-    if (card.kind === 'qend') {
-      const sh = shellLessons();
-      const ids = cards.filter((c) => c.kind === 'check').map((c) => c.id);
-      const ok = ids.filter((x) => Store.data.checks[x] === 'ok').length;
-      const bad = ids.filter((x) => Store.data.checks[x] === 'bad').length;
-      const nx = quickData().next || {};
-      return `<div class="fx-end">
-        <span class="fx-end-mark" aria-hidden="true">✓</span>
-        <h2 class="fx-title">Teori tekrarı tamam</h2>
-        <p class="fx-sub" id="rv-score">${ok} bildim · ${bad} bilemedim · ${ids.length - ok - bad} işaretlenmedi</p>
-        ${sh.length ? `<section class="qr-next">
-          <span class="tag">Sıradaki: Shell programlama</span>
-          <p>Shell burada özetlenmedi: sınavdaki laboratuvar tipi görev için derslerden adım adım çalış.${(nx.tq || []).length ? ` Hocanın pipe sorusu (${tqLinks(nx.tq)}) bu derslerde çözülüyor.` : ''}</p>
-          <a class="btn btn-primary fx-next" href="${lessonHref(sh[0].ch, sh[0].l)}">Shell'e başla: ${sh[0].l.title} ▶</a>
-          <ol class="qr-shell">${sh.map(({ ch, l }) => `<li><a href="${lessonHref(ch, l)}">${l.title}</a></li>`).join('')}</ol>
-        </section>` : ''}
-        <div class="btn-row"><a class="btn btn-sm" href="${QUICK_HREF}/1">Hızlı tekrarı baştan al</a><a class="btn btn-sm" href="#/learn/sorular">Hocanın soruları</a></div>
-      </div>`;
-    }
-    const where = `Bölüm ${card.qch.num} · ${card.n} / ${card.total}`;
-    if (card.kind === 'check') {
-      const st = Store.data.checks[card.id];
-      return `<div class="rq-head"><span class="tag">${where}</span><span class="src-badge src-lesson">Hızlı yoklama ${card.ci + 1} / ${card.cn}</span></div>
-        <div class="fx-check${st ? ' ' + st : ''}" data-check="${card.id}">
-          <p class="fx-check-q">${card.check.q}</p>
-          <button class="btn" type="button" data-act="reveal">Cevabı göster</button>
-          <div class="l-check-a" hidden><p>${card.check.a}</p><div class="btn-row"><button class="btn btn-sm l-ok" type="button" data-act="ok">✓ Bildim</button><button class="btn btn-sm l-bad" type="button" data-act="bad">✗ Bilemedim</button></div></div>
-        </div>`;
-    }
-    const srcs = card.src.filter((s) => !srcOut(s)).map((s) => {
-      const [chId, lId] = s.split('/');
-      const ch = findChapter(chId);
-      const l = ch.lessons.find((x) => x.id === lId);
-      return l ? `<a href="${lessonHref(ch, l)}">${l.title}</a>` : '';
-    }).filter(Boolean);
-    return `<div class="qr-meta"><span class="tag">${where}</span>${card.slides ? `<span class="qr-slides">slayt ${card.slides}</span>` : ''}${card.tqs.length ? `<span class="qr-star">★ ${tqLinks(card.tqs)}</span>` : ''}</div>
-      <h3 class="fx-h">${card.h}</h3>
-      <div class="l-body fx-body">${card.blocks.map(renderBlock).join('')}</div>
-      ${srcs.length ? `<p class="qr-src">Ders: ${srcs.join(' · ')}</p>` : ''}`;
-  }
-
-  function quickTop(cards) {
-    return `<header class="fx-top">
-      <button class="icon-btn fx-menu" type="button" data-act="menu" aria-label="Menüyü aç">☰</button>
-      <div class="fx-progress">
-        <div class="fx-bar">${cards.parts.map((p) => `<div class="fx-ch" style="flex-grow:${p.total}">
-          <div class="fx-segs"><a class="fx-seg" data-qpart="${p.start}" href="${QUICK_HREF}/${p.start + 1}" title="Bölüm ${p.ch.num} · ${esc(p.ch.title)}" aria-label="Bölüm ${p.ch.num}: ${esc(p.ch.title)}"><span><i style="width:0%"></i></span></a></div>
-          <div class="fx-chname"><span>${p.ch.title}</span><small>B${p.ch.num}</small></div>
-        </div>`).join('')}</div>
-        <div class="fx-caption"><span>${QL.title} › <b id="qr-where">Başlangıç</b></span><span class="fx-count" id="fx-count"></span></div>
-      </div>
-      <span class="fx-pct" id="fx-pct">%0</span>
-    </header>`;
-  }
-
-  function pageQuick() {
-    const cards = buildCards(QL);
-    const ctx = { ch: QCH, l: QL, key: lessonKey(QCH, QL), idx: 0, cards, next: null };
-    return `<div class="fx fx-quick">
-      ${quickTop(cards)}
-      <div class="fx-scroll" id="fx-scroll">${cards.map((c, i) => renderCard(c, i, ctx)).join('')}</div>
-      <div class="fx-nav" id="fx-nav">
-        <button class="btn fx-up" type="button" data-act="card-prev" aria-label="Önceki kart">↑</button>
-        <button class="btn btn-primary fx-down" type="button" data-act="card-next">Devam ↓</button>
-      </div>
-    </div>`;
-  }
-
-  function refreshQuickUi() {
-    const cards = buildCards(QL);
-    const card = cards[F.idx];
-    const last = cards.length - 1;
-    root.querySelector('#fx-count').textContent = card.qch ? `Bölüm ${card.qch.num} · ${card.n}/${card.total}` : `${F.idx + 1} / ${last + 1}`;
-    root.querySelector('#qr-where').textContent = card.qch ? `Bölüm ${card.qch.num}: ${card.qch.title}` : card.kind === 'qend' ? 'Sıradaki: Shell' : 'Başlangıç';
-    root.querySelector('#fx-nav').classList.toggle('end', F.idx === last);
-    root.querySelectorAll('[data-qpart]').forEach((a) => {
-      const p = cards.parts.find((x) => x.start === +a.dataset.qpart);
-      const done = Math.min(Math.max(F.idx - p.start + 1, 0), p.total);
-      a.querySelector('i').style.width = `${(done / p.total) * 100}%`;
-      a.classList.toggle('read', done === p.total);
-      a.classList.toggle('active', card.qch === p.ch);
-    });
-    root.querySelector('#fx-pct').textContent = `%${Math.round((F.idx / last) * 100)}`;
-  }
+  /* ------------------------------------------------------------ hızlı tekrar: review-view.js çizer */
 
   function buildCards(l) {
     if (cardCache.has(l)) return cardCache.get(l);
-    if (l.quick) {
-      cardCache.set(l, buildQuick());
-      return cardCache.get(l);
-    }
     if (l.review) {
       cardCache.set(l, buildReview(l));
       return cardCache.get(l);
@@ -657,12 +506,10 @@
 
   // Başlangıç ekranında "Başla"nın altındaki ikinci düğme
   function quickHomeLink() {
-    if (!quickData()) return '';
-    const cards = buildCards(QL);
-    const qn = cards.filter((c) => c.kind === 'check').length;
+    if (!OSLab.reviewView) return '';
     const s = scope();
     return `<a class="fx-quick-btn" href="${QUICK_HREF}">↻ Hızlı Tekrar</a>
-      <p class="fx-start-next">${s ? `${s.exam} öncesi` : 'Tüm bölümler'}: ${cards.parts.length} bölüm, ${cards.length - 2 - qn} özet kartı ve ${qn} soru</p>`;
+      <p class="fx-start-next">${s ? `${s.exam} kapsamı` : 'Tüm bölümler'}: ${OSLab.reviewView.count()} konu sayfası · <b>Bütün</b> ya da yalnızca <b>Başlıklar</b></p>`;
   }
 
   function pageHome() {
@@ -691,9 +538,7 @@
   function renderCard(card, i, ctx) {
     const { ch, l, key, idx, cards, next } = ctx;
     let inner;
-    if (l.quick) {
-      inner = quickInner(card, cards);
-    } else if (card.kind === 'chintro') {
+    if (card.kind === 'chintro') {
       const o = OSLab.chapterOutlines[ch.id];
       const num = (id) => ch.lessons.findIndex((x) => x.id === id) + 1;
       const range = (ids) => {
@@ -794,7 +639,7 @@
     } else {
       inner = `${card.out ? `<div class="scope-flag strip" role="note"><b>⛔ ${scope().label.toUpperCase()}</b><span>${scopeReason(ch)}</span></div>` : ''}${card.partial ? `<div class="scope-flag soft" role="note"><b>⚠ KISMEN ${scope().label.toUpperCase()}</b><span>${card.partial}</span></div>` : ''}${card.tq ? teacherFlag(card.tq) : ''}${card.h ? `<h3 class="fx-h">${card.h}</h3>` : ''}<div class="l-body fx-body">${card.blocks.map(renderBlock).join('')}</div>`;
     }
-    const isOut = !l.quick && (card.out || (card.kind === 'check' && checkOut(ch, l, card.n)) || (card.kind === 'rq' && card.item.out));
+    const isOut = !!(card.out || (card.kind === 'check' && checkOut(ch, l, card.n)) || (card.kind === 'rq' && card.item.out));
     return `<section class="fx-card fx-${card.kind}${isOut ? ' scope-out' : ''}" data-i="${i}" aria-label="Kart ${i + 1} / ${cards.length}"><div class="fx-inner">${inner}</div></section>`;
   }
 
@@ -819,7 +664,6 @@
   const feedCard = (i) => feedScroller().children[i];
 
   function refreshFeedUi() {
-    if (F.l.quick) { refreshQuickUi(); return; }
     root.querySelector('#fx-count').textContent = `${F.idx + 1} / ${lastCard(F.l) + 1}`;
     root.querySelector('#fx-nav').classList.toggle('end', F.idx === lastCard(F.l));
     const seg = root.querySelector('.fx-seg.active');
@@ -837,14 +681,6 @@
     if (i === F.idx || i < 0 || i > lastCard(F.l)) return;
     F.idx = i;
     const key = lessonKey(F.ch, F.l);
-    // Hızlı tekrarda "okundu" işaretlenmez; yalnızca kalınan kart hatırlanır
-    if (F.l.quick) {
-      Store.data.seen[key] = i;
-      Store.save();
-      try { history.replaceState(null, '', `${QUICK_HREF}/${i + 1}`); } catch (e) { /* yok say */ }
-      refreshFeedUi();
-      return;
-    }
     Store.data.seen[key] = Math.max(Store.data.seen[key] || 0, i);
     if (i === lastCard(F.l) && !Store.data.read[key]) Store.data.read[key] = today();
     Store.save();
@@ -869,7 +705,6 @@
     if (scrollInsideCard(dir)) return;
     const i = F.idx + dir;
     if (i >= 0 && i <= lastCard(F.l)) { showCard(i); return; }
-    if (F.l.quick) return;
     const to = dir > 0 ? nextOf(F.ch, F.l) : prevOf(F.ch, F.l);
     if (to) location.hash = dir > 0 ? lessonHref(to.ch, to.l) : `${lessonHref(to.ch, to.l)}/son`;
     else if (dir > 0) location.hash = '#/learn/sorular';
@@ -912,7 +747,6 @@
   function startFeed(ch, l, cardParam) {
     const last = lastCard(l);
     let i = isRead(ch, l) ? 0 : seenCard(ch, l);
-    if (l.quick && i === last) i = 0;
     if (cardParam === 'son') i = last;
     else if (cardParam) i = Math.min(Math.max((parseInt(cardParam, 10) || 1) - 1, 0), last);
     F = { ch, l, idx: i, wheelAt: 0, wheelGo: 0 };
@@ -1111,9 +945,7 @@
         chk.classList.add(a);
         const score = root.querySelector('#rv-score');
         if (score && F) {
-          const ids = F.l.quick
-            ? buildCards(F.l).filter((c) => c.kind === 'check').map((c) => c.id)
-            : buildCards(F.l).filter((c) => c.kind === 'rq').map((c) => c.item.id);
+          const ids = buildCards(F.l).filter((c) => c.kind === 'rq').map((c) => c.item.id);
           const ok = ids.filter((x) => Store.data.checks[x] === 'ok').length;
           const bad = ids.filter((x) => Store.data.checks[x] === 'bad').length;
           score.textContent = `${ok} bildim · ${bad} bilemedim · ${ids.length - ok - bad} işaretlenmedi`;
@@ -1167,16 +999,22 @@
     const ch = findChapter(a);
     const l = ch && b2 && (b2 === 'tekrar' ? reviewOf(ch) : b2 === 'konular' && hasIntro(ch) ? introOf(ch) : ch.lessons.find((x) => x.id === b2));
     F = null;
+    if (OSLab.reviewView) OSLab.reviewView.stop();
+    if (OSLab.mindMap) OSLab.mindMap.stop();
     if (a === 'plan') {
       html = pageOverview();
       header = { num: 'T', title: 'Genel Bakış', sub: 'Çalışma yöntemi, bölümler, dönem planı' };
     } else if (a === 'sorular') {
       html = pageQuestions(b2);
       header = { num: 'S', title: 'Hocanın Soruları', sub: 'Aralıklı tekrar ile sınava hazırlık' };
-    } else if (a === 'hizli' && quickData()) {
-      html = pageQuick();
+    } else if (a === 'harita' && OSLab.mindMap) {
+      html = OSLab.mindMap.page(b2);
       focus = true;
-      header = { num: QCH.num, title: QL.title, sub: 'Vize kapsamının özeti' };
+      header = { num: '◎', title: 'Zihin Haritası', sub: 'Konuların birbiriyle ilgisi' };
+    } else if (a === 'hizli' && OSLab.reviewView) {
+      html = OSLab.reviewView.page(b2);
+      focus = true;
+      header = { num: '↻', title: 'Hızlı Tekrar', sub: 'Konu konu, tek sayfada' };
     } else if (l) {
       html = pageFeed(ch, l);
       focus = true;
@@ -1193,7 +1031,8 @@
     OSLab.diagrams.init(root);
     OSLab.app.setHeader(header);
     if (l) startFeed(ch, l, b3);
-    else if (a === 'hizli' && quickData()) startFeed(QCH, QL, b2);
+    else if (a === 'hizli' && OSLab.reviewView) OSLab.reviewView.start(root, b2);
+    else if (a === 'harita' && OSLab.mindMap) OSLab.mindMap.start(root, b2, b3);
 
     if (a === 'sorular' && b2 && Q.mode === 'list') {
       const el = root.querySelector(`#q-${CSS.escape(b2)}`);
@@ -1226,10 +1065,15 @@
       root.removeEventListener('change', onInput);
     }
     document.removeEventListener('keydown', onKey);
+    if (OSLab.reviewView) OSLab.reviewView.stop();
+    if (OSLab.mindMap) OSLab.mindMap.stop();
     document.body.classList.remove('focus-mode');
     F = null;
     root = null;
   }
+
+  // review-view.js (Hızlı Tekrar) bu yardımcıları kullanır
+  OSLab.learnKit = { Store, esc, chapters, lessonKey, lessonHref, questionsFor, renderBlock, scope, scopeOf, scopeRule };
 
   OSLab.modules = OSLab.modules || {};
   OSLab.modules.learn = {

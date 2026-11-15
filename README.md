@@ -30,9 +30,13 @@ Her ders aynı öğrenme döngüsünü izler:
 4. **Kendini yokla** (geri çağırma pratiği): Ders sonundaki soruları cevaba bakmadan cevapla.
 5. **Laboratuvarda dene:** Kavramı ilgili simülatörde canlı çalıştır.
 
-### Hızlı Tekrar (vize öncesi)
+### Hızlı Tekrar (öğrendikten sonra)
 
-Başlangıç ekranındaki **Hızlı Tekrar** düğmesi (ya da ☰ menüdeki aynı adlı öğe) vize kapsamının yoğun ama okunur bir özetini açar: Bölüm 1–6'nın tanımları, karşılaştırma tabloları ve formülleri, kartta slayt numarası ve kaynak dersiyle. Bir kartın cevapladığı hoca soruları ★ S13 gibi etiketlerle gösterilir; vize kapsamındaki her hoca sorusu en az bir kartta karşılanır. Her bölüm 3–5 hızlı soruyla biter. Üstteki çubuk bölümler arasında atlamayı sağlar. Kapsam `exam-scope.js`'den okunur (Bölüm 4 slayt 4.26'ya kadar, Bölüm 7 yok). Shell özetlenmez; son kart doğrudan shell derslerine yönlendirir.
+Başlangıç ekranındaki **Hızlı Tekrar** düğmesi (ya da ☰ menüdeki aynı adlı öğe) dersleri kart kart değil, **konu konu tek sayfada** gösterir. Bir sayfada yalnızca aynı dersin birbiriyle ilgili başlıkları olur ve sayfa kaydırmadan bütünüyle görünür: içerik sütunlara dökülür, yazı ekrana sığana kadar küçülür. Sayfalar doğrudan ders verisinden üretilir, hiçbir tanım, tablo, şekil veya not atlanmaz; sığmayan dersler `review-pages.js`teki plana göre anlamlı başlık sınırlarından bölünür. Üstteki iki düğme iki aşamayı seçer: **Bütün** (her şey açık) ve **Başlıklar** (yalnızca başlıklar, terimler ve kalın anahtar sözcükler okunur; konuyu kendin anlatırsın, sonra bloğa tıklayıp kontrol edersin). `B` tuşu aşamalar arasında geçer; ok tuşları ve tekerlek sayfa değiştirir. Kapsam `exam-scope.js`'den okunur.
+
+### Zihin Haritası
+
+Menüdeki **Zihin Haritası** konuların birbiriyle ilgisini kaydırmasız tek ekranda gösterir. Genel haritada ortada ders, çevresinde bölümler, uçlarda dersler; bölüm haritasında ortada bölüm, çevresinde dersler, uçlarda başlıkları vardır. Bir derse tıklayınca başka konularla ilişkileri çizilir ve alttaki şeritte nedenleriyle listelenir (`mind-links.js`, her ilişki iki dersin metnine dayanır). "Tüm ilişkiler" genel haritada hepsini birden çizer; "Alt başlıklar: gizli" başlıkları saklar, kendin hatırlayıp tıklayarak açarsın. Hızlı Tekrar sayfalarındaki **Haritada gör** o konunun haritasını açar.
 
 **Hocanın Soruları** sayfasında her sorunun model cevabı ve cevapta bulunması gereken anahtar noktalar vardır. Sorular aralıklı tekrarla çalışılır: bir soru ancak farklı günlerde iki kez bilinirse "Öğrenildi" sayılır. Kart modu ise soruları karışık sırayla sorar. İlerleme yalnızca kendi tarayıcında saklanır.
 
@@ -101,7 +105,10 @@ js/
   scheduler-trace.js        ders Gantt şekillerinin çizelge hesabı (SRTF ve öncelik dahil)
   data/teacher-questions.js hocanın soruları, model cevaplar, anahtar noktalar
   data/web-questions.js     bölüm tekrarları için internetten sorular (kaynak bağlantılı)
-  data/quick-review.js      Hızlı Tekrar kartları: bölüm bölüm özet, hoca sorusu eşlemesi, hızlı sorular
+  data/review-pages.js      Hızlı Tekrar sayfa planı: hangi başlıklar aynı ekranda (sığmayan dersler nereden bölünür)
+  views/review-view.js      Hızlı Tekrar: konu sayfaları, ekrana sığdırma, Bütün / Başlıklar aşamaları
+  data/mind-links.js        Zihin haritasındaki konu ilişkileri (iki ders ve nedeni)
+  views/mindmap-view.js     Zihin Haritası: genel ve bölüm haritaları, ilişki çizgileri
   data/exam-scope.js        yaklaşan sınavın kapsamı: hocanın işlemediği dersler "vize dışı" işaretlenir (active: false ile kapanır)
   views/learn-view.js       Ders Notları: ana sayfa, dersler, soru tekrarı
   views/diagrams.js         ders notlarındaki etkileşimli şekiller
