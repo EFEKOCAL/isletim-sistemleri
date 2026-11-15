@@ -30,6 +30,10 @@ Her ders aynı öğrenme döngüsünü izler:
 4. **Kendini yokla** (geri çağırma pratiği): Ders sonundaki soruları cevaba bakmadan cevapla.
 5. **Laboratuvarda dene:** Kavramı ilgili simülatörde canlı çalıştır.
 
+### Hızlı Tekrar (vize öncesi)
+
+Başlangıç ekranındaki **Hızlı Tekrar** düğmesi (ya da ☰ menüdeki aynı adlı öğe) vize kapsamının yoğun ama okunur bir özetini açar: Bölüm 1–6'nın tanımları, karşılaştırma tabloları ve formülleri, kartta slayt numarası ve kaynak dersiyle. Bir kartın cevapladığı hoca soruları ★ S13 gibi etiketlerle gösterilir; vize kapsamındaki her hoca sorusu en az bir kartta karşılanır. Her bölüm 3–5 hızlı soruyla biter. Üstteki çubuk bölümler arasında atlamayı sağlar. Kapsam `exam-scope.js`'den okunur (Bölüm 4 slayt 4.26'ya kadar, Bölüm 7 yok). Shell özetlenmez; son kart doğrudan shell derslerine yönlendirir.
+
 **Hocanın Soruları** sayfasında her sorunun model cevabı ve cevapta bulunması gereken anahtar noktalar vardır. Sorular aralıklı tekrarla çalışılır: bir soru ancak farklı günlerde iki kez bilinirse "Öğrenildi" sayılır. Kart modu ise soruları karışık sırayla sorar. İlerleme yalnızca kendi tarayıcında saklanır.
 
 ### Hocanın yeni sorularını eklemek
@@ -97,6 +101,7 @@ js/
   scheduler-trace.js        ders Gantt şekillerinin çizelge hesabı (SRTF ve öncelik dahil)
   data/teacher-questions.js hocanın soruları, model cevaplar, anahtar noktalar
   data/web-questions.js     bölüm tekrarları için internetten sorular (kaynak bağlantılı)
+  data/quick-review.js      Hızlı Tekrar kartları: bölüm bölüm özet, hoca sorusu eşlemesi, hızlı sorular
   data/exam-scope.js        yaklaşan sınavın kapsamı: hocanın işlemediği dersler "vize dışı" işaretlenir (active: false ile kapanır)
   views/learn-view.js       Ders Notları: ana sayfa, dersler, soru tekrarı
   views/diagrams.js         ders notlarındaki etkileşimli şekiller
